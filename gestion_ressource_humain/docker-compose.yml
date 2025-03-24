@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  web:
+    build: .  # Construire le conteneur à partir du Dockerfile
+    ports:
+      - "8081:8081"  # Associer le port du conteneur à la machine hôte
+    volumes:
+      - .:/app  # Monter le dossier local dans le conteneur
+    working_dir: /app
+    depends_on:
+      - db  # S'assure que la base de données démarre avant Django
+    environment:
+      - DATABASE_NAME=my_database
+      - DATABASE_USER=my_user
+      - DATABASE_PASSWORD=my_password
+      - DATABASE_HOST=db
+      - DATABASE_PORT=3306
+
+  db:
+    image: mysql:latest
+    container_name: mysql_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: my_database
+      MYSQL_USER: my_user
+      MYSQL_PASSWORD: my_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql  # Stocker les données
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin_container
+    restart: always
+    ports:
+      - "8082:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    depends_on:
+      - db  # phpMyAdmin démarre après MySQL
+
+volumes:
+  mysql_data:
