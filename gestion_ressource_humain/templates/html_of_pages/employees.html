@@ -10,14 +10,14 @@
     <table >
         <tr>
             <th>Nom</th>
-            <th>Email</th>
-            <th>Salaire</th>
+            <th>description</th>
+        
         </tr>
-        {% for employee in employees %}
+        {% for depp in la_departement %}
         <tr>
-            <td>{{ employee.name }}</td>
-            <td>{{ employee.email }}</td>
-            <td>{{ employee.salary }}</td>
+            <td>{{ depp.nom }}</td>
+            <td>{{ depp.description }}</td>
+            
         </tr>
         {% endfor %}
     </table>

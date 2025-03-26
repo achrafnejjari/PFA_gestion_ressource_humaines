@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Employee
+from .models import Departement
 
 def index(request):
     x = {'name': 'ahmed', 'age': 18}
@@ -7,5 +7,5 @@ def index(request):
     
 
 def list_employees(request):
-    employees = Employee.objects.all() # Récupérer tous les employés
-    return render(request, 'html_of_pages/employees.html', {'employees': employees}) # Passer les données au template
+    departements = Departement.objects.all() # Récupérer tous les employés
+    return render(request, 'html_of_pages/employees.html', {'la_departement': departements}) # Passer les données au template
