@@ -1,0 +1,49 @@
+:root {
+  /* === FONT === */
+  --font-family: "Poppins", sans-serif;
+  --font-size-1: 4.2rem;
+  --font-size-2: 3.6rem;
+  --font-size-3: 2.5rem;
+  --font-size-4: 2.4rem;
+  --font-size-5: 2rem;
+  --font-size-6: 1.5rem;
+  --font-size-7: 1.125rem;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --font-weight-extra-bold: 800;
+
+  /* === SPACING === */
+  --padding-sm: 0.5rem;
+  --padding-md: 1rem;
+  --padding-lg: 2rem;
+
+  --margin-sm: 0.5rem;
+  --margin-md: 1rem;
+  --margin-lg: 2rem;
+
+  /* === BORDER RADIUS === */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 200px;
+  --radius-circle: 50%;
+
+  /* === SHADOW === */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+  /* === TRANSITION === */
+  --transition-slow: 1s ease-in-out;
+  --transition-fast: 0.2s ease-in-out;
+  --transition-very-fast: 0.1s ease-in-out;
+  --transition-delayed: 0.5s ease-in-out 0.2s;
+  --transition-properties: all;
+
+  /* === COMMON COLORS (non liés au thème) === */
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --info-color: #17a2b8;
+}

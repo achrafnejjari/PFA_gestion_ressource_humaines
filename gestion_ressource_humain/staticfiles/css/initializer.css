@@ -1,0 +1,86 @@
+/* Réinitialisation des marges et paddings de base */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Police par défaut */
+body {
+  font-family: "Arial", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  background-color: #fff;
+  color: #222222;
+}
+
+/* Lien */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Suppression du soulignement sur les liens au survol */
+a:hover,
+a:focus {
+  text-decoration: none;
+}
+
+/* Style pour les images */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Réinitialisation des listes */
+ul,
+ol {
+  list-style: none;
+}
+
+/* Suppression des bordures sur les boutons et autres éléments */
+button,
+input,
+select,
+textarea {
+  border: none;
+  outline: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  padding: 0;
+  margin: 0;
+}
+
+/* Définir un comportement normal pour les formulaires */
+input,
+textarea,
+select {
+  background-color: transparent;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Suppression des bordures sur les tables */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* Appliquer un style de base pour les éléments de formulaire */
+input[type="text"],
+input[type="password"],
+textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+/* Appliquer des transitions par défaut */
+* {
+  transition: all 0.3s ease-in-out;
+}

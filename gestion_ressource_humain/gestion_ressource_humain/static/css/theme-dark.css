@@ -1,0 +1,13 @@
+/**** START DARK MODE ****/
+:root {
+  --primary-color: #7b75ff;
+  --primary-color-hover: #a19cff;
+
+  --secondary-color: #b388ff;
+  --secondary-color-hover: #d1bfff;
+
+  --background-color: #121212;
+  --text-color: #e0e0e0;
+  --card-background: #1e1e1e;
+  --border-color: #2e2e2e;
+}

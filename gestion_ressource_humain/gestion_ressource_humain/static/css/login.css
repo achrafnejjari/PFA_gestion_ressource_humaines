@@ -1,0 +1,57 @@
+/**** INCLUDE EXTERN CSS FILES ****/
+@import url("./index.css");
+
+/**** START LOGIN PAGE ****/
+.login {
+  background-color: var(--background-color);
+  height: 100vh;
+}
+
+.login-section {
+  background-color: #fff;
+  width: min(90%, 900px);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 40px 20px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+.login-section i.bi-people {
+  font-size: var(--font-size-extraLarge);
+}
+
+.login .login-photo {
+  flex: 1;
+}
+.login .login-form {
+  flex: 0.98;
+}
+.login .login-photo img {
+  max-width: 100%;
+}
+
+.login-form input[type="text"],
+.login-form input[type="password"] {
+  border-bottom: 1px solid var(--text-color-secondary);
+}
+
+/**** MEDIA QUERIES FOR LOGIN PAGE ****/
+@media (max-width: 768px) {
+  .login-section {
+    flex-direction: column !important;
+  }
+  .login .login-photo {
+    display: none;
+  }
+
+  .form-bottom .forgotPasswordLink,
+  .form-bottom .form-check {
+    font-size: var(--font-size-small);
+  }
+
+  .form-btns .btn {
+    font-size: var(--font-size-small);
+  }
+}

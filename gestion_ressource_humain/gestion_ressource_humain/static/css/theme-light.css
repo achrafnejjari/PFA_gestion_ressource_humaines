@@ -1,0 +1,14 @@
+/**** STARTING LIGHT MODE ****/
+:root {
+  --primary-color: #4e47ff;
+  --primary-color-hover: #3f39d6;
+
+  --secondary-color: #b388ff;
+  --secondary-color-hover: #9f6eff;
+
+  --background-color: #f5f8ff;
+  --text-color: #222222;
+  --text-color-secondary: #6c757d;
+  --card-background: #f9f9f9;
+  --border-color: #e0e0e0;
+}

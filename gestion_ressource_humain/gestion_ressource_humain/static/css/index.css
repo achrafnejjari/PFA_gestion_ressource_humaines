@@ -1,3 +1,4 @@
-h1{
-    color: aqua;
-}
+@import url("./variables.css");
+@import url("./theme-light.css"); /**** BY DEFAULT, WE CHANGE THIS THEME USING JS ****/
+@import url("./initializer.css");
+@import url("./global-rules.css");

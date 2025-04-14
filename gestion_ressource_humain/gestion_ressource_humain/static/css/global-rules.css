@@ -1,0 +1,34 @@
+/**** START GLOBAL RULES ****/
+body {
+  background-color: var(--background-color);
+  font-family: var(--font-family);
+  color: var(--text-color);
+  font-size: var(--font-size-regular) !important;
+  line-height: 1.5;
+}
+html {
+  scroll-behavior: smooth;
+}
+h1,
+h2,
+h3 {
+  font-size: var(--font-size-extraLarge);
+  line-height: 1.2;
+}
+
+/**** DECLARING USED COMPONENTS ****/
+.primary-button {
+  background-color: var(--primary-color) !important;
+  color: #fff;
+}
+.primary-button:hover {
+  background-color: var(--primary-color-hover) !important;
+  color: #fff;
+}
+
+.special-text {
+  color: var(--primary-color) !important;
+}
+.special-text:hover {
+  color: var(--primary-color-hover) !important;
+}

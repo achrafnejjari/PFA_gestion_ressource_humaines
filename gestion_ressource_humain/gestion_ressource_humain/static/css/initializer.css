@@ -1,0 +1,76 @@
+/**** RESETTING THE BASIC MARGINS AND PADDINGS ****/
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/**** LINKS ****/
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/**** REMOVING THE UNDERLINE ON LINKS ON HOVER ****/
+a:hover,
+a:focus {
+  text-decoration: none;
+}
+
+/**** IMAGES STYLE ****/
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/**** RESETTING UL ****/
+ul,
+ol {
+  list-style: none;
+}
+
+/**** REMOVING BORDERS ON BUTTONS AND OTHER ELEMENTS ****/
+button,
+input,
+select,
+textarea {
+  border: none;
+  outline: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  padding: 0;
+  margin: 0;
+}
+
+/**** SET A NORMAL BEHAVIOUS FOR FORMS ****/
+input,
+textarea,
+select {
+  background-color: transparent;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/**** REMOVING BORDERS ON TABLES ****/
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/**** APPLY A BASE STYLE FOR FORM ELEMENTS ****/
+input[type="text"],
+input[type="password"],
+textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: none;
+}
+/**** APPLY TRANSITION BY DEFAULT ****/
+* {
+  transition: all 0.5s ease-in-out;
+}

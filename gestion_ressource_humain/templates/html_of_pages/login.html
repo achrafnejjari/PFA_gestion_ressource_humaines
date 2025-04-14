@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- ADD BOOTSTRAP CSS CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- ADD BOOTSTRAP ICONS CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+    <!-- ADD CSS FILES -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}" />
+    <title>Se connecter</title>
+  </head>
+  <body>
+    <!-- START LOGIN PAGE -->
+    <div class="login">
+      <section class="login-section d-flex justify-content-center gap-2">
+        <div class="login-photo">
+          <img
+            src="{% static 'images/login_photo.png' %}"
+            alt="your image"
+            class="img-fluid"
+          />
+        </div>
+        <form class="login-form">
+          <h4 class="mb-3 text-center fw-bold">Connectez-vous ici</h4>
+          <i class="bi bi-people d-flex justify-content-center mb-5"></i>
+          <div class="form-middle d-flex flex-column">
+            <div class="inputUsernameHolder">
+              <input
+                type="text"
+                id="inputUsername"
+                placeholder="Nom d'utilisateur"
+              />
+            </div>
+            <div class="mb-3 InputPasswordHolder d-flex align-items-end">
+              <input
+                type="password"
+                id="InputPassword"
+                placeholder="Mot de passe"
+              />
+              <span
+                ><i
+                  ><i class="bi bi-eye"></i
+                  ><i class="bi bi-eye-slash d-none"></i></i
+              ></span>
+            </div>
+          </div>
+          <div
+            class="form-bottom d-flex justify-content-between align-items-center gap-5 mb-3"
+          >
+            <div class="form-check">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                id="remembermeCheckbox"
+              />
+              <label class="form-check-label" for="remembermeCheckbox"
+                >Se souvenir de moi</label
+              >
+            </div>
+            <div>
+              <a href="#" class="forgotPasswordLink special-text"
+                >Mot de passe oublié?</a
+              >
+            </div>
+          </div>
+          <div class="form-btns d-flex flex-column gap-2">
+            <button type="submit" class="btn primary-button">
+              Se connecter
+            </button>
+            <button type="submit" class="btn primary-button">S'inscrire</button>
+          </div>
+        </form>
+      </section>
+    </div>
+    <!-- ADD BOOTSTRAP SCRIPT CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
