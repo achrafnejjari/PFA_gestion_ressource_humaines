@@ -7,6 +7,7 @@
   background-color: var(--background-color);
   box-shadow: -3px 10px 8px -12px rgba(0, 0, 0, 0.75);
   min-height: 70px;
+  
 }
 .navbar .logo-photo {
   max-height: 80px;
@@ -35,6 +36,15 @@
 .navbar-btn .btn-login:hover {
   color: var(--text-color) !important;
 }
+
+
+.nav-link {
+    font-size: 16px !important; /* taille fixe pour tous */
+  }
+
+
+
+
 
 /**** MEDIA QUERIES FOR NAVBAR SECTION ****/
 @media (max-width: 992px) {

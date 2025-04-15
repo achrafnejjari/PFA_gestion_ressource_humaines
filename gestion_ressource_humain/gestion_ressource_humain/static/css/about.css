@@ -1,0 +1,180 @@
+/**** ABOUT PAGE STYLES ****/
+.about-header {
+  background-color: #f8f9fa; /* Corrigé la faute de frappe dans la couleur */
+  border-bottom: 1px solid #e9ecef;
+}
+
+.about-header h1 {
+  font-size: 2.5rem;
+  color: #333;
+}
+
+.about-header .lead {
+  font-size: 1.2rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.about-intro img {
+  max-width: 100%;
+  height: auto;
+}
+
+.about-intro h2 {
+  font-size: 2rem;
+  color: #333;
+}
+
+.about-intro p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.value-card {
+  background-color: #fff;
+  border: 1px solid #e9ecef;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.value-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.value-card i {
+  color: #007bff;
+}
+
+.value-card h3 {
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.value-card p {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+.team-section h2 {
+  font-size: 2rem;
+  color: #333;
+}
+
+.team-card {
+  background-color: #fff;
+  border: 1px solid #e9ecef;
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.team-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.team-card img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+}
+
+.team-card h4 {
+  font-size: 1.3rem;
+  color: #333;
+}
+
+.team-card p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.cta-section {
+  background-color: #f1f5f9;
+}
+
+.cta-section h2 {
+  font-size: 2rem;
+  color: #333;
+}
+
+.cta-section p {
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.about-primary-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 12px 30px;
+  font-size: 1rem;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.about-primary-button:hover {
+  background-color: #0056b3;
+}
+
+/**** RESPONSIVE DESIGN ****/
+@media (max-width: 768px) {
+  .about-header h1 {
+    font-size: 2rem;
+  }
+
+  .about-header .lead {
+    font-size: 1rem;
+  }
+
+  .about-intro h2 {
+    font-size: 1.8rem;
+  }
+
+  .about-intro p {
+    font-size: 1rem;
+  }
+
+  .value-card {
+    min-height: 200px;
+    padding: 15px;
+  }
+
+  .value-card h3 {
+    font-size: 1.3rem;
+  }
+
+  .value-card p {
+    font-size: 0.9rem;
+  }
+
+  .team-section h2 {
+    font-size: 1.8rem;
+  }
+
+  .team-card img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .team-card h4 {
+    font-size: 1.2rem;
+  }
+
+  .team-card p {
+    font-size: 0.85rem;
+  }
+
+  .cta-section h2 {
+    font-size: 1.8rem;
+  }
+
+  .cta-section p {
+    font-size: 1rem;
+  }
+}

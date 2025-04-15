@@ -5,19 +5,22 @@
 .login {
   background-color: var(--background-color);
   height: 100vh;
+  margin-top: 80px;  /* Ajouter de l'espace pour la navbar */
 }
 
 .login-section {
   background-color: #fff;
   width: min(90%, 900px);
-  position: absolute;
+  position: relative; /* Change absolute en relative pour éviter que ça ne soit derrière la navbar */
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   padding: 40px 20px;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
+  z-index: 999;  /* S'assurer que c'est derrière la navbar */
 }
+
 .login-section i.bi-people {
   font-size: var(--font-size-extraLarge);
 }
@@ -35,7 +38,19 @@
 .login-form input[type="text"],
 .login-form input[type="password"],
 .login-form input[type="email"] {
-  border-bottom: 1px solid var(--text-color-secondary);
+  border: none; /* Pas de bordure visible */
+  border-bottom: 1px solid var(--text-color-secondary); /* Bordure uniquement en bas */
+  padding: 12px 15px; /* Espacement interne pour une apparence uniforme */
+  font-size: 16px; /* Taille de la police uniforme */
+  width: 100%; /* Champs prennent toute la largeur */
+  box-sizing: border-box; /* Inclut padding et border dans la largeur totale */
+}
+
+.login-form input[type="email"]:focus,
+.login-form input[type="text"]:focus,
+.login-form input[type="password"]:focus {
+  outline: none; /* Retirer le contour par défaut du focus */
+  border-bottom: 2px solid var(--primary-color); /* Changer la couleur de la ligne en bas au focus */
 }
 
 /**** MEDIA QUERIES FOR LOGIN PAGE ****/
