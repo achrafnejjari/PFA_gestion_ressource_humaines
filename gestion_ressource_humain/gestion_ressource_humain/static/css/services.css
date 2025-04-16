@@ -1,0 +1,122 @@
+/**** SERVICES PAGE STYLES ****/
+.services-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .services-header h1 {
+    font-size: 2.5rem;
+    color: #333;
+  }
+  
+  .services-header .lead {
+    font-size: 1.2rem;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  
+  .services-overview {
+    max-width: 1200px;
+  }
+  
+  .services-overview .row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .service-card {
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-height: 350px; /* Hauteur minimale pour uniformiser les cartes */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Assure que le contenu est bien réparti */
+  }
+  
+  .service-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .service-card i {
+    color: #007bff;
+  }
+  
+  .service-card h3 {
+    font-size: 1.5rem;
+    color: #333;
+  }
+  
+  .service-card p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 0; /* Évite un espace inutile */
+  }
+  
+  .service-card .btn {
+    font-size: 0.9rem;
+    padding: 8px 20px;
+    align-self: center; /* Centre le bouton */
+  }
+  
+  .cta-section {
+    background-color: #f1f5f9;
+  }
+  
+  .cta-section h2 {
+    font-size: 2rem;
+    color: #333;
+  }
+  
+  .cta-section p {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .primary-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .primary-button:hover {
+    background-color: #0056b3;
+  }
+  
+  /**** RESPONSIVE DESIGN ****/
+  @media (max-width: 768px) {
+    .services-header h1 {
+      font-size: 2rem;
+    }
+  
+    .services-header .lead {
+      font-size: 1rem;
+    }
+  
+    .service-card {
+      min-height: 300px; /* Ajustement pour les petits écrans */
+      padding: 20px;
+    }
+  
+    .service-card h3 {
+      font-size: 1.3rem;
+    }
+  
+    .service-card p {
+      font-size: 0.9rem;
+    }
+  
+    .cta-section h2 {
+      font-size: 1.8rem;
+    }
+  
+    .cta-section p {
+      font-size: 1rem;
+    }
+  }

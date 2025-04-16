@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/footer.css' %}" />
+    <!-- Bootstrap CSS CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- BOOTSTRAP ICONS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+    <!-- Font Awesome CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <!-- Favicon -->
+    {% load static %}
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" />
+    <!-- CSS Styles -->
+    
+    <link rel="stylesheet" href="{% static 'css/about.css' %}" />
+    <title>À propos - TeamCore</title>
+  </head>
+  <body>
+
+    <!-- NAVBAR  -->
+    {% include 'html_of_pages/navbar.html' %}
+
+    <!-- About Header -->
+    <section class="about-header text-center py-5">
+      <h1 class="fw-bold mb-3">À propos de TeamCore</h1>
+      <p class="lead text-muted">
+        Votre partenaire de confiance pour des solutions informatiques innovantes
+      </p>
+    </section>
+
+    <!-- About Intro -->
+    <section class="about-intro container py-5">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <h2 class="fw-bold mb-4">Qui sommes-nous ?</h2>
+          <p class="text-muted mb-4">
+            Fondée en 2015, TeamCore est une société d’informatique dédiée à l’innovation technologique. Nous accompagnons les entreprises dans leur transformation digitale en proposant des solutions sur mesure, allant du développement logiciel à la cybersécurité. Notre mission est de simplifier la technologie pour permettre à nos clients de se concentrer sur leur cœur de métier.
+          </p>
+          <a href="{% url 'contact' %}" class="btn primary-button">Nous contacter</a>
+        </div>
+        <div class="col-lg-6">
+          <img
+            src="{% static 'images/logo_photo.png' %}"
+            alt="Équipe TeamCore"
+            class="img-fluid rounded shadow-sm"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Mission, Vision, Values -->
+    <section class="mission-vision-values container py-5">
+      <div class="row g-4">
+        <!-- Mission -->
+        <div class="col-md-4 d-flex">
+          <div class="value-card p-4 text-center shadow-sm rounded h-100 w-100">
+            <i class="fas fa-bullseye fa-3x mb-3 text-primary"></i>
+            <h3 class="fw-bold">Notre Mission</h3>
+            <p class="text-muted">
+              Offrir des solutions informatiques innovantes et fiables pour accélérer la croissance de nos clients tout en garantissant une expérience utilisateur exceptionnelle.
+            </p>
+          </div>
+        </div>
+        <!-- Vision -->
+        <div class="col-md-4 d-flex">
+          <div class="value-card p-4 text-center shadow-sm rounded h-100 w-100">
+            <i class="fas fa-eye fa-3x mb-3 text-primary"></i>
+            <h3 class="fw-bold">Notre Vision</h3>
+            <p class="text-muted">
+              Devenir un leader mondial dans le domaine des technologies de l’information, en repoussant les limites de l’innovation et de la transformation digitale.
+            </p>
+          </div>
+        </div>
+        <!-- Values -->
+        <div class="col-md-4 d-flex">
+          <div class="value-card p-4 text-center shadow-sm rounded h-100 w-100">
+            <i class="fas fa-heart fa-3x mb-3 text-primary"></i>
+            <h3 class="fw-bold">Nos Valeurs</h3>
+            <p class="text-muted">
+              Innovation, intégrité et collaboration sont au cœur de notre approche. Nous croyons en des partenariats durables et en des solutions centrées sur le client.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team-section container py-5">
+      <h2 class="fw-bold text-center mb-5">Rencontrez notre équipe</h2>
+      <div class="row g-4">
+        <!-- Team Member 1 -->
+        <div class="col-md-4 d-flex">
+          <div class="team-card text-center shadow-sm rounded h-100 w-100">
+            <img
+              src="{% static 'images/contact_image_employee_1.png' %}"
+              alt="Membre 1"
+              class="img-fluid rounded-circle mb-3 d-block mx-auto"
+            />
+            <h4 class="fw-bold">Marie Dubois</h4>
+            <p class="text-muted">Directrice Générale</p>
+            <p class="text-muted small">
+              Marie dirige TeamCore avec une vision claire pour l’innovation technologique et la satisfaction client.
+            </p>
+          </div>
+        </div>
+        <!-- Team Member 2 -->
+        <div class="col-md-4 d-flex">
+          <div class="team-card text-center shadow-sm rounded h-100 w-100">
+            <img
+              src="{% static 'images/contact_image_employee_3.png' %}"
+              alt="Membre 2"
+              class="img-fluid rounded-circle mb-3 d-block mx-auto"
+            />
+            <h4 class="fw-bold">Ahmed Benali</h4>
+            <p class="text-muted">Responsable Cybersécurité</p>
+            <p class="text-muted small">
+              Ahmed est un expert en cybersécurité, garantissant la protection des données de nos clients.
+            </p>
+          </div>
+        </div>
+        <!-- Team Member 3 -->
+        <div class="col-md-4 d-flex">
+          <div class="team-card text-center shadow-sm rounded h-100 w-100">
+            <img
+              src="{% static 'images/contact_image_employee_2.png' %}"
+              alt="Membre 3"
+              class="img-fluid rounded-circle mb-3 d-block mx-auto"
+            />
+            <h4 class="fw-bold">Clara Lefèvre</h4>
+            <p class="text-muted">Lead Développeuse</p>
+            <p class="text-muted small">
+              Clara dirige notre équipe de développement, créant des logiciels performants et innovants.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="cta-section text-center py-5 bg-light">
+      <h2 class="fw-bold mb-3">Prêt à collaborer avec TeamCore ?</h2>
+      <p class="text-muted mb-4">
+        Contactez-nous pour découvrir comment nous pouvons booster votre transformation digitale.
+      </p>
+      <a href="{% url 'contact' %}" class="btn primary-button">Nous contacter</a>
+    </section>
+
+    <!-- ASSUMING YOUR FOOTER IS HERE -->
+    {% include 'html_of_pages/footer.html' %}
+    <!-- Bootstrap JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
