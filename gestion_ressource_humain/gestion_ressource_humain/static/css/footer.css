@@ -19,6 +19,9 @@ footer .footer_p {
   font-size: 15px;
 }
 
+footer .footer-links li {
+  transition: var(--transition-fast);
+}
 footer .footer-links li:hover {
   transform: translateX(5px);
 }
@@ -46,6 +49,7 @@ footer .footer-socials li {
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: var(--transition-fast);
 }
 footer .footer-socials li:hover {
   transform: scale(1.1);

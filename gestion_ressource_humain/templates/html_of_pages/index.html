@@ -5,30 +5,529 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TeamCore</title>
     {% load static %}
+
+    <!-- CSS perso -->
     <link rel="stylesheet" href="{% static 'css/index.css' %}" />
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}" />
     <link rel="stylesheet" href="{% static 'css/footer.css' %}" />
-    <!-- ADD BOOTSTRAP CSS CDN -->
-    <head>
-      <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-      />
-      <!-- ADD BOOTSTRAP ICONS CDN -->
-      <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
-      />
-    </head>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}" />
+
+    <!-- Link Swiper's CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+
+    <!-- Demo styles -->
+    <style>
+      html,
+      body {
+        position: relative;
+        height: 100%;
+      }
+
+      body {
+        background: #eee;
+        font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        color: #000;
+        margin: 0;
+        padding: 0;
+      }
+
+      .swiper {
+        width: 100%;
+        height: 100%;
+      }
+
+      .swiper-slide {
+        background-position: center;
+        background-size: cover;
+      }
+      .news-swiper .swiper-slide {
+        width: 70%;
+        max-width: 300px;
+      }
+      .news-swiper .swiper-slide img {
+        border-radius: 10px;
+      }
+      .news-swiper .swiper-pagination {
+        bottom: 10px;
+      }
+
+      .swiper-slide img {
+        display: block;
+        width: 100%;
+        object-fit: cover;
+      }
+    </style>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+
+    <!-- Swiper CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
   </head>
+
   <body>
-    <!-- ADD NAVBAR COMPONENT HERE -->
+    <!-- START NAVBAR -->
     {% include 'html_of_pages/navbar.html' %}
-    <div></div>
-    <!-- ADD FOOTER COMPONENT HERE -->
+
+    <!-- START HOME SLIDER -->
+    <div class="swiper mySwiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide">
+          <div class="slide_imgHolder">
+            <img
+              class="slide-img"
+              src="{% static 'images/home_slider/slider_1.jpg' %}"
+              alt="slider_photo"
+            />
+          </div>
+          <div class="slide-text">
+            <h2>Talents connectés</h2>
+            <p>
+              TeamCore repère et connecte les meilleurs profils avec les
+              entreprises qui font la différence.
+            </p>
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <div class="slide_imgHolder">
+            <img
+              class="slide-img"
+              src="{% static 'images/home_slider/slider_2.jpg' %}"
+              alt="slider_photo"
+            />
+          </div>
+          <div class="slide-text">
+            <h2>Une équipe, une vision</h2>
+            <p>Chez TeamCore, la collaboration est au cœur de notre succès.</p>
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <div class="slide_imgHolder">
+            <img
+              class="slide-img"
+              src="{% static 'images/home_slider/slider_3.jpg' %}"
+              alt="slider_photo"
+            />
+          </div>
+          <div class="slide-text">
+            <h2>Des solutions innovantes</h2>
+            <p>
+              Nous combinons technologie et expertise pour booster vos
+              performances RH.
+            </p>
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <div class="slide_imgHolder">
+            <img
+              class="slide-img"
+              src="{% static 'images/home_slider/slider_4.jpg' %}"
+              alt="slider_photo"
+            />
+          </div>
+          <div class="slide-text">
+            <h2>Votre croissance, notre mission</h2>
+            <p>
+              Nous accompagnons votre évolution grâce à une stratégie RH
+              sur-mesure.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+
+    <!-- START ABOUT SECTION -->
+    <section class="about-section py-5">
+      <div class="container text-center">
+        <div class="about-text">
+          <h2 class="section-title mb-3">Que sommes-nous ?</h2>
+          <p class="section-description mb-4">
+            TeamCore est une entreprise spécialisée dans le développement de
+            solutions numériques innovantes pour la gestion des ressources
+            humaines. Notre objectif est d’offrir aux entreprises une plateforme
+            intuitive, efficace et moderne pour piloter leur capital humain.
+          </p>
+          <div class="video-container">
+            <video
+              autoplay
+              muted
+              loop
+              playsinline
+              class="img-fluid"
+              style="width: 100%; height: auto"
+            >
+              <source
+                src="{% static 'videos/home_video.mp4' %}"
+                type="video/mp4"
+              />
+              Votre navigateur ne prend pas en charge la lecture de vidéos.
+            </video>
+
+            <div
+              class="video-overlay position-absolute top-50 start-50 translate-middle text-white text-center"
+            >
+              <h3 class="fw-bold">L’innovation au cœur de l’humain</h3>
+              <p class="mb-0">
+                Découvrez comment TeamCore transforme la gestion RH
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- START NEWS SECTION -->
+    <section class="news-section py-5">
+      <div class="container text-center">
+        <div class="news-text">
+          <h2 class="section-title mb-5">Actualités</h2>
+        </div>
+        <!-- Swiper -->
+        <div class="swiper news-swiper">
+          <div class="swiper-wrapper">
+            <!-- Card 1 -->
+            <div class="swiper-slide">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">
+                    Lancement de la nouvelle fonctionnalité de gestion des
+                    talents
+                  </h5>
+                  <p class="card-text">
+                    Une nouvelle fonctionnalité permettant aux entreprises de
+                    mieux suivre et gérer les talents au sein de leur
+                    organisation.
+                  </p>
+                  <button class="btn primary-button text-white">
+                    Lire plus
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="swiper-slide">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">
+                    Conférence TeamCore : L'innovation au service des RH
+                  </h5>
+                  <p class="card-text">
+                    Participez à notre conférence le 20 avril pour découvrir les
+                    dernières innovations RH et rencontrer des experts du
+                    secteur.
+                  </p>
+                  <button class="btn primary-button text-white">
+                    Lire plus
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="swiper-slide">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">
+                    Témoignage client : Comment TeamCore aide XYZ Corp
+                  </h5>
+                  <p class="card-text">
+                    Découvrez comment XYZ Corp a transformé ses processus RH
+                    avec l’aide de TeamCore.
+                  </p>
+                  <button class="btn primary-button text-white">
+                    Lire plus
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- START SERVICES SECTION -->
+    <section class="services-section py-5">
+      <div class="container text-center">
+        <h2 class="section-title mb-5">Nos Services</h2>
+        <div class="row">
+          <!-- Service Card 1 -->
+          <div class="col-md-4">
+            <div class="card">
+              <img
+                src="{% static 'images/service_1.jpg' %}"
+                class="card-img-top"
+                alt="Service 1"
+              />
+              <div class="card-body">
+                <h5 class="card-title">Conseil en Transformation Digitale</h5>
+                <p class="card-text">
+                  Nous accompagnons les entreprises dans leur transition
+                  numérique en proposant des solutions innovantes, adaptées à
+                  leurs besoins métiers.
+                </p>
+                <a href="#" class="btn primary-button text-white"
+                  >En savoir plus</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Service Card 2 -->
+          <div class="col-md-4">
+            <div class="card special">
+              <img
+                src="{% static 'images/service_2.jpg' %}"
+                class="card-img-top"
+                alt="Service 2"
+              />
+              <div class="card-body">
+                <h5 class="card-title">Recrutement & Gestion des Talents</h5>
+                <p class="card-text">
+                  Notre service RH vous aide à attirer, évaluer et fidéliser les
+                  meilleurs profils grâce à des outils modernes et une expertise
+                  métier pointue.
+                </p>
+                <a href="#" class="btn primary-button text-white"
+                  >En savoir plus</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Service Card 3 -->
+          <div class="col-md-4">
+            <div class="card">
+              <img
+                src="{% static 'images/service_3.jpg' %}"
+                class="card-img-top"
+                alt="Service 3"
+              />
+              <div class="card-body">
+                <h5 class="card-title">Analyse de Données & Reporting</h5>
+                <p class="card-text">
+                  Nous vous aidons à exploiter efficacement vos données RH pour
+                  prendre de meilleures décisions grâce à des tableaux de bord
+                  clairs, des indicateurs précis et des rapports personnalisés.
+                </p>
+                <a href="#" class="btn primary-button text-white"
+                  >En savoir plus</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- START FAQ SECTION -->
+    <section class="faq-section py-5">
+      <div class="container d-flex justify-content-center">
+        <div class="text-center">
+          <h2 class="section-title mb-5">Foire aux questions</h2>
+        </div>
+        <div class="col-md-8 d-flex justify-content-center">
+          <!-- Conteneur des questions -->
+          <div class="faq-content flex-grow-1" style="max-width: 600px">
+            <!-- Question 1 -->
+            <div class="faq-item mb-3">
+              <div
+                class="faq-question d-flex justify-content-between align-items-center"
+                data-target="answer1"
+              >
+                <span>Quels services propose votre entreprise ?</span>
+                <span class="faq-toggle">+</span>
+              </div>
+              <div class="faq-answer" id="answer1">
+                <p>
+                  TeamCore propose une gamme complète de solutions numériques
+                  pour la gestion des ressources humaines, incluant le
+                  recrutement et la gestion des talents, l’analyse de données
+                  RH, ainsi que des conseils en transformation digitale. Chaque
+                  service est conçu pour répondre aux besoins uniques de nos
+                  clients.
+                </p>
+              </div>
+            </div>
+            <!-- Question 2 -->
+            <div class="faq-item mb-3">
+              <div
+                class="faq-question d-flex justify-content-between align-items-center"
+                data-target="answer2"
+              >
+                <span
+                  >Comment puis-je postuler pour une offre d’emploi chez vous
+                  ?</span
+                >
+                <span class="faq-toggle">+</span>
+              </div>
+              <div class="faq-answer" id="answer2">
+                <p>
+                  Vous pouvez postuler directement via notre site web en suivant
+                  le lien de candidature disponible dans la barre de navigation
+                  "Postuler" de TeamCore.
+                </p>
+              </div>
+            </div>
+            <!-- Question 3 -->
+            <div class="faq-item mb-3">
+              <div
+                class="faq-question d-flex justify-content-between align-items-center"
+                data-target="answer3"
+              >
+                <span>Où se situe l’entreprise TeamCore ?</span>
+                <span class="faq-toggle">+</span>
+              </div>
+              <div class="faq-answer" id="answer3">
+                <p>
+                  TeamCore est située à Casablanca, Maroc, au 123 Rue de
+                  l'Innovation, 75001. Vous pouvez également consulter notre
+                  page "Contact" pour plus de détails.
+                </p>
+              </div>
+            </div>
+            <!-- Question 4 -->
+            <div class="faq-item mb-3">
+              <div
+                class="faq-question d-flex justify-content-between align-items-center"
+                data-target="answer4"
+              >
+                <span
+                  >Quels sont les avantages d’un emploi chez TeamCore ?</span
+                >
+                <span class="faq-toggle">+</span>
+              </div>
+              <div class="faq-answer" id="answer4">
+                <p>
+                  Chez TeamCore, nous offrons des avantages compétitifs,
+                  incluant une mutuelle complète, des formations continues, des
+                  horaires flexibles, ainsi qu’un environnement de travail
+                  stimulant et collaboratif axé sur l’innovation.
+                </p>
+              </div>
+            </div>
+            <!-- Question 5 -->
+            <div class="faq-item mb-3">
+              <div
+                class="faq-question d-flex justify-content-between align-items-center"
+                data-target="answer5"
+              >
+                <span>Comment puis-je contacter TeamCore ?</span>
+                <span class="faq-toggle">+</span>
+              </div>
+              <div class="faq-answer" id="answer5">
+                <p>
+                  Vous pouvez nous contacter via notre formulaire de contact sur
+                  le site ou directement à l’adresse email contact@teamcore.ma
+                  ou par téléphone au +212 666 666 66.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- START CONTACT SECTION -->
+    <section class="contact-section py-5">
+      <div class="container d-flex justify-content-center">
+        <div class="col-md-6">
+          <h2 class="section-title mb-5 text-center">Contactez-nous</h2>
+          <form>
+            <div class="mb-3">
+              <input
+                type="email"
+                class="form-control"
+                placeholder="exemple@email.com"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Nom complet"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <textarea
+                class="form-control"
+                rows="5"
+                placeholder="Écrivez votre message..."
+                required
+              ></textarea>
+            </div>
+            <div class="d-flex justify-content-center">
+              <button
+                type="submit"
+                class="btn primary-button text-white btn-send"
+              >
+                Envoyer
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- START FOOTER -->
     {% include 'html_of_pages/footer.html' %}
-    <!-- ADD BOOTSTRAP SCRIPT CDN -->
+
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!-- Include JS -->
     <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/faq.js' %}"></script>
+
+    <!-- Initialize Swiper -->
+    <script>
+      var swiper = new Swiper(".mySwiper", {
+        spaceBetween: 30,
+        effect: "fade",
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+      });
+      var news_swiper = new Swiper(".news-swiper", {
+        effect: "coverflow",
+        grabCursor: true,
+        centeredSlides: true,
+        slidesPerView: "auto",
+        coverflowEffect: {
+          rotate: 50,
+          stretch: 0,
+          depth: 100,
+          modifier: 1,
+          slideShadows: true,
+        },
+      });
+    </script>
   </body>
 </html>

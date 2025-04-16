@@ -28,12 +28,37 @@
   align-items: center;
   gap: 5px;
 }
+
 .navbar-btn .btn-login {
   color: var(--text-color-secondary);
   border: none;
 }
 .navbar-btn .btn-login:hover {
   color: var(--text-color) !important;
+}
+
+.navbar-btn .dropdown-menu {
+  background-color: var(--background-color) !important;
+  left: -50px !important;
+}
+.navbar-btn .dropdown-menu a {
+  color: var(--text-color-secondary);
+  transition: var(--transition-fast);
+}
+.navbar-btn .dropdown-menu a:hover {
+  color: var(--text-color);
+}
+.navbar-btn .dropdown-menu .logout-link {
+  color: var(--danger-color);
+}
+.navbar-btn .dropdown-menu .logout-link:hover {
+  color: var(--danger-color-hover);
+}
+
+.navbar-btn .profile_pic {
+  width: 35px;
+  height: 35px;
+  object-fit: cover;
 }
 
 /**** MEDIA QUERIES FOR NAVBAR SECTION ****/

@@ -4,12 +4,11 @@
       <a href=".">
         {% load static %}
         <img
-        src="{% static 'images/logo_photo.png' %}"
-        alt="login_photo"
-        class="img-fluid logo-photo"
-      />
+          src="{% static 'images/logo_photo.png' %}"
+          alt="login_photo"
+          class="img-fluid logo-photo"
+        />
       </a>
-      
     </div>
     <div>
       <button
@@ -43,9 +42,53 @@
         </ul>
       </div>
     </div>
+
     <div class="navbar-btn">
-      <button type="button" class="btn btn-login" id="loginBtn">Se connecter<button>
-      <button type="button" class="btn btn-signup primary-button text-light" id="signupBtn">S'inscrire<button>
+      <div id="not-logged" class="d-none">
+        <button type="button" class="btn btn-login" id="loginBtn">
+          Se connecter
+        </button>
+        <button
+          type="button"
+          class="btn btn-signup primary-button text-light"
+          id="signupBtn"
+        >
+          S'inscrire
+        </button>
+      </div>
+
+      <div id="logged">
+        <div class="dropdown">
+          <a
+            class="btn dropdown-toggle border-0"
+            href="#"
+            role="button"
+            data-bs-toggle="dropdown"
+          >
+            <img
+              class="profile_pic rounded-circle"
+              src="{% static 'images/profile_pics/profile_pic1.jpg' %}"
+              alt="Photo de profil"
+            />
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item Dashboard-link" href="../dashboard"
+                >Dashboard</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item Profile-link" href="../profile">Profil</a>
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item logout-link" href="../login"
+                >Déconnexion</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </nav>

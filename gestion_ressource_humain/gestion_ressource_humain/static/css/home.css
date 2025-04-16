@@ -1,1 +1,256 @@
-/**** START HOME PAGE ****/
+/**** INCLUDE CSS EXTERN FILES ****/
+@import url("./variables.css");
+@import url("./theme-light.css");
+
+/************************ START HOME PAGE ************************/
+
+/* START HOME SLIDER SECTION */
+.swiper-slide {
+  position: relative;
+}
+
+.slide_imgHolder {
+  position: relative;
+}
+.slide_imgHolder::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background-color: #0000008c;
+  z-index: 0;
+}
+
+.slide-img {
+  width: 100%;
+  height: auto;
+}
+
+.slide-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  text-align: center;
+  font-size: 2rem;
+  z-index: 3;
+}
+.slide-text h2 {
+  margin: 0;
+  font-size: 3rem;
+}
+.slide-text p {
+  margin: 5px 0 0;
+  font-size: 1.2rem;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: var(--primary-color) !important;
+}
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  color: var(--primary-color-hover) !important;
+}
+
+.swiper-pagination-bullet {
+  background: #fff !important;
+}
+.swiper-pagination-bullet-active {
+  background: var(--primary-color) !important;
+}
+
+/* START ABOUT SECTION */
+.about-section {
+  background-color: var(--background-color);
+}
+
+.video-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-height: 400px;
+  overflow: hidden;
+}
+.video-container video {
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-lg);
+}
+
+.video-overlay {
+  background: rgba(0, 0, 0, 0.5); /* fond semi-transparent */
+  padding: 20px;
+  border-radius: 12px;
+}
+
+/* START SERVICES */
+.services-section {
+  background-color: #f9f9f9;
+}
+
+.services-section .card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  transition: transform 0.3s ease;
+}
+.services-section .card.special {
+  transform: translateY(15px);
+}
+
+.services-section .card:hover {
+  transform: scale(1.1);
+}
+
+.services-section .card img {
+  height: 200px;
+  object-fit: cover;
+}
+
+.services-section .card-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.services-section .btn {
+  background-color: #007bff;
+  color: white;
+  border-radius: 20px;
+}
+
+.services-section .btn:hover {
+  background-color: #0056b3;
+}
+
+/* START FAQ SECTION */
+.faq-section {
+  background-color: #fff !important;
+}
+
+.faq-item {
+  border: 1px solid #dee2e6;
+  border-radius: var(--radius-md);
+}
+
+.faq-question {
+  padding: 15px 20px;
+  cursor: pointer;
+  font-weight: 500;
+  transition-property: background-color;
+}
+.faq-question:hover {
+  background-color: #f8f9fa;
+}
+.faq-question.active {
+  background-color: #e9ecef;
+}
+
+.faq-toggle {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #6c757d;
+}
+
+.faq-answer {
+  display: none;
+  padding: 15px 20px;
+  border-top: 1px solid #dee2e6;
+  background-color: #fff;
+}
+.faq-answer.active {
+  display: block;
+}
+
+/* START CONTACT SECTION */
+.contact-section {
+  background-color: var(--background-color); /* Fond léger comme dans l'image */
+}
+
+.contact-section .form-control {
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  color: #6c757d; /* Couleur du placeholder et du texte */
+}
+
+.contact-section .form-control::placeholder {
+  color: #6c757d;
+}
+
+.contact-section .form-control:focus {
+  border-color: #007bff;
+  box-shadow: none;
+}
+
+.contact-section textarea.form-control {
+  resize: none; /* Empêche le redimensionnement de la textarea */
+}
+
+.contact-section .btn-send {
+  background-color: #5a4af5; /* Violet comme dans l'image */
+  border: none;
+  padding: 10px 30px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.contact-section .btn-send:hover {
+  background-color: #4838f0; /* Violet plus foncé au survol */
+}
+
+/**** MEDIA QUERIES FOR HOME PAGE ****/
+@media (max-width: 992px) {
+  /* HOME SLIDER SECTION */
+  .swiper-pagination-bullet {
+    background: #000 !important;
+  }
+  .swiper-pagination-bullet-active {
+    background: var(--primary-color) !important;
+  }
+}
+@media (max-width: 768px) {
+  /* HOME SLIDER SECTION */
+  .slide-text h2 {
+    font-size: 2rem;
+  }
+  .slide-text p {
+    font-size: 1rem;
+  }
+  .slide-text {
+    top: 10%;
+    transform: translateX(-50%);
+  }
+
+  /* HOME ABOUT SECTION */
+  .video-container .video-overlay {
+    padding: 10px;
+  }
+  .video-container .video-overlay h3 {
+    font-size: calc(1rem + 0.6vw);
+  }
+  .video-container .video-overlay p {
+    font-size: 12px;
+  }
+}
+@media (max-width: 576px) {
+  /* HOME SLIDER SECTION */
+  .slide-text h2 {
+    font-size: 1rem;
+  }
+  .slide-text p {
+    font-size: 12px;
+  }
+  .slide-text {
+    top: 5%;
+    transform: translateX(-50%);
+  }
+  .swiper-pagination-bullet {
+    display: none !important;
+  }
+}
