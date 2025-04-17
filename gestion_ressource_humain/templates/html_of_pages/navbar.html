@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg">
   <div class="container">
     <div class="navbar-logo">
-      <a href=".">
+      <a href="../index">
         {% load static %}
         <img
           src="{% static 'images/logo_photo.png' %}"
@@ -25,7 +25,7 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link active" href=".">Accueil</a>
+            <a class="nav-link active" href="../index">Accueil</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../about">À propos</a>
@@ -34,7 +34,7 @@
             <a class="nav-link" href="../services">Services</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../offer">Offre d'emplois</a>
+            <a class="nav-link" href="../joboffer">Offre d'emplois</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../contact">Contact</a>
@@ -44,7 +44,7 @@
     </div>
 
     <div class="navbar-btn">
-      <div id="not-logged" class="d-none">
+      <div id="not-logged" class="d-block">
         <button type="button" class="btn btn-login" id="loginBtn">
           Se connecter
         </button>
@@ -57,7 +57,7 @@
         </button>
       </div>
 
-      <div id="logged">
+      <div id="logged" class="d-none">
         <div class="dropdown">
           <a
             class="btn dropdown-toggle border-0"

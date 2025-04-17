@@ -46,7 +46,7 @@
 }
 
 .value-card i {
-  color: #007bff;
+  color: var(--primary-color) !important;
 }
 
 .value-card h3 {

@@ -175,7 +175,7 @@
   border-radius: 5px;
   padding: 10px 15px;
   font-size: 1rem;
-  color: #6c757d; /* Couleur du placeholder et du texte */
+  color: #6c757d;
 }
 
 .contact-section .form-control::placeholder {

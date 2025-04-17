@@ -25,20 +25,18 @@
     <title>Nos Services - TeamCore</title>
 
     <!-- ADD BOOTSTRAP CSS CDN -->
-    
-        <link
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
-          rel="stylesheet"
-        />
-        <!-- ADD BOOTSTRAP ICONS CDN -->
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
-        />
-    
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- ADD BOOTSTRAP ICONS CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
   </head>
   <body>
-    
     <!--  NAVBAR -->
     {% include 'html_of_pages/navbar.html' %}
 
@@ -46,7 +44,8 @@
     <section class="services-header text-center py-5">
       <h1 class="fw-bold mb-3">Nos Services</h1>
       <p class="lead text-muted">
-        Des solutions informatiques innovantes pour accélérer votre transformation digitale
+        Des solutions informatiques innovantes pour accélérer votre
+        transformation digitale
       </p>
     </section>
 
@@ -55,68 +54,102 @@
       <div class="row g-4">
         <!-- Service 1 -->
         <div class="col-md-4">
-          <div class="service-card p-4 text-center shadow-sm rounded d-flex flex-column">
+          <div
+            class="service-card p-4 text-center shadow-sm rounded d-flex flex-column"
+          >
             <i class="fas fa-code fa-3x mb-3 text-primary"></i>
             <h3 class="fw-bold">Développement Logiciel</h3>
             <p class="text-muted flex-grow-1">
-              Nous concevons des logiciels sur mesure pour répondre aux besoins spécifiques de votre entreprise, qu’il s’agisse d’applications web, mobiles ou desktop.
+              Nous concevons des logiciels sur mesure pour répondre aux besoins
+              spécifiques de votre entreprise, qu’il s’agisse d’applications
+              web, mobiles ou desktop.
             </p>
-            <a href="{% url 'services' %}" class="btn btn-outline-primary mt-auto">En savoir plus</a>
+            <a href="{% url 'services' %}" class="btn secondary-button mt-auto"
+              >En savoir plus</a
+            >
           </div>
         </div>
         <!-- Service 2 -->
         <div class="col-md-4">
-          <div class="service-card p-4 text-center shadow-sm rounded d-flex flex-column">
+          <div
+            class="service-card p-4 text-center shadow-sm rounded d-flex flex-column"
+          >
             <i class="fas fa-shield-alt fa-3x mb-3 text-primary"></i>
             <h3 class="fw-bold">Cybersécurité</h3>
             <p class="text-muted flex-grow-1">
-              Protégez vos données et systèmes contre les cybermenaces avec nos solutions de sécurité avancées, incluant audits et protection en temps réel.
+              Protégez vos données et systèmes contre les cybermenaces avec nos
+              solutions de sécurité avancées, incluant audits et protection en
+              temps réel.
             </p>
-            <a href="{% url 'services' %}" class="btn btn-outline-primary mt-auto">En savoir plus</a>
+            <a href="{% url 'services' %}" class="btn secondary-button mt-auto"
+              >En savoir plus</a
+            >
           </div>
         </div>
         <!-- Service 3 -->
         <div class="col-md-4">
-          <div class="service-card p-4 text-center shadow-sm rounded d-flex flex-column">
+          <div
+            class="service-card p-4 text-center shadow-sm rounded d-flex flex-column"
+          >
             <i class="fas fa-server fa-3x mb-3 text-primary"></i>
             <h3 class="fw-bold">Infogérance IT</h3>
             <p class="text-muted flex-grow-1">
-              Confiez-nous la gestion de votre infrastructure informatique pour garantir une performance optimale et une disponibilité continue.
+              Confiez-nous la gestion de votre infrastructure informatique pour
+              garantir une performance optimale et une disponibilité continue.
             </p>
-            <a href="{% url 'services' %}" class="btn btn-outline-primary mt-auto">En savoir plus</a>
+            <a href="{% url 'services' %}" class="btn secondary-button mt-auto"
+              >En savoir plus</a
+            >
           </div>
         </div>
         <!-- Service 4 -->
         <div class="col-md-4">
-          <div class="service-card p-4 text-center shadow-sm rounded d-flex flex-column">
+          <div
+            class="service-card p-4 text-center shadow-sm rounded d-flex flex-column"
+          >
             <i class="fas fa-digital-tachograph fa-3x mb-3 text-primary"></i>
             <h3 class="fw-bold">Transformation Digitale</h3>
             <p class="text-muted flex-grow-1">
-              Accélérez votre digitalisation avec notre expertise en consulting, automatisation des processus et adoption de technologies modernes.
+              Accélérez votre digitalisation avec notre expertise en consulting,
+              automatisation des processus et adoption de technologies modernes.
             </p>
-            <a href="{% url 'services' %}" class="btn btn-outline-primary mt-auto">En savoir plus</a>
+            <a href="{% url 'services' %}" class="btn secondary-button mt-auto"
+              >En savoir plus</a
+            >
           </div>
         </div>
         <!-- Service 5 -->
         <div class="col-md-4">
-          <div class="service-card p-4 text-center shadow-sm rounded d-flex flex-column">
+          <div
+            class="service-card p-4 text-center shadow-sm rounded d-flex flex-column"
+          >
             <i class="fas fa-cloud fa-3x mb-3 text-primary"></i>
             <h3 class="fw-bold">Cloud Computing</h3>
             <p class="text-muted flex-grow-1">
-              Adoptez des solutions cloud flexibles pour le stockage, la gestion des données et l’hébergement d’applications avec une sécurité renforcée.
+              Adoptez des solutions cloud flexibles pour le stockage, la gestion
+              des données et l’hébergement d’applications avec une sécurité
+              renforcée.
             </p>
-            <a href="{% url 'services' %}" class="btn btn-outline-primary mt-auto">En savoir plus</a>
+            <a href="{% url 'services' %}" class="btn secondary-button mt-auto"
+              >En savoir plus</a
+            >
           </div>
         </div>
         <!-- Service 6 -->
         <div class="col-md-4">
-          <div class="service-card p-4 text-center shadow-sm rounded d-flex flex-column">
+          <div
+            class="service-card p-4 text-center shadow-sm rounded d-flex flex-column"
+          >
             <i class="fas fa-headset fa-3x mb-3 text-primary"></i>
             <h3 class="fw-bold">Support & Maintenance</h3>
             <p class="text-muted flex-grow-1">
-              Bénéficiez d’un support technique 24/7 et de services de maintenance pour assurer la continuité de vos opérations informatiques.
+              Bénéficiez d’un support technique 24/7 et de services de
+              maintenance pour assurer la continuité de vos opérations
+              informatiques.
             </p>
-            <a href="{% url 'services' %}" class="btn btn-outline-primary mt-auto">En savoir plus</a>
+            <a href="{% url 'services' %}" class="btn secondary-button mt-auto"
+              >En savoir plus</a
+            >
           </div>
         </div>
       </div>
@@ -126,16 +159,21 @@
     <section class="cta-section text-center py-5 bg-light">
       <h2 class="fw-bold mb-3">Prêt à booster votre infrastructure IT ?</h2>
       <p class="text-muted mb-4">
-        Contactez TeamCore dès aujourd’hui pour des solutions informatiques sur mesure.
+        Contactez TeamCore dès aujourd’hui pour des solutions informatiques sur
+        mesure.
       </p>
-      <a href="{% url 'contact' %}" class="btn primary-button">Nous contacter</a>
+      <a href="{% url 'contact' %}" class="btn primary-button text-white"
+        >Nous contacter</a
+      >
     </section>
 
     <!-- ASSUMING YOUR FOOTER IS HERE -->
     {% include 'html_of_pages/footer.html' %}
 
-
     <!-- Bootstrap JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Include JS -->
+    <script src="{% static 'js/main.js' %}"></script>
   </body>
 </html>

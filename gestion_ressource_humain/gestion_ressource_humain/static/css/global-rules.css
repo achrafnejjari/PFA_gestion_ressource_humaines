@@ -19,11 +19,22 @@ h3 {
 /**** DECLARING USED COMPONENTS ****/
 .primary-button {
   background-color: var(--primary-color) !important;
-  color: #fff;
+  color: #fff !important;
 }
 .primary-button:hover {
   background-color: var(--primary-color-hover) !important;
-  color: #fff;
+  color: #fff !important;
+}
+
+.secondary-button {
+  background-color: #fff !important;
+  color: var(--primary-color) !important;
+  border: 1px solid var(--primary-color) !important;
+}
+.secondary-button:hover {
+  background-color: var(--primary-color) !important;
+  color: #fff !important;
+  border: 1px solid var(--primary-color) !important;
 }
 
 .special-text {

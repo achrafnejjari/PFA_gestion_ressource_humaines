@@ -1,8 +1,5 @@
-body {
-  background-color: #f5f7fa;
-}
-
-.contact-section h3, .contact-section h4 {
+.contact-section h3,
+.contact-section h4 {
   font-weight: 600;
 }
 
@@ -15,18 +12,21 @@ body {
   letter-spacing: 0.5px;
 }
 
+.contact-section i {
+  color: var(--primary-color) !important;
+}
+
 .contact-section ul li i {
   font-size: 1.2rem;
 }
 
-
 .fas {
-    transition: transform 0.3s ease, color 0.3s ease;
-    color: var(--primary-color); /* ou une autre couleur de base */
+  transition: transform 0.3s ease, color 0.3s ease;
+  color: var(--primary-color); /* ou une autre couleur de base */
 }
 
 .fas:hover {
-    transform: scale(1.2);
-    color: #ff9f43; /* Couleur au survol */
-    cursor: pointer;
+  transform: scale(1.2);
+  color: #ff9f43; /* Couleur au survol */
+  cursor: pointer;
 }
