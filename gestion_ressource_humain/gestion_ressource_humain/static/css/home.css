@@ -98,9 +98,6 @@
   margin-bottom: 20px;
   transition: transform 0.3s ease;
 }
-.services-section .card.special {
-  transform: translateY(15px);
-}
 
 .services-section .card:hover {
   transform: scale(1.1);
@@ -124,6 +121,16 @@
 
 .services-section .btn:hover {
   background-color: #0056b3;
+}
+
+/* START VALUES SECTION */
+.values-section i {
+  color: var(--primary-color) !important;
+}
+
+/* START TIMELINE SECTION */
+.key-stats {
+  background-color: var(--background-color) !important;
 }
 
 /* START FAQ SECTION */
@@ -165,9 +172,19 @@
   display: block;
 }
 
+/* START TESTIMONIALS SECTION */
+.testimonials {
+  background-color: var(--background-color) !important;
+}
+.testimonials .card {
+  height: 100%;
+  box-shadow: var(--shadow-lg);
+}
+
 /* START CONTACT SECTION */
 .contact-section {
-  background-color: var(--background-color); /* Fond léger comme dans l'image */
+  background-color: #fff !important;
+  margin-bottom: 10%;
 }
 
 .contact-section .form-control {

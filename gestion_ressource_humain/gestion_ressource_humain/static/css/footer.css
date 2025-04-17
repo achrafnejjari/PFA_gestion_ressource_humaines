@@ -5,7 +5,8 @@
 /**** START FOOTER SECTION ****/
 footer {
   background-color: var(--background-color);
-  padding: 10px 0 70px 0;
+  padding: 5% 0 50px 0;
+  border-top: 1px solid #ddd;
 }
 
 footer .container {
