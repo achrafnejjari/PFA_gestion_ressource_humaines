@@ -26,9 +26,135 @@
     <div class="container-fluid">
       {% include 'html_of_pages/dashboard/sidebar.html' %}
       <div class="content">
-        <h1>Bienvenue sur employés</h1>
-        <p>Ici tu peux voir un résumé global.</p>
+        <!-- En-tête -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h1 class="h2">
+              <i class="bi bi-people me-2"></i>Gestion des Employés
+            </h1>
+            <p class="text-muted">Consultez et gérez les informations des employés de TeamCore.</p>
+          </div>
+          <a href="#" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Ajouter un employé
+          </a>
+        </div>
+      
+        <!-- Statistiques rapides -->
+        <div class="row g-4 mb-4">
+          <div class="col-md-6">
+            <div class="card shadow-sm">
+              <div class="card-body text-center">
+                <h5 class="card-title text-muted">
+                  <i class="bi bi-person-fill me-2 text-primary"></i>Nombre total d'employés
+                </h5>
+                <h2 class="card-text">290</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title text-muted">
+                  <i class="bi bi-building-fill me-2 text-success"></i>Répartition par département
+                </h5>
+                <ul class="list-unstyled mt-3">
+                  <li>Informatique: 120</li>
+                  <li>Marketing: 80</li>
+                  <li>Finance: 60</li>
+                  <li>RH: 30</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Tableau des employés -->
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="card-title">
+                <i class="bi bi-table me-2"></i>Liste des Employés
+              </h5>
+              <button class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-funnel me-1"></i>Filtrer
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Département</th>
+                    <th scope="col">Type de contrat</th>
+                    <th scope="col">Salaire actuel</th>
+                    <th scope="col">Performance</th>
+                    <th scope="col">Dernier congé</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Exemple statique (sera remplacé dynamiquement) -->
+                  <tr>
+                    <td>Justin Lipshutz</td>
+                    <td>Marketing</td>
+                    <td><span class="badge bg-success">CDI</span></td>
+                    <td>45 000 €</td>
+                    <td>92%</td>
+                    <td><span class="badge bg-warning">En attente</span></td>
+                    <td>
+                      <a href="#" class="btn btn-outline-primary btn-sm me-1">
+                        <i class="bi bi-eye"></i>
+                      </a>
+                      <a href="#" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Marcus Culhane</td>
+                    <td>Finance</td>
+                    <td><span class="badge bg-primary">CDD</span></td>
+                    <td>38 000 €</td>
+                    <td>88%</td>
+                    <td><span class="badge bg-success">Approuvé</span></td>
+                    <td>
+                      <a href="#" class="btn btn-outline-primary btn-sm me-1">
+                        <i class="bi bi-eye"></i>
+                      </a>
+                      <a href="#" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Leo Stanton</td>
+                    <td>Informatique</td>
+                    <td><span class="badge bg-success">CDI</span></td>
+                    <td>52 000 €</td>
+                    <td>95%</td>
+                    <td><span class="badge bg-danger">Rejeté</span></td>
+                    <td>
+                      <a href="#" class="btn btn-outline-primary btn-sm me-1">
+                        <i class="bi bi-eye"></i>
+                      </a>
+                      <a href="#" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
+
+
+
+
+
+
+
     </div>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
