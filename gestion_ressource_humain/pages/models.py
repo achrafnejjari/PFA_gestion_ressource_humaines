@@ -57,8 +57,20 @@ class Performance(models.Model):
     commentaire = models.TextField()
     employe = models.ForeignKey(Employe, on_delete=models.CASCADE)
 
+    #debut_objectif = models.DateField()  # Nouveau champ
+    #fin_objectif = models.DateField()    # Nouveau champ
+    
+    #cette fonction peux aide au colum de period objectif quand tu veux le afiche dans la page html 
+    # def periode_objectif(self):
+    #     # Calcule la période en mois (approximative)
+    #     delta = (self.fin_objectif - self.debut_objectif).days
+    #     mois = delta // 30  # Approximation (30 jours par mois)
+    #     return f"{mois} mois"
+
     def __str__(self):
         return f"Performance de {self.employe.nom} - Score: {self.score}"
+
+
 
 
 # 4. Congé (Relation N:M avec Employé)

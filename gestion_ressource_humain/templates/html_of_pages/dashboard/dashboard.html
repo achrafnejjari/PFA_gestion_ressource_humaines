@@ -26,9 +26,146 @@
     <div class="container-fluid">
       {% include 'html_of_pages/dashboard/sidebar.html' %}
       <div class="content">
-        <h1>Bienvenue sur le dashboard</h1>
-        <p>Ici tu peux voir un résumé global.</p>
+        <!-- Statistiques globales -->
+        <div class="row g-4 mb-4">
+          <div class="col-12">
+            <h5 class="card-title mb-3">
+              <i class="bi bi-bar-chart me-2"></i>Aperçu des Ressources Humaines
+            </h5>
+          </div>
+          <div class="col-md-3">
+            <div class="card shadow-sm">
+              <div class="card-body text-center">
+                <h5 class="card-title text-muted">
+                  <i class="bi bi-people-fill me-2 text-primary"></i>Nombre total d'employés
+                </h5>
+                <h2 class="card-text">290</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card shadow-sm">
+              <div class="card-body text-center">
+                <h5 class="card-title text-muted">
+                  <i class="bi bi-check-circle-fill me-2 text-success"></i>Nombre de départements actifs
+                </h5>
+                <h2 class="card-text">12</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card shadow-sm">
+              <div class="card-body text-center">
+                <h5 class="card-title text-muted">
+                  <i class="bi bi-envelope-fill me-2 text-danger"></i>Nombre total de candidatures
+                </h5>
+                <h2 class="card-text">77</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card shadow-sm">
+              <div class="card-body text-center">
+                <h5 class="card-title text-muted">
+                  <i class="bi bi-clock-fill me-2 text-warning"></i>Ancienneté moyenne des employés
+                </h5>
+                <h2 class="card-text">17</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Section Graphique et Composition -->
+        <div class="row g-4 mb-4">
+          <!-- Graphique des emplois/candidatures -->
+          <div class="col-md-8">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="bi bi-graph-up me-2"></i>Tendances des Recrutements Mensuels
+                </h5>
+                <div id="employment-chart" style="min-height: 300px;">
+                  <!-- Placeholder pour l'histogramme -->
+                  <p class="text-muted text-center">Graphique des emplois postés et candidatures par mois</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Composition des employés -->
+          <div class="col-md-4">
+            <div class="card shadow-sm">
+              <div class="card-body text-center">
+                <h5 class="card-title">
+                  <i class="bi bi-pie-chart me-2"></i>Répartition Démographique du Personnel
+                </h5>
+                <div id="gender-chart" style="min-height: 200px;">
+                  <!-- Placeholder pour le graphique circulaire -->
+                  <p class="text-muted">Répartition hommes/femmes</p>
+                </div>
+                <p class="mt-3">290 Total des employés</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Tableau des employés -->
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="card-title">
+                <i class="bi bi-people me-2"></i>Aperçu des Employés Actifs
+              </h5>
+              <button class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-funnel me-1"></i> Filtrer
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">Nom de l'employé</th>
+                    <th scope="col">Département</th>
+                    <th scope="col">Ancienneté</th>
+                    <th scope="col">Performance</th>
+                    <th scope="col">Statut</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Justin Lipshutz</td>
+                    <td>Marketing</td>
+                    <td>2 ans</td>
+                    <td>+100%</td>
+                    <td><span class="badge bg-success">CDI</span></td>
+                  </tr>
+                  <tr>
+                    <td>Marcus Culhane</td>
+                    <td>Finance</td>
+                    <td>1 an</td>
+                    <td>+95%</td>
+                    <td><span class="badge bg-primary">CDD</span></td>
+                  </tr>
+                  <tr>
+                    <td>Leo Stanton</td>
+                    <td>Informatique</td>
+                    <td>3 ans</td>
+                    <td>+88%</td>
+                    <td><span class="badge bg-success">CDI</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
+
+
+
+
+
+
+
+
     </div>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>

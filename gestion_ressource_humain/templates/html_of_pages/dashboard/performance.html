@@ -25,10 +25,145 @@
     <!-- START SIDEBAR -->
     <div class="container-fluid">
       {% include 'html_of_pages/dashboard/sidebar.html' %}
+      
       <div class="content">
-        <h1>Bienvenue sur performance</h1>
-        <p>Ici tu peux voir un résumé global.</p>
+        <!-- En-tête -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h1 class="h2">
+              <i class="bi bi-star-fill me-2"></i>Évaluation des Performances
+            </h1>
+            <p class="text-muted">Suivez et gérez les performances des employés de TeamCore.</p>
+          </div>
+          <a href="#" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Nouvelle évaluation
+          </a>
+        </div>
+      
+        <!-- Statistiques globales -->
+        <div class="row g-4 mb-4">
+          <div class="col-md-6">
+            <div class="card shadow-sm">
+              <div class="card-body text-center">
+                <h5 class="card-title text-muted">
+                  <i class="bi bi-star-fill me-2 text-warning"></i>Moyenne des scores de performance
+                </h5>
+                <h2 class="card-text">85%</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title text-muted">
+                  <i class="bi bi-pie-chart-fill me-2 text-success"></i>Répartition des performances
+                </h5>
+                <ul class="list-unstyled mt-3">
+                  <li>Excellent (≥ 90%) : 120 employés</li>
+                  <li>Moyen (70-89%) : 140 employés</li>
+                  <li>Faible (< 70%) : 30 employés</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Tableau des performances -->
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="card-title">
+                <i class="bi bi-table me-2"></i>Détails des Performances
+              </h5>
+              <button class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-funnel me-1"></i>Filtrer
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">Employé</th>
+                    <th scope="col">Département</th>
+                    <th scope="col">Objectif</th>
+                    <th scope="col">Score</th>
+                    <th scope="col">Commentaire</th>
+                    <th scope="col">Début objectif</th>
+                    <th scope="col">Fin objectif</th>
+                    <th scope="col">Période d'objectif</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Exemple statique (sera remplacé dynamiquement) -->
+                  <tr>
+                    <td>Justin Lipshutz</td>
+                    <td>Marketing</td>
+                    <td>Atteindre les objectifs de vente</td>
+                    <td><span class="badge bg-success">92%</span></td>
+                    <td>Excellent travail, continuez ainsi !</td>
+                    <td>01/01/2025</td>
+                    <td>31/03/2025</td>
+                    <td>3 mois</td>
+                    <td>
+                      <a href="#" class="btn btn-outline-danger btn-sm me-1">
+                        <i class="bi bi-trash"></i>
+                      </a>
+                      <a href="#" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Marcus Culhane</td>
+                    <td>Finance</td>
+                    <td>Optimiser les budgets</td>
+                    <td><span class="badge bg-warning">78%</span></td>
+                    <td>Bon effort, mais peut améliorer la précision.</td>
+                    <td>01/02/2025</td>
+                    <td>30/04/2025</td>
+                    <td>3 mois</td>
+                    <td>
+                      <a href="#" class="btn btn-outline-danger btn-sm me-1">
+                        <i class="bi bi-trash"></i>
+                      </a>
+                      <a href="#" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Leo Stanton</td>
+                    <td>Informatique</td>
+                    <td>Développer une nouvelle application</td>
+                    <td><span class="badge bg-danger">65%</span></td>
+                    <td>Doit travailler sur les délais.</td>
+                    <td>01/03/2025</td>
+                    <td>31/05/2025</td>
+                    <td>2 mois</td>
+                    <td>
+                      <a href="#" class="btn btn-outline-danger btn-sm me-1">
+                        <i class="bi bi-trash"></i>
+                      </a>
+                      <a href="#" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
+
+
+
+
+
+
+
+
     </div>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
