@@ -37,9 +37,61 @@ h3 {
   border: 1px solid var(--primary-color) !important;
 }
 
+.form-control {
+  border: 1px solid #dee2e6 !important;
+  border-radius: 5px !important;
+  padding: 10px 15px !important;
+  font-size: 1rem !important;
+}
+.form-control::placeholder {
+  color: #6c757d !important;
+}
+.form-control:focus {
+  border-color: #007bff !important;
+  box-shadow: none !important;
+}
+
 .special-text {
   color: var(--primary-color) !important;
 }
 .special-text:hover {
   color: var(--primary-color-hover) !important;
+}
+
+.textSuccess {
+  background-color: var(--success-color);
+}
+.textFailed {
+  background-color: var(--danger-color);
+}
+.textInfo {
+  background-color: var(--info-color);
+}
+.textWarning {
+  background-color: var(--warning-color);
+}
+
+.btnInfo {
+  background-color: #ffffff !important;
+  border: 1px solid var(--info-color) !important;
+  color: var(--info-color) !important;
+}
+.btnInfo:hover {
+  background-color: var(--info-color) !important;
+  color: #ffffff !important;
+}
+.btnDanger {
+  background-color: #ffffff !important;
+  border: 1px solid var(--danger-color) !important;
+  color: var(--danger-color) !important;
+}
+.btnDanger:hover {
+  background-color: var(--danger-color) !important;
+  color: #ffffff !important;
+}
+.btnWarning {
+  background-color: var(--warning-color) !important;
+}
+.btnWarning:hover {
+  background-color: #f8bc06 !important;
 }
