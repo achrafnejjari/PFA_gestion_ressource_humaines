@@ -4,3 +4,78 @@
 @import url("./sidebar.css");
 @import url("../variables.css");
 @import url("../theme-light.css");
+
+/* START DASHBOARD GLOBAL RULES */
+.card.card-100 {
+  height: 100%;
+}
+
+.content .content-button {
+  background-color: rgb(52, 94, 158) !important;
+  color: #ffffff;
+}
+.content .content-button:hover {
+  background-color: rgb(41, 76, 129) !important;
+  color: #ffffff;
+}
+
+.custom-rounded-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.custom-rounded-table td,
+.custom-rounded-table th {
+  border-top: 1px solid #f1f1f1;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+}
+
+.custom-rounded-table thead tr:first-child th:first-child {
+  border-top-left-radius: 12px;
+}
+.custom-rounded-table thead tr:first-child th:last-child {
+  border-top-right-radius: 12px;
+}
+
+.custom-rounded-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 12px;
+}
+.custom-rounded-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 12px;
+}
+
+.custom-rounded-table thead th {
+  background-color: rgb(52, 94, 158);
+  color: #ffffff;
+}
+
+.custom-rounded-table tbody tr:nth-child(odd) td {
+  background-color: #ffffff;
+}
+.custom-rounded-table tbody tr:nth-child(even) td {
+  background-color: rgba(168, 187, 216, 0.596) !important;
+}
+
+.custom-rounded-table tbody tr:nth-child(even):hover td {
+  background-color: rgba(148, 166, 190, 0.596) !important;
+}
+
+.custom-rounded-table tbody td:nth-child(1) {
+  font-weight: bold;
+}
+
+.custom-rounded-table .btn-edit i {
+  color: var(--primary-color) !important;
+}
+.custom-rounded-table .btn-edit i:hover {
+  color: var(--primary-color-hover) !important;
+}
+.custom-rounded-table .btn-delete i {
+  color: var(--danger-color) !important;
+}
+.custom-rounded-table .btn-delete i:hover {
+  color: var(--danger-color-hover) !important;
+}

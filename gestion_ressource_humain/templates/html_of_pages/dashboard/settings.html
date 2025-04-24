@@ -25,9 +25,88 @@
     <!-- START SIDEBAR -->
     <div class="container-fluid">
       {% include 'html_of_pages/dashboard/sidebar.html' %}
-      <div class="content">
-        <h1>Bienvenue sur parametres</h1>
-        <p>Ici tu peux voir un résumé global.</p>
+      <div class="content parametres-content">
+        <div class="container">
+          <h2 class="content-title mb-4">Paramètres</h2>
+
+          <div class="row">
+            <!-- Modifier le mot de passe -->
+            <div class="col-md-6 shadow-sm mb-4">
+              <div class="card shadow-sm p-4">
+                <h5 class="mb-3">Changer le mot de passe</h5>
+                <form>
+                  <div class="mb-3">
+                    <label for="old-password" class="form-label"
+                      >Mot de passe actuel</label
+                    >
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="old-password"
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="new-password" class="form-label"
+                      >Nouveau mot de passe</label
+                    >
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="new-password"
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="confirm-password" class="form-label"
+                      >Confirmer</label
+                    >
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="confirm-password"
+                    />
+                  </div>
+                  <button class="btn btnWarning text-white">Changer</button>
+                </form>
+              </div>
+            </div>
+
+            <!-- Préférences -->
+            <div class="card col-md-6 shadow-sm p-4">
+              <h5 class="mb-3">Préférences</h5>
+              <form>
+                <div class="form-check form-switch mb-3">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="notifSwitch"
+                    checked
+                  />
+                  <label class="form-check-label" for="notifSwitch">
+                    Activer les notifications
+                  </label>
+                </div>
+                <div class="mb-3">
+                  <label for="langue" class="form-label">Langue</label>
+                  <select class="form-select form-control" id="langue">
+                    <option value="fr" selected>Français</option>
+                    <option value="en">English</option>
+                  </select>
+                </div>
+                <div class="form-check form-switch mb-3">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="themeSwitch"
+                  />
+                  <label class="form-check-label" for="themeSwitch"
+                    >Mode sombre</label
+                  >
+                </div>
+                <button class="btn primary-button">Sauvegarder</button>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <!-- Bootstrap JS -->
