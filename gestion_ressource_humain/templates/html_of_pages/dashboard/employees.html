@@ -20,6 +20,19 @@
 
     <!-- CSS perso -->
     <link rel="stylesheet" href="{% static 'css/dashboard/dashboard.css' %}" />
+
+    <!-- Styles spécifiques pour le tableau -->
+    <style>
+      .table th, .table td {
+        vertical-align: middle;
+      }
+      .col-wide {
+        width: 120px; /* Colonne plus large pour Date d'embauche */
+      }
+      .col-narrow {
+        width: 80px; /* Colonne plus étroite pour Date de fin */
+      }
+    </style>
   </head>
   <body>
     <!-- START SIDEBAR -->
@@ -71,13 +84,13 @@
 
         <!-- Bouton Ajouter -->
         <div class="mb-3">
-          <a href="#" class="btn primary-button">
+          <a href="#" class="btn btn-primary">
             <i class="bi bi-plus-circle me-2"></i>Ajouter un employé
           </a>
         </div>
 
         <!-- Tableau des employés -->
-        <div class="card shadow-sm">
+        <div class="card shadow-sm mb-4">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h5 class="card-title">
@@ -96,60 +109,156 @@
                 <thead>
                   <tr>
                     <th scope="col">Nom</th>
+                    <th scope="col">Prénom</th>
+                    <th scope="col">Date de naissance</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Téléphone</th>
+                    <th scope="col">Salaire</th>
                     <th scope="col">Département</th>
-                    <th scope="col">Type de contrat</th>
-                    <th scope="col">Salaire actuel</th>
-                    <th scope="col">Performance</th>
-                    <th scope="col">Dernier congé</th>
+                    <th scope="col" class="col-wide">Date d'embauche</th>
+                    <th scope="col" class="col-narrow">Date de fin</th>
+                    <th scope="col" >Type de contrat</th>
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   <!-- Exemple statique (sera remplacé dynamiquement) -->
                   <tr>
-                    <td>Justin Lipshutz</td>
+                    <td>Lipshutz</td>
+                    <td>Justin</td>
+                    <td>15/05/1990</td>
+                    <td>justin.lipshutz@example.com</td>
+                    <td>+33 6 12 34 56 78</td>
+                    <td>45000€</td>
                     <td>Marketing</td>
-                    <td><span class="badge textSuccess">CDI</span></td>
-                    <td>45 000 €</td>
-                    <td>92%</td>
-                    <td><span class="badge textWarning">En attente</span></td>
+                    <td>15/01/2023</td>
+                    <td>-</td>
+                    <td><span class="badge text-bg-success">CDI</span></td>
                     <td>
-                      <a href="#" class="btn btnDanger btn-sm me-1">
+                      <a href="#" class="btn btn-danger btn-sm me-1">
                         <i class="bi bi-archive-fill"></i>
                       </a>
-                      <a href="#" class="btn btnInfo btn-sm me-1">
+                      <a href="#" class="btn btn-info btn-sm me-1">
                         <i class="bi bi-pencil"></i>
                       </a>
                     </td>
                   </tr>
                   <tr>
-                    <td>Marcus Culhane</td>
+                    <td>Culhane</td>
+                    <td>Marcus</td>
+                    <td>22/03/1988</td>
+                    <td>marcus.culhane@example.com</td>
+                    <td>+33 6 98 76 54 32</td>
+                    <td>38000€</td>
                     <td>Finance</td>
-                    <td><span class="badge textInfo">CDD</span></td>
-                    <td>38 000 €</td>
-                    <td>88%</td>
-                    <td><span class="badge textSuccess">Approuvé</span></td>
+                    <td>01/03/2024</td>
+                    <td>01/03/2025</td>
+                    <td><span class="badge text-bg-info">CDD</span></td>
                     <td>
-                      <a href="#" class="btn btnDanger btn-sm me-1">
+                      <a href="#" class="btn btn-danger btn-sm me-1">
                         <i class="bi bi-archive-fill"></i>
                       </a>
-                      <a href="#" class="btn btnInfo btn-sm">
+                      <a href="#" class="btn btn-info btn-sm me-1">
                         <i class="bi bi-pencil"></i>
                       </a>
                     </td>
                   </tr>
                   <tr>
-                    <td>Leo Stanton</td>
+                    <td>Stanton</td>
+                    <td>Leo</td>
+                    <td>10/11/1992</td>
+                    <td>leo.stanton@example.com</td>
+                    <td>+33 6 45 67 89 01</td>
+                    <td>52000€</td>
                     <td>Informatique</td>
-                    <td><span class="badge textSuccess">CDI</span></td>
-                    <td>52 000 €</td>
-                    <td>95%</td>
-                    <td><span class="badge textFailed">Rejeté</span></td>
+                    <td>10/06/2022</td>
+                    <td>-</td>
+                    <td><span class="badge text-bg-success">CDI</span></td>
                     <td>
-                      <a href="#" class="btn btnDanger btn-sm me-1">
+                      <a href="#" class="btn btn-danger btn-sm me-1">
                         <i class="bi bi-archive-fill"></i>
                       </a>
-                      <a href="#" class="btn btnInfo btn-sm">
+                      <a href="#" class="btn btn-info btn-sm me-1">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tableau des congés -->
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="card-title">
+                <i class="bi bi-calendar3 me-2"></i>Gestion des Congés
+              </h5>
+              <div class="search-table">
+                <input
+                  type="text"
+                  placeholder="Rechercher..."
+                  class="border-0"
+                />
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Type de congé</th>
+                    <th scope="col">Date de début</th>
+                    <th scope="col">Date de fin</th>
+                    <th scope="col">Statut</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Exemple statique (sera remplacé dynamiquement) -->
+                  <tr>
+                    <td>Lipshutz, Justin</td>
+                    <td>Congé payé</td>
+                    <td>10/05/2025</td>
+                    <td>15/05/2025</td>
+                    <td><span class="badge text-bg-success">Approuvé</span></td>
+                    <td>
+                      <a href="#" class="btn btn-danger btn-sm me-1">
+                        <i class="bi bi-trash-fill"></i>
+                      </a>
+                      <a href="#" class="btn btn-info btn-sm me-1">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Culhane, Marcus</td>
+                    <td>Congé maladie</td>
+                    <td>20/04/2025</td>
+                    <td>22/04/2025</td>
+                    <td><span class="badge text-bg-warning">En attente</span></td>
+                    <td>
+                      <a href="#" class="btn btn-danger btn-sm me-1">
+                        <i class="bi bi-trash-fill"></i>
+                      </a>
+                      <a href="#" class="btn btn-info btn-sm me-1">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Stanton, Leo</td>
+                    <td>Congé payé</td>
+                    <td>01/06/2025</td>
+                    <td>07/06/2025</td>
+                    <td><span class="badge text-bg-danger">Rejeté</span></td>
+                    <td>
+                      <a href="#" class="btn btn-danger btn-sm me-1">
+                        <i class="bi bi-trash-fill"></i>
+                      </a>
+                      <a href="#" class="btn btn-info btn-sm me-1">
                         <i class="bi bi-pencil"></i>
                       </a>
                     </td>

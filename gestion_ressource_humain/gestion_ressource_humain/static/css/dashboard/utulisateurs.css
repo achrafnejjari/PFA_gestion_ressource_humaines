@@ -1,0 +1,85 @@
+.card-100 {
+    height: 100%;
+  }
+  .primary-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+  }
+  .primary-button:hover {
+    background-color: #0056b3;
+  }
+  .btnDanger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+  }
+  .btnDanger:hover {
+    background-color: #c82333;
+  }
+  .btnInfo {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+  }
+  .btnInfo:hover {
+    background-color: #138496;
+  }
+  .search-table input {
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    width: 200px;
+  }
+  .card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  .card-title {
+    font-weight: 500;
+    color: #2c3e50;
+  }
+  .user-photo {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #e9ecef;
+  }
+  .status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .status-connected {
+    background-color: #28a745;
+    color: white;
+  }
+  .status-disconnected {
+    background-color: #dc3545;
+    color: white;
+  }
+  .modal-content {
+    border-radius: 10px;
+  }
+  .modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+  }
+  @media (max-width: 768px) {
+    .search-table input {
+      width: 100%;
+    }
+    .card-body {
+      padding: 15px;
+    }
+  }

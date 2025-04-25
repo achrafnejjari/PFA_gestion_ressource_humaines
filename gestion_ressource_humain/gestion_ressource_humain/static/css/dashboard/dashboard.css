@@ -79,3 +79,16 @@
 .custom-rounded-table .btn-delete i:hover {
   color: var(--danger-color-hover) !important;
 }
+/* Styles spécifiques pour le tableau  */
+.table th, .table td {
+  vertical-align: middle;
+}
+.col-wide {
+  width: 120px; /* Colonne plus large pour Date d'embauche */
+}
+.col-narrow {
+  width: 80px; /* Colonne plus étroite pour Date de fin */
+}
+
+
+

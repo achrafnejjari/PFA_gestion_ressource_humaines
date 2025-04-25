@@ -57,3 +57,7 @@ def profile(request):
 def settings(request):
     return render(request, 'html_of_pages/dashboard/settings.html', {'active_page': 'settings'})
 
+
+def utulisateurs(request):
+    return render(request, 'html_of_pages/dashboard/utulisateurs.html', {'active_page': 'utulisateurs'})
+
