@@ -195,3 +195,19 @@ class Candidature(models.Model):
 
     def __str__(self):
         return f"Candidature de {self.candidat.nom if self.candidat else 'Inconnu'} pour {self.offre_emploi.titre if self.offre_emploi else 'Inconnu'}"
+    
+
+
+
+class Contact(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.subject}"
+
+    class Meta:
+        ordering = ['-created_at']

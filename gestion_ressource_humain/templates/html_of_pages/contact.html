@@ -37,6 +37,17 @@
     <!-- NAVBAR -->
     {% include 'html_of_pages/navbar.html' %}
 
+    
+   <!-- Messages de confirmation email -->
+   {% if messages %}
+   {% for message in messages %}
+     <div class="alert alert-success text-center alert-dismissible fade show" role="alert">
+       {{ message }}
+       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+     </div>
+   {% endfor %}
+ {% endif %}
+    
     <!-- Banner -->
     <section class="bg-dark text-white text-center py-5">
       <div class="container">
@@ -54,7 +65,7 @@
           <div class="col-lg-7">
             <div class="bg-white p-5 shadow rounded">
               <h3 class="mb-4 special-text">Nous sommes à votre écoute</h3>
-              <form method="post" action="/contact/submit/">
+              <form method="post" action="{% url 'contact' %}">
                 {% csrf_token %}
                 <div class="mb-3">
                   <label class="form-label">Nom complet</label>
@@ -200,4 +211,5 @@
     <!-- Include JS -->
     <script src="{% static 'js/main.js' %}"></script>
   </body>
+  
 </html>

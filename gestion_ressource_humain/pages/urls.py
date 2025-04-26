@@ -22,4 +22,5 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('settings/', views.settings, name='settings'),
     path('utulisateurs/', views.utulisateurs, name='utulisateurs'),
+    path('dashboard/contact_messages/', views.contact_messages, name='contact_messages'),
 ]
