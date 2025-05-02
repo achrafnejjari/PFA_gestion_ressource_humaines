@@ -15,16 +15,12 @@
     />
 
     <!-- Bootstrap Icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
-    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
 
     <!-- CSS personnalisé -->
     <link rel="stylesheet" href="{% static 'css/dashboard/dashboard.css' %}" />
     <link rel="stylesheet" href="{% static 'css/dashboard/utulisateurs.css' %}" />
     <!-- Inline CSS pour styles spécifiques -->
-    
   </head>
   <body>
     <!-- Conteneur principal -->
@@ -39,11 +35,10 @@
           <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
             <div>
               <h1 class="h2">
-                <i class="bi bi-people me-2"></i>Gestion des utilisateurs
+                <i class="bi bi-people me-2"></i>
+                Gestion des utilisateurs
               </h1>
-              <p class="text-muted">
-                Consultez, ajoutez, modifiez ou supprimez les utilisateurs de TeamCore.
-              </p>
+              <p class="text-muted">Consultez, ajoutez, modifiez ou supprimez les utilisateurs de TeamCore.</p>
             </div>
           </div>
 
@@ -80,12 +75,9 @@
 
           <!-- Bouton Ajouter -->
           <div class="mb-3">
-            <button
-              class="btn primary-button"
-              data-bs-toggle="modal"
-              data-bs-target="#addUserModal"
-            >
-              <i class="bi bi-plus-circle me-2"></i> Ajouter un utilisateur
+            <button class="btn primary-button" data-bs-toggle="modal" data-bs-target="#addUserModal">
+              <i class="bi bi-plus-circle me-2"></i>
+              Ajouter un utilisateur
             </button>
           </div>
 
@@ -94,15 +86,11 @@
             <div class="card-body">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="card-title">
-                  <i class="bi bi-table me-2"></i>Liste des utilisateurs
+                  <i class="bi bi-table me-2"></i>
+                  Liste des utilisateurs
                 </h5>
                 <div class="search-table">
-                  <input
-                    type="text"
-                    placeholder="Rechercher..."
-                    class="border-0"
-                    id="searchInput"
-                  />
+                  <input type="text" placeholder="Rechercher..." class="border-0" id="searchInput" />
                 </div>
               </div>
               <div class="table-responsive">
@@ -120,11 +108,7 @@
                     <!-- Exemples statiques -->
                     <tr>
                       <td>
-                        <img
-                          src="https://via.placeholder.com/40"
-                          alt="Photo de Jean Dupont"
-                          class="user-photo"
-                        />
+                        <img src="https://via.placeholder.com/40" alt="Photo de Jean Dupont" class="user-photo" />
                       </td>
                       <td>Jean Dupont</td>
                       <td>RH</td>
@@ -155,7 +139,7 @@
                     </tr>
                     <tr>
                       <td>
-                        <i class="bi bi-person-circle text-muted" style="font-size: 40px;"></i>
+                        <i class="bi bi-person-circle text-muted" style="font-size: 40px"></i>
                       </td>
                       <td>Marie Curie</td>
                       <td>Employé</td>
@@ -202,23 +186,12 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="addUserModalLabel">Ajouter un utilisateur</h5>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Fermer"
-                  ></button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                 </div>
                 <div class="modal-body">
                   <div class="mb-3">
                     <label for="addUsername" class="form-label">Nom d'utilisateur</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="addUsername"
-                      placeholder="Nom d'utilisateur"
-                      required
-                    />
+                    <input type="text" class="form-control" id="addUsername" placeholder="Nom d'utilisateur" required />
                   </div>
                   <div class="mb-3">
                     <label for="addPhotoUrl" class="form-label">URL de la photo</label>
@@ -241,13 +214,7 @@
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    Annuler
-                  </button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                   <button type="button" class="btn btn-primary">Ajouter</button>
                 </div>
               </div>
@@ -266,12 +233,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="editUserModalLabel">Modifier un utilisateur</h5>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Fermer"
-                  ></button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                 </div>
                 <div class="modal-body">
                   <div class="mb-3">
@@ -305,13 +267,7 @@
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    Annuler
-                  </button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                   <button type="button" class="btn btn-primary">Enregistrer</button>
                 </div>
               </div>
@@ -329,27 +285,14 @@
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="deleteUserModalLabel">
-                    Confirmer la suppression
-                  </h5>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Fermer"
-                  ></button>
+                  <h5 class="modal-title" id="deleteUserModalLabel">Confirmer la suppression</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                 </div>
                 <div class="modal-body">
                   Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.
                 </div>
                 <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    Annuler
-                  </button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                   <button type="button" class="btn btn-danger">Supprimer</button>
                 </div>
               </div>
@@ -366,31 +309,31 @@
     <!-- JavaScript pour la recherche et les modals -->
     <script>
       // Recherche dans le tableau
-      document.getElementById('searchInput').addEventListener('input', function () {
+      document.getElementById("searchInput").addEventListener("input", function () {
         const searchValue = this.value.toLowerCase();
-        const rows = document.querySelectorAll('tbody tr');
-        rows.forEach(row => {
+        const rows = document.querySelectorAll("tbody tr");
+        rows.forEach((row) => {
           const username = row.cells[1].textContent.toLowerCase();
           const role = row.cells[2].textContent.toLowerCase();
           if (username.includes(searchValue) || role.includes(searchValue)) {
-            row.style.display = '';
+            row.style.display = "";
           } else {
-            row.style.display = 'none';
+            row.style.display = "none";
           }
         });
       });
 
       // Remplir le modal de modification
       function fillEditModal(id, username, photoUrl, roleId) {
-        document.getElementById('editUsername').value = username;
-        document.getElementById('editPhotoUrl').value = photoUrl;
-        document.getElementById('editRole').value = roleId;
+        document.getElementById("editUsername").value = username;
+        document.getElementById("editPhotoUrl").value = photoUrl;
+        document.getElementById("editRole").value = roleId;
       }
 
       // Placeholder pour la suppression
       function setDeleteUserId(id) {
         // Logique à implémenter dans le backend
-        console.log('Supprimer utilisateur ID:', id);
+        console.log("Supprimer utilisateur ID:", id);
       }
     </script>
 

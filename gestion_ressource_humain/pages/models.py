@@ -4,7 +4,7 @@ from datetime import date
 
 # 1. Utilisateur et Role
 class Role(models.Model):
-    nom_role = models.CharField(max_length=255, default="Employé")  # Valeur par défaut
+    nom_role = models.CharField(max_length=255, default="Employé")
 
     def __str__(self):
         return self.nom_role
@@ -20,8 +20,8 @@ class Utilisateur(models.Model):
         null=True, 
         blank=True
     )
-    url_photo = models.URLField(max_length=255, blank=True, null=True)  # Facultatif
-    role = models.OneToOneField(
+    url_photo = models.URLField(max_length=255, blank=True, null=True)
+    role = models.ForeignKey(
         Role,
         on_delete=models.CASCADE,
         null=True,  # Nullable temporairement pour migration
@@ -65,6 +65,12 @@ class Contrat(models.Model):
         verbose_name_plural = "Contrats"
 
 class Employe(models.Model):
+    utilisateur = models.OneToOneField(
+        Utilisateur,
+        on_delete=models.CASCADE,
+        null=True,  # Nullable temporairement pour la migration
+        blank=True
+    )
     nom = models.CharField(max_length=255, default="Inconnu")  # Valeur par défaut
     prenom = models.CharField(max_length=255, default="Inconnu")  # Valeur par défaut
     date_de_naissance = models.DateField(default=date(2000, 1, 1))  # Valeur par défaut
@@ -110,14 +116,15 @@ class Performance(models.Model):
 
 # 4. Congé (Relation N:M avec Employé)
 class Conge(models.Model):
-    type = models.CharField(max_length=50, default="Congé annuel")  # Valeur par défaut
-    date_debut = models.DateField(default=date.today)  # Valeur par défaut
-    date_fin = models.DateField(default=date.today)  # Valeur par défaut
+    type = models.CharField(max_length=50, default="Congé annuel") 
+    date_debut = models.DateField(default=date.today)
+    date_fin = models.DateField(default=date.today)
     statut = models.CharField(
         max_length=50,
         choices=[('EN_ATTENTE', 'En attente'), ('APPROUVE', 'Approuvé'), ('REFUSE', 'Refusé')],
-        default='EN_ATTENTE'  # Valeur par défaut
+        default='EN_ATTENTE'
     )
+    created_at = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.type} - {self.statut}"
@@ -195,3 +202,23 @@ class Candidature(models.Model):
 
     def __str__(self):
         return f"Candidature de {self.candidat.nom if self.candidat else 'Inconnu'} pour {self.offre_emploi.titre if self.offre_emploi else 'Inconnu'}"
+    
+
+
+class Training(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    created_at = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+class TrainingRegistration(models.Model):
+    employee = models.ForeignKey('Employe', on_delete=models.CASCADE)
+    training = models.ForeignKey(Training, on_delete=models.CASCADE)
+    registered_at = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.employee.nom} - {self.training.title}"
