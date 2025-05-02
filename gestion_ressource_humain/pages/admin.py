@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Role, Utilisateur, Departement, Contrat, Employe, Performance, Conge, EmployeConge, OffreEmploi, Candidat, Candidature
+from .models import Role, Utilisateur, Departement, Contrat, Employe, Performance, Conge, EmployeConge, OffreEmploi, Candidat, Candidature, Contact
 
 admin.site.register(Role)
 admin.site.register(Utilisateur)
@@ -12,3 +12,4 @@ admin.site.register(EmployeConge)
 admin.site.register(OffreEmploi)
 admin.site.register(Candidat)
 admin.site.register(Candidature)
+admin.site.register(Contact)

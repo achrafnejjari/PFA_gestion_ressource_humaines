@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tableau de bord - Messages de contact</title>
+    {% load static %}
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+
+    <!-- CSS personnalisé -->
+    <link rel="stylesheet" href="{% static 'css/dashboard/dashboard.css' %}" />
+
+    <!-- Inline CSS pour styles spécifiques -->
+    <style>
+      .card-100 {
+        height: 100%;
+      }
+      .primary-button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: background-color 0.2s ease;
+      }
+      .primary-button:hover {
+        background-color: #0056b3;
+      }
+      .btnDanger {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 5px;
+      }
+      .btnDanger:hover {
+        background-color: #c82333;
+      }
+      .search-table input {
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        width: 200px;
+      }
+      .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      .card-title {
+        font-weight: 500;
+        color: #2c3e50;
+      }
+      .message-content {
+        max-width: 300px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      tr {
+        cursor: pointer;
+      }
+      @media (max-width: 768px) {
+        .search-table input {
+          width: 100%;
+        }
+        .card-body {
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Conteneur principal -->
+    <div class="container-fluid">
+      <!-- Barre latérale -->
+      {% include 'html_of_pages/dashboard/sidebar.html' %}
+
+      <!-- Contenu principal -->
+      <div class="content departments-content">
+        <div class="container">
+          <!-- En-tête -->
+          <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+            <div>
+              <h1 class="h2">
+                <i class="bi bi-envelope me-2"></i>Gestion des messages de contact
+              </h1>
+              <p class="text-muted">
+                Consultez les messages envoyés via le formulaire de contact.
+              </p>
+            </div>
+          </div>
+
+          <!-- Messages -->
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-success text-center alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+
+          <!-- Statistique rapide -->
+          <div class="row g-4 mb-4">
+            <div class="col-md-6">
+              <div class="card card-100 shadow-sm">
+                <div class="card-body text-center">
+                  <h5 class="card-title text-muted">
+                    <i class="bi bi-envelope-fill me-2 text-primary"></i>
+                    Nombre total de messages
+                  </h5>
+                  <h2 class="card-text">{{ messages_list.count }}</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tableau des messages -->
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title">
+                  <i class="bi bi-table me-2"></i>Liste des messages
+                </h5>
+                <div class="search-table">
+                  <input
+                    type="text"
+                    placeholder="Rechercher..."
+                    class="border-0"
+                    id="searchInput"
+                  />
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Nom</th>
+                      <th>Email</th>
+                      <th>Sujet</th>
+                      <th>Message</th>
+                      <th>Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for message in messages_list %}
+                    <tr onclick="showMessageDetails('{{ message.name|escapejs }}', '{{ message.email|escapejs }}', '{{ message.subject|escapejs }}', '{{ message.message|escapejs }}')">
+                      <td>{{ message.name }}</td>
+                      <td>{{ message.email }}</td>
+                      <td>{{ message.subject }}</td>
+                      <td class="message-content">{{ message.message }}</td>
+                      <td>{{ message.created_at|date:"d/m/Y H:i" }}</td>
+                      <td>
+                        <button
+                          class="btn btnDanger btn-sm me-1"
+                          data-bs-toggle="modal"
+                          data-bs-target="#deleteMessageModal"
+                          onclick="setDeleteMessageId({{ message.id }}); event.stopPropagation();"
+                        >
+                          <i class="bi bi-archive-fill"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                      <td colspan="6" class="text-center">Aucun message trouvé.</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal pour confirmer la suppression -->
+          <div
+            class="modal fade"
+            id="deleteMessageModal"
+            tabindex="-1"
+            aria-labelledby="deleteMessageModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="deleteMessageModalLabel">
+                    Confirmer la suppression
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Fermer"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  Êtes-vous sûr de vouloir supprimer ce message ? Cette action est irréversible.
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Annuler
+                  </button>
+                  <form method="post" action="{% url 'contact_messages' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="message_id" id="deleteMessageId" value="" />
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal pour afficher les détails -->
+          <div
+            class="modal fade"
+            id="messageDetailsModal"
+            tabindex="-1"
+            aria-labelledby="messageDetailsModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="messageDetailsModalLabel">
+                    Détails du message
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Fermer"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <p><strong>Nom :</strong> <span id="detailName"></span></p>
+                  <p><strong>Email :</strong> <span id="detailEmail"></span></p>
+                  <p><strong>Sujet :</strong> <span id="detailSubject"></span></p>
+                  <p><strong>Message :</strong></p>
+                  <p id="detailMessage" style="white-space: pre-wrap;"></p>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Fermer
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript pour la recherche, suppression et détails -->
+    <script>
+      // Recherche dans le tableau
+      document.getElementById('searchInput').addEventListener('input', function () {
+        const searchValue = this.value.toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+          const name = row.cells[0].textContent.toLowerCase();
+          const email = row.cells[1].textContent.toLowerCase();
+          const subject = row.cells[2].textContent.toLowerCase();
+          const message = row.cells[3].textContent.toLowerCase();
+          if (name.includes(searchValue) || email.includes(searchValue) || subject.includes(searchValue) || message.includes(searchValue)) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
+
+      // Configurer l'ID pour la suppression
+      function setDeleteMessageId(id) {
+        document.getElementById('deleteMessageId').value = id;
+      }
+
+      // Afficher les détails du message
+      function showMessageDetails(name, email, subject, message) {
+        document.getElementById('detailName').textContent = name;
+        document.getElementById('detailEmail').textContent = email;
+        document.getElementById('detailSubject').textContent = subject;
+        document.getElementById('detailMessage').textContent = message;
+        const modal = new bootstrap.Modal(document.getElementById('messageDetailsModal'));
+        modal.show();
+      }
+    </script>
+
+    <!-- Script personnalisé -->
+    <script src="{% static 'js/dashboard.js' %}"></script>
+  </body>
+</html>
