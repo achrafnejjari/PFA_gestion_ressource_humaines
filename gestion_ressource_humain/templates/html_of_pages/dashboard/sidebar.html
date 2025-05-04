@@ -3,7 +3,11 @@
   <div class="logo-section">
     {% load static %}
     <a href="{% url 'index' %}">
-      <img src="{% static 'images/logo_photo.png' %}" alt="logo" class="logo-photo" />
+      <img
+        src="{% static 'images/logo_photo.png' %}"
+        alt="logo"
+        class="logo-photo"
+      />
     </a>
   </div>
   <div class="header-right">
@@ -13,7 +17,9 @@
 
 <!-- Sidebar -->
 <nav class="sidebar" id="sidebar">
-  <div class="sidebar-profile d-flex align-items-center justify-content-center mb-5 mt-3 gap-2">
+  <div
+    class="sidebar-profile d-flex align-items-center justify-content-center mb-5 mt-3 gap-2"
+  >
     <div class="profile-holder">
       {% load static %}
       <img
@@ -24,7 +30,9 @@
     </div>
     <div class="profile-text d-flex flex-column">
       <span class="profile-title fw-bold fs-5">{{ user.username }}</span>
-      <span class="profile-description text-white-50 text-secondary">{{ user.utilisateur.role.nom_role }}</span>
+      <span class="profile-description text-white-50 text-secondary">
+        {{ user.utilisateur.role.nom_role }}
+      </span>
     </div>
   </div>
 
@@ -52,12 +60,16 @@
     <i class="bi bi-graph-up-arrow"></i>
     Performance
   </a>
-  <a class="nav-link" href="{% url 'joboffer_dashboard' %}" onclick="setActive(this)">
+  <a
+    class="nav-link"
+    href="{% url 'joboffer_dashboard' %}"
+    onclick="setActive(this)"
+  >
     <i class="bi bi-calendar-check"></i>
     Offre d'emploi
   </a>
   <a class="nav-link" href="{% url 'candidates' %}" onclick="setActive(this)">
-    <i class="bi bi-person-plus-fill"></i>
+    <i class="bi bi-person-bounding-box"></i>
     Candidat
   </a>
   <a class="nav-link" href="{% url 'rh_trainings' %}" onclick="setActive(this)">
@@ -68,23 +80,37 @@
     <i class="bi bi-person-plus-fill"></i>
     Utilisateurs
   </a>
+  <!-- prettier-ignore -->
   {% endif %} {% if user.is_authenticated and user.utilisateur.role.nom_role == 'Employé' %}
   <!-- Liens réservés aux Employés -->
   <a class="nav-link" href="{% url 'trainings' %}" onclick="setActive(this)">
     <i class="bi bi-book"></i>
     Formations
   </a>
-  <a class="nav-link" href="{% url 'leave_requests' %}" onclick="setActive(this)">
+  <a
+    class="nav-link"
+    href="{% url 'leave_requests' %}"
+    onclick="setActive(this)"
+  >
     <i class="bi bi-calendar-check"></i>
     Demandes de congé
   </a>
-  <a class="nav-link" href="{% url 'employee_performance' %}" onclick="setActive(this)">
+  <a
+    class="nav-link"
+    href="{% url 'employee_performance' %}"
+    onclick="setActive(this)"
+  >
     <i class="bi bi-graph-up-arrow"></i>
     Mes Performances
   </a>
+  <!-- prettier-ignore -->
   {% endif %} {% if user.is_authenticated and user.utilisateur.role.nom_role == 'Utilisateur' %}
   <!-- Liens réservés aux Utilisateurs -->
-  <a class="nav-link" href="{% url 'user_joboffers' %}" onclick="setActive(this)">
+  <a
+    class="nav-link"
+    href="{% url 'user_joboffers' %}"
+    onclick="setActive(this)"
+  >
     <i class="bi bi-briefcase-fill"></i>
     Offres d'emploi internes
   </a>

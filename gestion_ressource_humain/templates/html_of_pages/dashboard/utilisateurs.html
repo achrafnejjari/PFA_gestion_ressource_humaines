@@ -15,12 +15,63 @@
     />
 
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
 
     <!-- CSS personnalisé -->
     <link rel="stylesheet" href="{% static 'css/dashboard/dashboard.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/dashboard/utulisateurs.css' %}" />
+    <link
+      rel="stylesheet"
+      href="{% static 'css/dashboard/utulisateurs.css' %}"
+    />
     <!-- Inline CSS pour styles spécifiques -->
+    <style>
+      .status-connected {
+        background-color: #28a745;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+      }
+      .status-disconnected {
+        background-color: #dc3545;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+      }
+      .user-photo {
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .primary-button {
+        background-color: #4e73df;
+        color: white;
+        border: none;
+      }
+      .primary-button:hover {
+        background-color: #2e59d9;
+      }
+      .btnInfo {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+      }
+      .btnInfo:hover {
+        background-color: #5a6268;
+      }
+      .btnDanger {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+      }
+      .btnDanger:hover {
+        background-color: #c82333;
+      }
+      .form-switch {
+        margin-bottom: 0;
+      }
+    </style>
   </head>
   <body>
     <!-- Conteneur principal -->
@@ -32,15 +83,36 @@
       <div class="content departments-content">
         <div class="container">
           <!-- En-tête -->
-          <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+          <div
+            class="d-flex justify-content-between align-items-center mb-4 mt-3"
+          >
             <div>
               <h1 class="h2">
                 <i class="bi bi-people me-2"></i>
                 Gestion des utilisateurs
               </h1>
-              <p class="text-muted">Consultez, ajoutez, modifiez ou supprimez les utilisateurs de TeamCore.</p>
+              <p class="text-muted">
+                Consultez, ajoutez, modifiez ou supprimez les utilisateurs de
+                TeamCore.
+              </p>
             </div>
           </div>
+
+          <!-- Messages -->
+          <!-- prettier-ignore -->
+          {% if messages %}
+          <!-- prettier-ignore -->
+          {% for message in messages %}
+          <div
+            class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}"
+            role="alert"
+          >
+            {{ message }}
+          </div>
+          <!-- prettier-ignore -->
+          {% endfor %}
+          <!-- prettier-ignore -->
+          {% endif %}
 
           <!-- Statistiques rapides -->
           <div class="row g-4 mb-4">
@@ -51,7 +123,7 @@
                     <i class="bi bi-person-fill me-2 text-primary"></i>
                     Nombre total d'utilisateurs
                   </h5>
-                  <h2 class="card-text">150</h2>
+                  <h2 class="card-text">{{ total_users }}</h2>
                 </div>
               </div>
             </div>
@@ -63,10 +135,9 @@
                     Rôles les plus courants
                   </h5>
                   <ul class="list-unstyled mt-3">
-                    <li>Employé : 80</li>
-                    <li>RH : 30</li>
-                    <li>Manager : 20</li>
-                    <li>Administrateur : 20</li>
+                    <li>Employé : {{ role_counts.Employé }}</li>
+                    <li>RH : {{ role_counts.RH }}</li>
+                    <li>Utilisateur : {{ role_counts.Utilisateur }}</li>
                   </ul>
                 </div>
               </div>
@@ -75,7 +146,11 @@
 
           <!-- Bouton Ajouter -->
           <div class="mb-3">
-            <button class="btn primary-button" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            <button
+              class="btn primary-button"
+              data-bs-toggle="modal"
+              data-bs-target="#addUserModal"
+            >
               <i class="bi bi-plus-circle me-2"></i>
               Ajouter un utilisateur
             </button>
@@ -84,13 +159,20 @@
           <!-- Tableau des utilisateurs -->
           <div class="card shadow-sm">
             <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center mb-3">
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
                 <h5 class="card-title">
-                  <i class="bi bi-table me-2"></i>
+                  <i class="bi bi-list-check me-2"></i>
                   Liste des utilisateurs
                 </h5>
                 <div class="search-table">
-                  <input type="text" placeholder="Rechercher..." class="border-0" id="searchInput" />
+                  <input
+                    type="text"
+                    placeholder="Rechercher..."
+                    class="border-0"
+                    id="searchInput"
+                  />
                 </div>
               </div>
               <div class="table-responsive">
@@ -101,73 +183,87 @@
                       <th>Nom</th>
                       <th>Rôle</th>
                       <th>Statut</th>
+                      <th>Actif</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <!-- Exemples statiques -->
+                  <tbody id="userTable">
+                    <!-- prettier-ignore -->
+                    {% for user in users_data %}
                     <tr>
                       <td>
-                        <img src="https://via.placeholder.com/40" alt="Photo de Jean Dupont" class="user-photo" />
+                        <img
+                          src="{{ user.photo }}"
+                          alt="Photo de {{ user.nom }}"
+                          class="user-photo"
+                          width="40"
+                          height="40"
+                        />
                       </td>
-                      <td>Jean Dupont</td>
-                      <td>RH</td>
+                      <td>{{ user.nom }}</td>
+                      <td>{{ user.role }}</td>
                       <td>
-                        <span class="status-badge status-connected">Connecté</span>
+                        <span
+                          class="status-badge {% if user.statut == 'Actif' %}status-connected{% else %}status-disconnected{% endif %}"
+                        >
+                          {{ user.statut }}
+                        </span>
                       </td>
                       <td>
-                        <a href="#" class="btn btnInfo btn-sm me-1">
+                        <form method="post" style="display: inline">
+                          {% csrf_token %}
+                          <input
+                            type="hidden"
+                            name="action"
+                            value="toggle_active"
+                          />
+                          <input
+                            type="hidden"
+                            name="user_id"
+                            value="{{ user.id }}"
+                          />
+                          <div class="form-check form-switch">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              id="activeSwitch{{ user.id }}"
+                              name="is_active"
+                              {% if user.statut == "Actif" %}checked{% endif %}
+                              onchange="this.form.submit()"
+                            >
+                            <label
+                              class="form-check-label"
+                              for="activeSwitch{{ user.id }}"
+                            >
+                              Activer/Désactiver
+                            </label>
+                          </div>
+                        </form>
+                      </td>
+                      <td>
+                        <a href="#" class="btn btn-outline-secondary btn-sm me-1">
                           <i class="bi bi-eye"></i>
                         </a>
                         <button
                           class="btn btnInfo btn-sm me-1"
                           data-bs-toggle="modal"
-                          data-bs-target="#editUserModal"
-                          onclick="fillEditModal(1, 'Jean Dupont', 'https://via.placeholder.com/40', '1')"
+                          data-bs-target="#editUserModal{{ user.id }}"
+                          onclick="fillEditModal('{{ user.id }}', '{{ user.nom }}', '{{ user.photo }}', '{{ user.role }}', '{{ user.email }}')"
                         >
                           <i class="bi bi-pencil"></i>
                         </button>
                         <button
                           class="btn btnDanger btn-sm me-1"
                           data-bs-toggle="modal"
-                          data-bs-target="#deleteUserModal"
-                          onclick="setDeleteUserId(1)"
+                          data-bs-target="#deleteUserModal{{ user.id }}"
+                          onclick="setDeleteUserId('{{ user.id }}')"
                         >
                           <i class="bi bi-archive-fill"></i>
                         </button>
                       </td>
                     </tr>
-                    <tr>
-                      <td>
-                        <i class="bi bi-person-circle text-muted" style="font-size: 40px"></i>
-                      </td>
-                      <td>Marie Curie</td>
-                      <td>Employé</td>
-                      <td>
-                        <span class="status-badge status-disconnected">Déconnecté</span>
-                      </td>
-                      <td>
-                        <a href="#" class="btn btnInfo btn-sm me-1">
-                          <i class="bi bi-eye"></i>
-                        </a>
-                        <button
-                          class="btn btnInfo btn-sm me-1"
-                          data-bs-toggle="modal"
-                          data-bs-target="#editUserModal"
-                          onclick="fillEditModal(2, 'Marie Curie', '', '2')"
-                        >
-                          <i class="bi bi-pencil"></i>
-                        </button>
-                        <button
-                          class="btn btnDanger btn-sm me-1"
-                          data-bs-toggle="modal"
-                          data-bs-target="#deleteUserModal"
-                          onclick="setDeleteUserId(2)"
-                        >
-                          <i class="bi bi-archive-fill"></i>
-                        </button>
-                      </td>
-                    </tr>
+                    <!-- prettier-ignore -->
+                    {% endfor %}
                   </tbody>
                 </table>
               </div>
@@ -185,119 +281,290 @@
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="addUserModalLabel">Ajouter un utilisateur</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                  <h5 class="modal-title" id="addUserModalLabel">
+                    Ajouter un utilisateur
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Fermer"
+                  ></button>
                 </div>
                 <div class="modal-body">
-                  <div class="mb-3">
-                    <label for="addUsername" class="form-label">Nom d'utilisateur</label>
-                    <input type="text" class="form-control" id="addUsername" placeholder="Nom d'utilisateur" required />
-                  </div>
-                  <div class="mb-3">
-                    <label for="addPhotoUrl" class="form-label">URL de la photo</label>
-                    <input
-                      type="url"
-                      class="form-control"
-                      id="addPhotoUrl"
-                      placeholder="https://example.com/photo.jpg"
-                    />
-                  </div>
-                  <div class="mb-3">
-                    <label for="addRole" class="form-label">Rôle</label>
-                    <select class="form-select" id="addRole" required>
-                      <option value="">Sélectionner un rôle</option>
-                      <option value="1">RH</option>
-                      <option value="2">Employé</option>
-                      <option value="3">Manager</option>
-                      <option value="4">Administrateur</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                  <button type="button" class="btn btn-primary">Ajouter</button>
+                  <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add" />
+                    <div class="mb-3">
+                      <label for="addUsername" class="form-label">
+                        Nom d'utilisateur
+                      </label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="addUsername"
+                        name="username"
+                        placeholder="Nom d'utilisateur"
+                        required
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="addEmail" class="form-label">Email</label>
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="addEmail"
+                        name="email"
+                        placeholder="Email"
+                        required
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="addPassword" class="form-label">
+                        Mot de passe
+                      </label>
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="addPassword"
+                        name="password"
+                        placeholder="Mot de passe"
+                        required
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="addRole" class="form-label">Rôle</label>
+                      <select
+                        class="form-select"
+                        id="addRole"
+                        name="role"
+                        required
+                      >
+                        <!-- prettier-ignore -->
+                        {% for role in roles %}
+                        <!-- prettier-ignore -->
+                        {% if role.nom_role == 'RH' and rh_exists %}
+                        <option value="{{ role.nom_role }}" disabled>
+                          RH (déjà attribué)
+                        </option>
+                        <!-- prettier-ignore -->
+                        {% else %}
+                        <option value="{{ role.nom_role }}">
+                          {{ role.nom_role }}
+                        </option>
+                        <!-- prettier-ignore -->
+                        {% endif %}
+                        <!-- prettier-ignore -->
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label for="addPhoto" class="form-label">Photo</label>
+                      <input
+                        type="file"
+                        class="form-control"
+                        id="addPhoto"
+                        name="photo"
+                      />
+                    </div>
+                    <div class="mb-3 form-check form-switch">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="addActive"
+                        name="is_active"
+                        checked
+                      />
+                      <label class="form-check-label" for="addActive">
+                        Actif
+                      </label>
+                    </div>
+                    <button type="submit" class="btn primary-button">
+                      Ajouter
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Modal pour modifier un utilisateur -->
+          <!-- prettier-ignore -->
+          {% for user in users_data %}
           <div
             class="modal fade"
-            id="editUserModal"
+            id="editUserModal{{ user.id }}"
             tabindex="-1"
-            aria-labelledby="editUserModalLabel"
+            aria-labelledby="editUserModalLabel{{ user.id }}"
             aria-hidden="true"
           >
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="editUserModalLabel">Modifier un utilisateur</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                  <h5 class="modal-title" id="editUserModalLabel{{ user.id }}">
+                    Modifier l'utilisateur
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Fermer"
+                  ></button>
                 </div>
                 <div class="modal-body">
-                  <div class="mb-3">
-                    <label for="editUsername" class="form-label">Nom d'utilisateur</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="editUsername"
-                      placeholder="Nom d'utilisateur"
-                      required
-                    />
-                  </div>
-                  <div class="mb-3">
-                    <label for="editPhotoUrl" class="form-label">URL de la photo</label>
-                    <input
-                      type="url"
-                      class="form-control"
-                      id="editPhotoUrl"
-                      placeholder="https://example.com/photo.jpg"
-                    />
-                  </div>
-                  <div class="mb-3">
-                    <label for="editRole" class="form-label">Rôle</label>
-                    <select class="form-select" id="editRole" required>
-                      <option value="">Sélectionner un rôle</option>
-                      <option value="1">RH</option>
-                      <option value="2">Employé</option>
-                      <option value="3">Manager</option>
-                      <option value="4">Administrateur</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                  <button type="button" class="btn btn-primary">Enregistrer</button>
+                  <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="edit" />
+                    <input type="hidden" name="user_id" value="{{ user.id }}" />
+                    <div class="mb-3">
+                      <label for="editUsername{{ user.id }}" class="form-label">
+                        Nom d'utilisateur
+                      </label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="editUsername{{ user.id }}"
+                        name="username"
+                        value="{{ user.nom }}"
+                        required
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="editEmail{{ user.id }}" class="form-label">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="editEmail{{ user.id }}"
+                        name="email"
+                        value="{{ user.email }}"
+                        required
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="editRole{{ user.id }}" class="form-label">
+                        Rôle
+                      </label>
+                      <select
+                        class="form-select"
+                        id="editRole{{ user.id }}"
+                        name="role"
+                        required
+                      >
+                        <!-- prettier-ignore -->
+                        {% for role in roles %}
+                        <!-- prettier-ignore -->
+                        {% if role.nom_role == 'RH' and rh_exists and user.role != 'RH' %}
+                        <option value="{{ role.nom_role }}" disabled>
+                          RH (déjà attribué)
+                        </option>
+                        <!-- prettier-ignore -->
+                        {% else %}
+                        <option
+                          value="{{ role.nom_role }}"
+                          <!-- prettier-ignore -->
+                          {% if role.nom_role == user.role %}selected 
+                          <!-- prettier-ignore -->
+                          {% endif %}
+                        >
+                          {{ role.nom_role }}
+                        </option>
+                        <!-- prettier-ignore -->
+                        {% endif %}
+                        <!-- prettier-ignore -->
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label for="editPhoto{{ user.id }}" class="form-label">
+                        Photo
+                      </label>
+                      <input
+                        type="file"
+                        class="form-control"
+                        id="editPhoto{{ user.id }}"
+                        name="photo"
+                      />
+                    </div>
+                    <div class="mb-3 form-check form-switch">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="editActive{{ user.id }}"
+                        name="is_active"
+                        {% if user.statut == "Actif" %}checked{% endif %}
+                        onchange="this.form.submit()"
+                      />
+                      <label
+                        class="form-check-label"
+                        for="editActive{{ user.id }}"
+                      >
+                        Actif
+                      </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                      Enregistrer
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>
           </div>
+          <!-- prettier-ignore -->
+          {% endfor %}
 
           <!-- Modal pour confirmer la suppression -->
+          <!-- prettier-ignore -->
+          {% for user in users_data %}
           <div
             class="modal fade"
-            id="deleteUserModal"
+            id="deleteUserModal{{ user.id }}"
             tabindex="-1"
-            aria-labelledby="deleteUserModalLabel"
+            aria-labelledby="deleteUserModalLabel{{ user.id }}"
             aria-hidden="true"
           >
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="deleteUserModalLabel">Confirmer la suppression</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                  <h5
+                    class="modal-title"
+                    id="deleteUserModalLabel{{ user.id }}"
+                  >
+                    Confirmer la suppression
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Fermer"
+                  ></button>
                 </div>
                 <div class="modal-body">
-                  Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.
+                  Êtes-vous sûr de vouloir supprimer l'utilisateur {{ user.nom }} ? Cette action est irréversible.
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                  <button type="button" class="btn btn-danger">Supprimer</button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Annuler
+                  </button>
+                  <form method="post" style="display: inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete" />
+                    <input type="hidden" name="user_id" value="{{ user.id }}" />
+                    <button type="submit" class="btn btn-danger">
+                      Supprimer
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>
           </div>
+          <!-- prettier-ignore -->
+          {% endfor %}
         </div>
       </div>
     </div>
@@ -309,31 +576,37 @@
     <!-- JavaScript pour la recherche et les modals -->
     <script>
       // Recherche dans le tableau
-      document.getElementById("searchInput").addEventListener("input", function () {
-        const searchValue = this.value.toLowerCase();
-        const rows = document.querySelectorAll("tbody tr");
-        rows.forEach((row) => {
-          const username = row.cells[1].textContent.toLowerCase();
-          const role = row.cells[2].textContent.toLowerCase();
-          if (username.includes(searchValue) || role.includes(searchValue)) {
-            row.style.display = "";
-          } else {
-            row.style.display = "none";
-          }
+      document
+        .getElementById('searchInput')
+        .addEventListener('input', function () {
+          const searchValue = this.value.toLowerCase();
+          const rows = document.querySelectorAll('#userTable tr');
+          rows.forEach((row) => {
+            const username = row.cells[1].textContent.toLowerCase();
+            const role = row.cells[2].textContent.toLowerCase();
+            if (username.includes(searchValue) || role.includes(searchValue)) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          });
         });
-      });
 
       // Remplir le modal de modification
-      function fillEditModal(id, username, photoUrl, roleId) {
-        document.getElementById("editUsername").value = username;
-        document.getElementById("editPhotoUrl").value = photoUrl;
-        document.getElementById("editRole").value = roleId;
+      function fillEditModal(id, username, photoUrl, role, email) {
+        document.getElementById(`editUsername${id}`).value = username;
+        document.getElementById(`editEmail${id}`).value = email;
+        document.getElementById(`editRole${id}`).value = role;
+        document.getElementById(`editPhoto${id}`).value = '';
+        document.getElementById(`editActive${id}`).checked =
+          document.querySelector(
+            `#userTable tr:has(#activeSwitch${id}) input`,
+          ).checked;
       }
 
-      // Placeholder pour la suppression
+      // Placeholder pour la suppression (déjà géré par le formulaire)
       function setDeleteUserId(id) {
-        // Logique à implémenter dans le backend
-        console.log("Supprimer utilisateur ID:", id);
+        console.log('Supprimer utilisateur ID:', id);
       }
     </script>
 

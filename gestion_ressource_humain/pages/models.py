@@ -45,7 +45,7 @@ class Departement(models.Model):
 
     class Meta:
         verbose_name = "Département"
-        verbose_name_plural = "Départements"
+        verbose_name_plural = "Départements"   
 
 class Contrat(models.Model):
     TYPE_CHOICES = [
