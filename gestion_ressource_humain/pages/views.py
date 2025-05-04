@@ -1,11 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
-from .models import Utilisateur, Role, Employe, Performance, Departement, Contrat, Conge, EmployeConge, Training, TrainingRegistration
+from .models import Utilisateur, Role, Employe, Performance, Departement, Contrat, Conge, EmployeConge, Training, TrainingRegistration, Contact
 from datetime import date
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.contrib.auth.forms import SetPasswordForm
@@ -216,7 +216,39 @@ def signup(request):
     return render(request, 'html_of_pages/signup.html', {'active_page': 'signup'})
 
 def contact(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+
+        # Sauvegarder le message dans la base de données
+        Contact.objects.create(
+            name=name,
+            email=email,
+            subject=subject,
+            message=message
+        )
+
+        messages.success(request, "Votre message a été enregistré avec succès.")
+        return redirect('contact')
+
     return render(request, 'html_of_pages/contact.html', {'active_page': 'contact'})
+
+def contact_messages(request):
+    if request.method == 'POST':
+        message_id = request.POST.get('message_id')
+        if message_id:
+            message = get_object_or_404(Contact, id=message_id)
+            message.delete()
+            messages.success(request, "Le message a été supprimé avec succès.")
+            return redirect('contact_messages')
+
+    messages_list = Contact.objects.all()
+    return render(request, 'html_of_pages/dashboard/contact_messages.html', {
+        'messages_list': messages_list,
+        'active_page': 'contact_messages'
+    })
 
 def services(request):
     return render(request, 'html_of_pages/services.html', {'active_page': 'services'})

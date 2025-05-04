@@ -38,4 +38,5 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(
         template_name='html_of_pages/password_reset_complete.html'
     ), name='password_reset_complete'),
+    path('contact_messages', views.contact_messages, name='contact_messages')
 ]
