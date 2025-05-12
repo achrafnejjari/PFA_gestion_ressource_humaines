@@ -62,3 +62,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+
+// Gestion de input "importer fichier"
+function updateFileName() {
+  var input = document.getElementById("inputPhoto");
+  var label = document.getElementById("fileLabel");
+  var fileName = input.files[0]
+    ? input.files[0].name
+    : "Aucune photo sélectionnée";
+
+  // Conserver l'icône et mettre à jour uniquement le texte
+  label.innerHTML = '<i class="bi bi-cloud-arrow-up"></i>' + fileName;
+}

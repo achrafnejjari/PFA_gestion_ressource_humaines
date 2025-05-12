@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gérer les formations</title>
+    {% load static %}
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+
+    <!-- CSS perso -->
+    <link rel="stylesheet" href="{% static 'css/dashboard/dashboard.css' %}" />
+  </head>
+  <body>
+    <!-- START SIDEBAR -->
+    <div class="container-fluid">
+      {% include 'html_of_pages/dashboard/sidebar.html' %}
+      <div class="content">
+        <div class="container">
+          <!-- En-tête -->
+          <div
+            class="d-flex justify-content-between align-items-center mb-4 mt-3"
+          >
+            <div>
+              <h1 class="h2">
+                <i class="bi bi-book"></i>
+                Gérer les formations
+              </h1>
+              <p class="text-muted">
+                Suivez et gérez les formations proposées par TeamCore.
+              </p>
+            </div>
+          </div>
+
+          <!-- Formulaire pour ajouter une formation -->
+          <div class="card shadow-sm mb-4">
+            <div class="card-body">
+              <h5 class="card-title">
+                <i class="bi bi-book me-2"></i>
+                Ajouter une nouvelle formation
+              </h5>
+              <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add" />
+                <div class="mb-3">
+                  <label for="title" class="form-label">Titre</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="title"
+                    name="title"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="description" class="form-label">
+                    Description
+                  </label>
+                  <textarea
+                    class="form-control"
+                    id="description"
+                    name="description"
+                    rows="3"
+                    required
+                  ></textarea>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="start_date" class="form-label">
+                      Date de début
+                    </label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="start_date"
+                      name="start_date"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="end_date" class="form-label">Date de fin</label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="end_date"
+                      name="end_date"
+                      required
+                    />
+                  </div>
+                </div>
+                <button type="submit" class="btn primary-button">
+                  Ajouter
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Liste des formations -->
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
+                <h5 class="card-title">
+                  <i class="bi bi-list-check me-2"></i>
+                  Formations existantes
+                </h5>
+                <div class="search-table">
+                  <input
+                    type="text"
+                    placeholder="Rechercher..."
+                    class="border-0"
+                    id="trainingSearchInput"
+                  />
+                </div>
+              </div>
+              {% if trainings %}
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Titre</th>
+                      <th>Description</th>
+                      <th>Date de début</th>
+                      <th>Date de fin</th>
+                      <th>Inscriptions</th>
+                      <th>Date de création</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="trainingTable">
+                    <!-- prettier-ignore -->
+                    {% for training in trainings %}
+                    <tr>
+                      <td>{{ training.title }}</td>
+                      <td>{{ training.description }}</td>
+                      <td>{{ training.start_date|date:"d/m/Y" }}</td>
+                      <td>{{ training.end_date|date:"d/m/Y" }}</td>
+                      <td>
+                        <!-- prettier-ignore -->
+                        {% with registered_employees=training.trainingregistration_set.all|length %}
+                        <!-- prettier-ignore -->
+                        {% if registered_employees > 0 %}
+                        <span class="badge bg-success text-white me-2">
+                          {{ registered_employees }}
+                          inscrit{{registered_employees|pluralize }}
+                        </span>
+                        <!-- prettier-ignore -->
+                        {% else %}
+                        <span class="badge bg-danger text-white me-2">
+                          {{ registered_employees }}
+                          inscrit{{registered_employees|pluralize }}
+                        </span>
+                        <!-- prettier-ignore -->
+                        {% endif %}
+                        <!-- prettier-ignore -->
+                        {% if registered_employees > 0 %}
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-secondary"
+                          data-bs-toggle="modal"
+                          data-bs-target="#enrolledEmployeesModal{{ training.id }}"
+                        >
+                          <i class="bi bi-eye"></i>
+                        </button>
+                        <!-- Modal pour afficher les employés inscrits -->
+                        <div
+                          class="modal fade"
+                          id="enrolledEmployeesModal{{ training.id }}"
+                          tabindex="-1"
+                          aria-labelledby="enrolledEmployeesModalLabel{{ training.id }}"
+                          aria-hidden="true"
+                        >
+                          <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5
+                                  class="modal-title"
+                                  id="enrolledEmployeesModalLabel{{ training.id }}"
+                                >
+                                  Employés inscrits à "{{ training.title }}"
+                                </h5>
+                                <button
+                                  type="button"
+                                  class="btn-close"
+                                  data-bs-dismiss="modal"
+                                  aria-label="Fermer"
+                                ></button>
+                              </div>
+                              <div class="modal-body">
+                                <ul class="list-group">
+                                  <!-- prettier-ignore -->
+                                  {% for registration in training.trainingregistration_set.all %}
+                                  <li class="list-group-item">
+                                    <!-- prettier-ignore -->
+                                    {{ registration.employee.nom }} {{ registration.employee.prenom }}
+                                  </li>
+                                  {% endfor %}
+                                </ul>
+                              </div>
+                              <div class="modal-footer">
+                                <button
+                                  type="button"
+                                  class="btn btn-secondary"
+                                  data-bs-dismiss="modal"
+                                >
+                                  Fermer
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- prettier-ignore -->
+                        {% endif %} {% endwith %}
+                      </td>
+                      <td>{{ training.created_at|date:"d/m/Y" }}</td>
+                      <td>
+                        <!-- Bouton Modifier -->
+                        <button
+                          type="button"
+                          class="btn btn-sm btnInfo me-1"
+                          data-bs-toggle="modal"
+                          data-bs-target="#editTrainingModal{{ training.id }}"
+                        >
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                        <!-- Bouton Supprimer -->
+                        <button
+                          type="button"
+                          class="btn btn-sm btnDanger"
+                          data-bs-toggle="modal"
+                          data-bs-target="#deleteTrainingModal{{ training.id }}"
+                        >
+                          <i class="bi bi-trash"></i>
+                        </button>
+
+                        <!-- Modal pour modifier la formation -->
+                        <div
+                          class="modal fade"
+                          id="editTrainingModal{{ training.id }}"
+                          tabindex="-1"
+                          aria-labelledby="editTrainingModalLabel{{ training.id }}"
+                          aria-hidden="true"
+                        >
+                          <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5
+                                  class="modal-title"
+                                  id="editTrainingModalLabel{{ training.id }}"
+                                >
+                                  Modifier la formation "{{ training.title }}"
+                                </h5>
+                                <button
+                                  type="button"
+                                  class="btn-close"
+                                  data-bs-dismiss="modal"
+                                  aria-label="Fermer"
+                                ></button>
+                              </div>
+                              <div class="modal-body">
+                                <form method="POST">
+                                  {% csrf_token %}
+                                  <input
+                                    type="hidden"
+                                    name="action"
+                                    value="edit"
+                                  />
+                                  <input
+                                    type="hidden"
+                                    name="training_id"
+                                    value="{{ training.id }}"
+                                  />
+                                  <div class="mb-3">
+                                    <label
+                                      for="edit_title_{{ training.id }}"
+                                      class="form-label"
+                                    >
+                                      Titre
+                                    </label>
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      id="edit_title_{{ training.id }}"
+                                      name="title"
+                                      value="{{ training.title }}"
+                                      required
+                                    />
+                                  </div>
+                                  <div class="mb-3">
+                                    <label
+                                      for="edit_description_{{ training.id }}"
+                                      class="form-label"
+                                    >
+                                      Description
+                                    </label>
+                                    <textarea
+                                      class="form-control"
+                                      id="edit_description_{{ training.id }}"
+                                      name="description"
+                                      rows="3"
+                                      required
+                                    >
+{{ training.description }}</textarea
+                                    >
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                      <label
+                                        for="edit_start_date_{{ training.id }}"
+                                        class="form-label"
+                                      >
+                                        Date de début
+                                      </label>
+                                      <input
+                                        type="date"
+                                        class="form-control"
+                                        id="edit_start_date_{{ training.id }}"
+                                        name="start_date"
+                                        value="{{ training.start_date|date:'Y-m-d' }}"
+                                        required
+                                      />
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                      <label
+                                        for="edit_end_date_{{ training.id }}"
+                                        class="form-label"
+                                      >
+                                        Date de fin
+                                      </label>
+                                      <input
+                                        type="date"
+                                        class="form-control"
+                                        id="edit_end_date_{{ training.id }}"
+                                        name="end_date"
+                                        value="{{ training.end_date|date:'Y-m-d' }}"
+                                        required
+                                      />
+                                    </div>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button
+                                      type="button"
+                                      class="btn btn-secondary"
+                                      data-bs-dismiss="modal"
+                                    >
+                                      Annuler
+                                    </button>
+                                    <button
+                                      type="submit"
+                                      class="btn btn-primary"
+                                    >
+                                      Enregistrer
+                                    </button>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Modal pour confirmer la suppression -->
+                        <div
+                          class="modal fade"
+                          id="deleteTrainingModal{{ training.id }}"
+                          tabindex="-1"
+                          aria-labelledby="deleteTrainingModalLabel{{ training.id }}"
+                          aria-hidden="true"
+                        >
+                          <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5
+                                  class="modal-title"
+                                  id="deleteTrainingModalLabel{{ training.id }}"
+                                >
+                                  Confirmer la suppression
+                                </h5>
+                                <button
+                                  type="button"
+                                  class="btn-close"
+                                  data-bs-dismiss="modal"
+                                  aria-label="Fermer"
+                                ></button>
+                              </div>
+                              <div class="modal-body">
+                                Êtes-vous sûr de vouloir supprimer la formation
+                                "{{ training.title }}" ?
+                                <!-- prettier-ignore -->
+                                {% with registered_employees=training.trainingregistration_set.all|length %}
+                                <!-- prettier-ignore -->
+                                {% if registered_employees > 0 %}
+                                <p class="text-danger mt-2">
+                                  Attention : {{ registered_employees}}
+                                  employé{{registered_employees|pluralize }}
+                                  est/sont inscrit
+                                  {{registered_employees|pluralize }} à cette
+                                  formation.
+                                </p>
+                                <!-- prettier-ignore -->
+                                {% endif %}
+                                <!-- prettier-ignore -->
+                                {% endwith %}
+                              </div>
+                              <div class="modal-footer">
+                                <form method="POST">
+                                  {% csrf_token %}
+                                  <input
+                                    type="hidden"
+                                    name="action"
+                                    value="delete"
+                                  />
+                                  <input
+                                    type="hidden"
+                                    name="training_id"
+                                    value="{{ training.id }}"
+                                  />
+                                  <button
+                                    type="button"
+                                    class="btn btn-secondary"
+                                    data-bs-dismiss="modal"
+                                  >
+                                    Annuler
+                                  </button>
+                                  <button type="submit" class="btn btn-danger">
+                                    Supprimer
+                                  </button>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <!-- prettier-ignore -->
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% else %}
+              <p class="card-text text-danger">
+                Aucune formation disponible pour le moment.
+              </p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Include JS -->
+    <script src="{% static 'js/dashboard.js' %}"></script>
+    <script>
+      // Recherche dans le tableau des formations
+      document
+        .getElementById('trainingSearchInput')
+        .addEventListener('input', function () {
+          const searchValue = this.value.toLowerCase();
+          const rows = document.querySelectorAll('#trainingTable tr');
+          rows.forEach((row) => {
+            const title = row.cells[0].textContent.toLowerCase();
+            const description = row.cells[1].textContent.toLowerCase();
+            if (
+              title.includes(searchValue) ||
+              description.includes(searchValue)
+            ) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          });
+        });
+    </script>
+  </body>
+</html>

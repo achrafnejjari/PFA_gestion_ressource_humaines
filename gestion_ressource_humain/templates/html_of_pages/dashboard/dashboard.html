@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -20,9 +20,6 @@
 
     <!-- CSS perso -->
     <link rel="stylesheet" href="{% static 'css/dashboard/dashboard.css' %}" />
-
-  
-  
   </head>
   <body>
     <!-- START SIDEBAR -->
@@ -30,20 +27,24 @@
       {% include 'html_of_pages/dashboard/sidebar.html' %}
       <div class="content">
         <div class="container">
+          <div
+            class="d-flex justify-content-between align-items-center mb-4 mt-3"
+          >
+            <div>
+              <h1 class="h2">
+                <i class="bi bi-building me-2"></i>
+                Aperçu des Ressources Humaines
+              </h1>
+            </div>
+          </div>
           <!-- Statistiques globales -->
           <div class="row g-4 mb-4">
-            <div class="col-12">
-              <h5 class="card-title mb-3">
-                <i class="bi bi-bar-chart me-2"></i>Aperçu des Ressources
-                Humaines
-              </h5>
-            </div>
             <div class="col-md-3">
               <div class="card card-100 shadow-sm">
                 <div class="card-body text-center">
                   <h5 class="card-title text-muted">
-                    <i class="bi bi-people-fill me-2 text-primary"></i>Nombre
-                    total d'employés
+                    <i class="bi bi-people-fill me-2 text-primary"></i>
+                    Nombre total d'employés
                   </h5>
                   <h2 class="card-text">290</h2>
                 </div>
@@ -53,8 +54,8 @@
               <div class="card card-100 shadow-sm">
                 <div class="card-body text-center">
                   <h5 class="card-title text-muted">
-                    <i class="bi bi-check-circle-fill me-2 text-success"></i
-                    >Nombre de départements actifs
+                    <i class="bi bi-check-circle-fill me-2 text-success"></i>
+                    Nombre de départements actifs
                   </h5>
                   <h2 class="card-text">12</h2>
                 </div>
@@ -64,8 +65,8 @@
               <div class="card card-100 shadow-sm">
                 <div class="card-body text-center">
                   <h5 class="card-title text-muted">
-                    <i class="bi bi-envelope-fill me-2 text-danger"></i>Nombre
-                    total de candidatures
+                    <i class="bi bi-envelope-fill me-2 text-danger"></i>
+                    Nombre total de candidatures
                   </h5>
                   <h2 class="card-text">77</h2>
                 </div>
@@ -75,8 +76,8 @@
               <div class="card card-100 shadow-sm">
                 <div class="card-body text-center">
                   <h5 class="card-title text-muted">
-                    <i class="bi bi-clock-fill me-2 text-warning"></i>Ancienneté
-                    moyenne des employés
+                    <i class="bi bi-clock-fill me-2 text-warning"></i>
+                    Ancienneté moyenne des employés
                   </h5>
                   <h2 class="card-text">17</h2>
                 </div>
@@ -91,8 +92,8 @@
               <div class="card card-100 shadow-sm">
                 <div class="card-body">
                   <h5 class="card-title">
-                    <i class="bi bi-graph-up me-2"></i>Tendances des
-                    Recrutements Mensuels
+                    <i class="bi bi-graph-up me-2"></i>
+                    Tendances des Recrutements Mensuels
                   </h5>
                   <div id="employment-chart" style="min-height: 300px">
                     <!-- Placeholder pour l'histogramme -->
@@ -108,8 +109,8 @@
               <div class="card card-100 shadow-sm">
                 <div class="card-body text-center">
                   <h5 class="card-title">
-                    <i class="bi bi-pie-chart me-2"></i>Répartition
-                    Démographique du Personnel
+                    <i class="bi bi-pie-chart me-2"></i>
+                    Répartition Démographique du Personnel
                   </h5>
                   <div id="gender-chart" style="min-height: 200px">
                     <!-- Placeholder pour le graphique circulaire -->
@@ -128,7 +129,8 @@
                 class="d-flex justify-content-between align-items-center mb-3"
               >
                 <h5 class="card-title">
-                  <i class="bi bi-table me-2"></i>Liste des Employés
+                  <i class="bi bi-list-check me-2"></i>
+                  Liste des Employés
                 </h5>
                 <div class="search-table">
                   <input
@@ -149,7 +151,8 @@
                       <th>Salaire</th>
                       <th>Département</th>
                       <th>Ancienneté</th>
-                      <th>Performance</th> <!--ici tu vas calcul tou ces peformance et le aficher-->
+                      <th>Performance</th>
+                      <!--ici tu vas calcul tou ces peformance et le aficher-->
                       <th class="col-wide">Date d'embauche</th>
                       <th class="col-narrow">Date de fin</th>
                       <th>Statut</th>

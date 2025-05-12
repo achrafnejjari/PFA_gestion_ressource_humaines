@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formations</title>
+    {% load static %}
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+
+    <!-- CSS perso -->
+    <link rel="stylesheet" href="{% static 'css/dashboard/dashboard.css' %}" />
+  </head>
+  <body>
+    <!-- START SIDEBAR -->
+    <div class="container-fluid">
+      {% include 'html_of_pages/dashboard/sidebar.html' %}
+      <div class="content">
+        <div class="container">
+          <!-- En-tête -->
+          <div
+            class="d-flex justify-content-between align-items-center mb-4 mt-3"
+          >
+            <div>
+              <h1 class="h2">
+                <i class="bi bi-book"></i>
+                Formations
+              </h1>
+              <p class="text-muted">
+                Suivez et inscrivez-vous dans des formations proposées par
+                TeamCore.
+              </p>
+            </div>
+          </div>
+
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">
+                <i class="bi bi-book me-2"></i>
+                Formations disponibles
+              </h5>
+              {% if trainings %}
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Titre</th>
+                      <th>Description</th>
+                      <th>Date de début</th>
+                      <th>Date de fin</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for training in trainings %}
+                    <tr>
+                      <td>{{ training.title }}</td>
+                      <td>{{ training.description }}</td>
+                      <td>{{ training.start_date|date:"d/m/Y" }}</td>
+                      <td>{{ training.end_date|date:"d/m/Y" }}</td>
+                      <td>
+                        {% if training.id in registered_trainings %}
+                        <span class="badge text-bg-success">Inscrit</span>
+                        <form method="POST" style="display: inline">
+                          {% csrf_token %}
+                          <input
+                            type="hidden"
+                            name="unregister_training_id"
+                            value="{{ training.id }}"
+                          />
+                          <button
+                            type="submit"
+                            class="btn btn-sm btnDanger ms-2"
+                          >
+                            Se désinscrire
+                          </button>
+                        </form>
+                        {% else %}
+                        <form method="POST">
+                          {% csrf_token %}
+                          <input
+                            type="hidden"
+                            name="training_id"
+                            value="{{ training.id }}"
+                          />
+                          <button
+                            type="submit"
+                            class="btn btn-sm primary-button"
+                          >
+                            S'inscrire
+                          </button>
+                        </form>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% else %}
+              <p class="card-text text-danger">
+                Aucune formation disponible pour le moment.
+              </p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Include JS -->
+    <script src="{% static 'js/dashboard.js' %}"></script>
+  </body>
+</html>

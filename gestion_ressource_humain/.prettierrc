@@ -1,0 +1,7 @@
+{
+  "plugins": ["prettier-plugin-django"],
+  "djangoBracketSpacing": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "htmlWhitespaceSensitivity": "ignore"
+}

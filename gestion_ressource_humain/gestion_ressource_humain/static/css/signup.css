@@ -5,7 +5,7 @@
 .login {
   background-color: var(--background-color);
   height: 100vh;
-  margin-top: 80px;  /* Ajouter de l'espace pour la navbar */
+  margin-top: 80px; /* Ajouter de l'espace pour la navbar */
 }
 
 .login-section {
@@ -18,7 +18,7 @@
   padding: 40px 20px;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
-  z-index: 999;  /* S'assurer que c'est derrière la navbar */
+  z-index: 999; /* S'assurer que c'est derrière la navbar */
 }
 
 .login-section i.bi-people {
@@ -51,6 +51,18 @@
 .login-form input[type="password"]:focus {
   outline: none; /* Retirer le contour par défaut du focus */
   border-bottom: 2px solid var(--primary-color); /* Changer la couleur de la ligne en bas au focus */
+}
+
+/* Importer une photo */
+.custom-file-label {
+  background-color: #f8f9fa;
+  padding: 10px 20px;
+  border: 1px solid #ced4da;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+.custom-file-label:hover {
+  background-color: #e9ecef;
 }
 
 /**** MEDIA QUERIES FOR LOGIN PAGE ****/
