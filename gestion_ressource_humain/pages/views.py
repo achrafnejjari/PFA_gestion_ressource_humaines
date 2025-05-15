@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
+from django.contrib import messages # departments , ..
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from .models import Utilisateur, Role, Employe, Performance, Departement, Contrat, Conge, EmployeConge, Training, TrainingRegistration, Contact
-from datetime import date
+from datetime import date , datetime , timedelta
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
@@ -16,6 +16,9 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.conf import settings
+
+from django.db.models import Count , Q , Avg #departments
+
 
 # Décorateur personnalisé pour vérifier si l'utilisateur est RH
 def rh_required(view_func):
@@ -263,23 +266,100 @@ def sidebar(request):
 # Accés aux pages dashboard
 from datetime import date, timedelta
 
+########################### DASHBOARD #################################
+
 @login_required
 def dashboard(request):
     role = request.user.utilisateur.role.nom_role
 
     if role == 'RH':
-        # Dashboard pour RH (liste de tous les employés)
-        employees = Employe.objects.all()
-        employees_data = []
+        # Statistiques globales
+        total_employes = Employe.objects.count()
+        total_departements = Departement.objects.count()
+        total_candidatures = Contact.objects.count()
         
-        for employee in employees:
-            today = date.today()
-            years_of_service = today.year - employee.date_embauche.year
-            if today.month < employee.date_embauche.month or (today.month == employee.date_embauche.month and today.day < employee.date_embauche.day):
-                years_of_service -= 1
+        # Ancienneté moyenne
+        today = date.today()
+        employes = Employe.objects.all()
+        total_years = 0
+        for emp in employes:
+            years = today.year - emp.date_embauche.year
+            if today.month < emp.date_embauche.month or (today.month == emp.date_embauche.month and today.day < emp.date_embauche.day):
+                years -= 1
+            total_years += years
+        anciennete_moyenne = round(total_years / total_employes) if total_employes > 0 else 0
 
-            performance = Performance.objects.filter(employe=employee).order_by('-date_evaluation').first()
-            performance_score = f"{performance.score}%" if performance else "N/A"
+        # Nombre d'employés par type de contrat
+        types_contrat = [
+            {'type': 'CDI', 'count': Employe.objects.filter(contrat__type='CDI').count()},
+            {'type': 'CDD', 'count': Employe.objects.filter(contrat__type='CDD').count()},
+            {'type': 'Stage', 'count': Employe.objects.filter(contrat__type='STG').count()},
+            {'type': 'Freelance', 'count': Employe.objects.filter(contrat__type='FRE').count()},
+        ]
+
+        # Proportion d'employés par département (en pourcentage)
+        all_departements = Departement.objects.all().order_by('nom')
+        print("Tous les départements :", list(all_departements.values('nom')))
+        
+        employe_counts = (
+            Employe.objects.values('departement__nom')
+            .annotate(count=Count('id'))
+            .order_by('departement__nom')
+        )
+        print("Comptes bruts par département :", list(employe_counts))
+        
+        # Créer un dictionnaire des comptes
+        count_dict = {
+            item['departement__nom']: item['count']
+            for item in employe_counts
+            if item['departement__nom']  # Exclure les départements null
+        }
+        print("Dictionnaire des comptes :", count_dict)
+        
+        # Vérifier les employés sans département
+        null_dept_count = Employe.objects.filter(departement__isnull=True).count()
+        print("Employés sans département :", null_dept_count)
+        
+        # Calculer la somme totale des employés
+        total_employes_count = sum(count_dict.values()) if count_dict else 0
+        print("Total des employés comptés (excluant null) :", total_employes_count)
+        print("Total des employés dans Employe.objects.count() :", total_employes)
+        
+        scores_par_departement = []
+        for dept in all_departements:
+            count = count_dict.get(dept.nom, 0)
+            print(f"Compte pour {dept.nom} : {count}")
+            percentage = round((count / total_employes_count * 100) if total_employes_count > 0 else 0.0, 2)
+            scores_par_departement.append({
+                'departement': dept.nom,
+                'avg_score': percentage,
+                'has_evaluations': count > 0,
+                'count': count
+            })
+        print("Pourcentages par département :", scores_par_departement)
+        print("Comptes dans scores_par_departement :", [item['count'] for item in scores_par_departement])
+
+        # Liste des employés
+        employees_data = []
+        for employee in employes:
+            # Calcul manuel de l'ancienneté
+            years = today.year - employee.date_embauche.year
+            months = today.month - employee.date_embauche.month
+            if today.month < employee.date_embauche.month or (today.month == employee.date_embauche.month and today.day < employee.date_embauche.day):
+                years -= 1
+                months += 12
+            if today.day < employee.date_embauche.day and today.month == employee.date_embauche.month:
+                months -= 1
+            if years > 0:
+                anciennete = f"{years} an{'s' if years > 1 else ''}, {months} mois"
+            elif months > 0:
+                anciennete = f"{months} mois"
+            else:
+                anciennete = "Moins d'un mois"
+
+            # Calcul de la moyenne des performances
+            avg_performance = Performance.objects.filter(employe=employee).aggregate(Avg('score'))['score__avg']
+            performance_score = f"{avg_performance:.2f}%" if avg_performance is not None else "N/A"
 
             employees_data.append({
                 'nom': employee.nom,
@@ -288,7 +368,7 @@ def dashboard(request):
                 'telephone': employee.telephone,
                 'salaire': f"{employee.salaire_actuel}€",
                 'departement': employee.departement.nom if employee.departement else "Non spécifié",
-                'anciennete': f"{years_of_service} an{'s' if years_of_service != 1 else ''}",
+                'anciennete': anciennete,
                 'performance': performance_score,
                 'date_embauche': employee.date_embauche.strftime('%d/%m/%Y'),
                 'date_fin': employee.date_fin.strftime('%d/%m/%Y') if employee.date_fin else "-",
@@ -298,10 +378,15 @@ def dashboard(request):
         return render(request, 'html_of_pages/dashboard/dashboard.html', {
             'active_page': 'dashboard',
             'employees_data': employees_data,
+            'total_employes': total_employes,
+            'total_departements': total_departements,
+            'total_candidatures': total_candidatures,
+            'anciennete_moyenne': anciennete_moyenne,
+            'types_contrat': types_contrat,
+            'scores_par_departement': scores_par_departement,
         })
 
     elif role == 'Employé':
-        # Dashboard pour Employé (informations personnelles)
         try:
             utilisateur = request.user.utilisateur
             employee = Employe.objects.get(utilisateur=utilisateur)
@@ -313,13 +398,12 @@ def dashboard(request):
             performance = Performance.objects.filter(employe=employee).order_by('-date_evaluation').first()
             recent_performances = Performance.objects.filter(employe=employee).order_by('-date_evaluation')[:3]
 
-            # Calcul des jours de congé
             annual_leave_days = employee.contrat.leave_entitlement if employee.contrat and employee.contrat.leave_entitlement else 25
             employee_conges = EmployeConge.objects.filter(employe=employee)
             taken_days = 0
             for emp_conge in employee_conges:
                 if emp_conge.conge.statut == 'APPROUVE':
-                    delta = (emp_conge.conge.date_fin - emp_conge.conge.date_debut).days + 1  # Inclure le jour de fin
+                    delta = (emp_conge.conge.date_fin - emp_conge.conge.date_debut).days + 1
                     taken_days += delta
 
             remaining_days = annual_leave_days - taken_days
@@ -353,20 +437,80 @@ def dashboard(request):
                 'recent_performances': [],
                 'remaining_days': 0,
                 'taken_days': 0,
-                'annual_leave_days': 25,  # Valeur par défaut même en cas d'erreur
+                'annual_leave_days': 25,
             })
 
     else:
-        # Dashboard pour Utilisateur
         return render(request, 'html_of_pages/dashboard/user_dashboard.html', {
             'active_page': 'dashboard',
         })
+#########################################################################
+
+########################## DEPARTEMENTS ################################33
+
+# page  departments  !
 
 @login_required
 @rh_required
 def departments(request):
-    return render(request, 'html_of_pages/dashboard/departments.html', {'active_page': 'departments'})
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'add':
+            nom = request.POST.get('nom')
+            description = request.POST.get('description', '')
+            if nom:
+                Departement.objects.create(nom=nom, description=description)
+                messages.success(request, 'Département créé avec succès.')
+            else:
+                messages.error(request, 'Le nom du département est requis.')
+        elif action == 'edit':
+            department_id = request.POST.get('department_id')
+            nom = request.POST.get('nom')
+            description = request.POST.get('description', '')
+            try:
+                department = Departement.objects.get(id=department_id)
+                if nom:
+                    department.nom = nom
+                    department.description = description
+                    department.save()
+                    messages.success(request, 'Département mis à jour avec succès.')
+                else:
+                    messages.error(request, 'Le nom du département est requis.')
+            except Departement.DoesNotExist:
+                messages.error(request, 'Le département spécifié n’existe pas.')
+        elif action == 'delete':
+            department_id = request.POST.get('department_id')
+            try:
+                department = Departement.objects.get(id=department_id)
+                department.delete()
+                messages.success(request, 'Département supprimé avec succès.')
+            except Departement.DoesNotExist:
+                messages.error(request, 'Le département spécifié n’existe pas.')
+        return redirect('departments')
 
+    departments = Departement.objects.all()
+    total_departments = departments.count()
+    department_employee_counts = Employe.objects.values('departement__nom').annotate(
+        employee_count=Count('id')
+    ).order_by('-employee_count')[:4]
+    search_query = request.GET.get('search', '')
+    if search_query:
+        departments = departments.filter(nom__icontains=search_query)
+
+    context = {
+        'active_page': 'departments',
+        'departments': departments,
+        'total_departments': total_departments,
+        'department_employee_counts': department_employee_counts,
+        'search_query': search_query,
+    }
+    return render(request, 'html_of_pages/dashboard/departments.html', context)
+
+
+
+#########################################################################
+
+########################### employees ##############################
 @login_required
 @rh_required
 def employees(request):
@@ -396,9 +540,7 @@ def employees(request):
                 # Créer un contrat
                 contrat = Contrat.objects.create(
                     type=type_contrat,
-                    date_debut=date_embauche,
-                    date_fin=date_fin if date_fin else None,
-                    salaire_initial=salaire_actuel
+                    leave_entitlement=25  # Valeur par défaut, comme dans contracts
                 )
 
                 # Récupérer l'utilisateur à lier (si sélectionné)
@@ -408,6 +550,7 @@ def employees(request):
                     # S'assurer que l'utilisateur n'est pas déjà lié à un autre employé
                     if Employe.objects.filter(utilisateur=utilisateur).exists():
                         messages.error(request, "Cet utilisateur est déjà lié à un autre employé.")
+                        contrat.delete()  # Nettoyer le contrat créé
                         return redirect('employees')
 
                 # Créer l'employé
@@ -419,12 +562,13 @@ def employees(request):
                     date_de_naissance=date_de_naissance,
                     email=email,
                     telephone=telephone,
-                    salaire_actuel=salaire_actuel,
+                    salaire_actuel=salaire_actuel if salaire_actuel else None,
                     date_embauche=date_embauche,
                     date_fin=date_fin if date_fin else None,
                     contrat=contrat,
                     departement=departement
                 )
+                messages.success(request, "Employé ajouté avec succès.")
             except Exception as e:
                 messages.error(request, f"Erreur lors de l'ajout de l'employé : {str(e)}")
             return redirect('employees')
@@ -469,16 +613,22 @@ def employees(request):
                 employee.date_de_naissance = date_de_naissance
                 employee.email = email
                 employee.telephone = telephone
-                employee.salaire_actuel = salaire_actuel
+                employee.salaire_actuel = salaire_actuel if salaire_actuel else None
                 employee.date_embauche = date_embauche
                 employee.date_fin = date_fin if date_fin else None
                 employee.departement = Departement.objects.get(id=departement_id)
-                employee.contrat.type = type_contrat
-                employee.contrat.date_debut = date_embauche
-                employee.contrat.date_fin = date_fin if date_fin else None
-                employee.contrat.salaire_initial = salaire_actuel
-                employee.contrat.save()
+
+                # Mettre à jour ou créer un contrat
+                if employee.contrat:
+                    employee.contrat.type = type_contrat
+                    employee.contrat.save()
+                else:
+                    employee.contrat = Contrat.objects.create(
+                        type=type_contrat,
+                        leave_entitlement=25
+                    )
                 employee.save()
+                messages.success(request, "Employé modifié avec succès.")
             except Exception as e:
                 messages.error(request, f"Erreur lors de la modification de l'employé : {str(e)}")
             return redirect('employees')
@@ -489,6 +639,7 @@ def employees(request):
             try:
                 employee = Employe.objects.get(id=employee_id)
                 employee.delete()
+                messages.success(request, "Employé supprimé avec succès.")
             except Exception as e:
                 messages.error(request, f"Erreur lors de la suppression de l'employé : {str(e)}")
             return redirect('employees')
@@ -500,6 +651,7 @@ def employees(request):
                 conge = Conge.objects.get(id=conge_id)
                 conge.statut = 'APPROUVE' if action == 'approve_leave' else 'REFUSE'
                 conge.save()
+                messages.success(request, f"Congé {'approuvé' if action == 'approve_leave' else 'refusé'} avec succès.")
             except Exception as e:
                 messages.error(request, f"Erreur lors de la mise à jour du congé : {str(e)}")
             return redirect('employees')
@@ -510,6 +662,7 @@ def employees(request):
             try:
                 conge = Conge.objects.get(id=conge_id)
                 conge.delete()
+                messages.success(request, "Congé supprimé avec succès.")
             except Exception as e:
                 messages.error(request, f"Erreur lors de la suppression du congé : {str(e)}")
             return redirect('employees')
@@ -519,10 +672,10 @@ def employees(request):
     departement_counts = {}
     for departement in Departement.objects.all():
         count = Employe.objects.filter(departement=departement).count()
-        if count > 0:  # N'afficher que les départements avec des employés
+        if count > 0:
             departement_counts[departement.nom] = count
 
-    # Liste des utilisateurs avec le rôle "Employé" disponibles (ceux qui ne sont pas déjà liés à un employé)
+    # Liste des utilisateurs avec le rôle "Employé" disponibles
     available_employe_users = Utilisateur.objects.filter(
         role__nom_role='Employé'
     ).exclude(
@@ -541,10 +694,10 @@ def employees(request):
             'date_de_naissance': employee.date_de_naissance.strftime('%d/%m/%Y'),
             'email': employee.email,
             'telephone': employee.telephone,
-            'salaire': f"{employee.salaire_actuel}€",
+            'salaire': f"{employee.salaire_actuel}€" if employee.salaire_actuel else "Non spécifié",
             'departement': employee.departement.nom if employee.departement else "Non spécifié",
             'departement_id': employee.departement.id if employee.departement else None,
-            'date_embauche': employee.date_embauche.strftime('%d/%m/%Y'),
+            'date_embauche': employee.date_embauche.strftime('%d/%m/%Y') if employee.date_embauche else "Non défini",
             'date_fin': employee.date_fin.strftime('%d/%m/%Y') if employee.date_fin else "-",
             'type_contrat': employee.contrat.type if employee.contrat else "N/A",
         })
@@ -569,19 +722,282 @@ def employees(request):
         'leaves_data': leaves_data,
         'departements': Departement.objects.all(),
         'contrat_types': Contrat.TYPE_CHOICES,
-        'available_employe_users': available_employe_users,  # Utilisateurs avec rôle "Employé" uniquement
+        'available_employe_users': available_employe_users,
     })
 
+
+#########################################################################
+
+
+########################### CONTRACTS #################################
 @login_required
 @rh_required
 def contracts(request):
-    return render(request, 'html_of_pages/dashboard/contracts.html', {'active_page': 'contracts'})
+    today = datetime.today().date()
+    thirty_days_later = today + timedelta(days=30)
+    # Gestion des actions POST
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        # Modifier un contrat
+        if action == 'edit':
+            contrat_id = request.POST.get('contrat_id')
+            leave_entitlement = request.POST.get('leave_entitlement', 25)
+            type_contrat = request.POST.get('type_contrat')
+            date_embauche = request.POST.get('date_debut')
+            date_fin = request.POST.get('date_fin', None)
+            salaire_actuel = request.POST.get('salaire', None)
+
+            try:
+                contrat = Contrat.objects.get(contract_id=contrat_id)
+                employe = Employe.objects.filter(contrat=contrat).first()
+                if not employe:
+                    messages.error(request, "Ce contrat n'est associé à aucun employé.")
+                else:
+                    # Mettre à jour Contrat
+                    contrat.leave_entitlement = leave_entitlement
+                    contrat.type = type_contrat
+                    contrat.save()
+                    # Mettre à jour Employe
+                    if date_embauche:
+                        employe.date_embauche = date_embauche
+                    if date_fin:
+                        employe.date_fin = date_fin
+                    else:
+                        employe.date_fin = None
+                    if salaire_actuel:
+                        employe.salaire_actuel = salaire_actuel
+                    else:
+                        employe.salaire_actuel = None
+                    employe.save()
+                    messages.success(request, "Contrat modifié avec succès.")
+            except Contrat.DoesNotExist:
+                messages.error(request, "Le contrat spécifié n'existe pas.")
+            except Exception as e:
+                messages.error(request, f"Erreur lors de la modification du contrat : {str(e)}")
+
+        # Supprimer un contrat
+        elif action == 'delete':
+            contrat_id = request.POST.get('contrat_id')
+            try:
+                contrat = Contrat.objects.get(contract_id=contrat_id)
+                employe = Employe.objects.filter(contrat=contrat).first()
+                if employe:
+                    employe.contrat = None
+                    employe.save()
+                contrat.delete()
+                messages.success(request, "Contrat supprimé avec succès.")
+            except Contrat.DoesNotExist:
+                messages.error(request, "Le contrat spécifié n'existe pas.")
+            except Exception as e:
+                messages.error(request, f"Erreur lors de la suppression du contrat : {str(e)}")
+
+        # Ajouter un contrat
+        elif action == 'add':
+            employe_id = request.POST.get('employe_id')
+            leave_entitlement = request.POST.get('leave_entitlement', 25)
+            type_contrat = request.POST.get('type_contrat')
+            date_embauche = request.POST.get('date_debut')
+            date_fin = request.POST.get('date_fin', None)
+            salaire_actuel = request.POST.get('salaire', None)
+
+            try:
+                employe = Employe.objects.get(id=employe_id)
+                if employe.contrat:
+                    messages.error(request, "Cet employé a déjà un contrat.")
+                else:
+                    contrat = Contrat.objects.create(
+                        type=type_contrat,
+                        leave_entitlement=leave_entitlement
+                    )
+                    employe.contrat = contrat
+                    if date_embauche:
+                        employe.date_embauche = date_embauche
+                    if date_fin:
+                        employe.date_fin = date_fin
+                    if salaire_actuel:
+                        employe.salaire_actuel = salaire_actuel
+                    employe.save()
+                    messages.success(request, "Contrat ajouté avec succès.")
+            except Employe.DoesNotExist:
+                messages.error(request, "L'employé spécifié n'existe pas.")
+            except Exception as e:
+                messages.error(request, f"Erreur lors de l'ajout du contrat : {str(e)}")
+
+        return redirect('contracts')
+
+    # Gestion de la requête GET
+    employes_avec_contrat = Employe.objects.filter(contrat__isnull=False)
+    contrats = Contrat.objects.filter(id__in=employes_avec_contrat.values('contrat'))
+    today = date.today()
+    threshold_date = today + timedelta(days=30)
+
+    # Calcul des statistiques
+    total_contrats = Contrat.objects.count()
+    actifs = Employe.objects.filter(
+        Q(contrat__isnull=False) &
+        (Q(date_fin__isnull=True) | Q(date_fin__gt=thirty_days_later))
+    ).count()
+    expires = Employe.objects.filter(
+        contrat__isnull=False,
+        date_fin__lte=today
+    ).count()
+    a_expirer = Employe.objects.filter(
+        contrat__isnull=False,
+        date_fin__gt=today,
+        date_fin__lte=thirty_days_later
+    ).count()
+    # Recherche
+    search_query = request.GET.get('search', '')
+    if search_query:
+        employes_avec_contrat = employes_avec_contrat.filter(
+            Q(nom__icontains=search_query) |
+            Q(prenom__icontains=search_query)
+        )
+        contrats = Contrat.objects.filter(id__in=employes_avec_contrat.values('contrat'))
+
+    # Liste des employés sans contrat pour l'ajout
+    employes_sans_contrat = Employe.objects.filter(contrat__isnull=True)
+
+    # Préparer les données pour le tableau
+    contrats_data = []
+    for contrat in contrats:
+        employe = Employe.objects.filter(contrat=contrat).first()
+        statut = "Actif" if not employe.date_fin or employe.date_fin > today else "Expiré"
+        if employe.date_fin and today < employe.date_fin <= threshold_date:
+            statut = "À expirer"
+        contrats_data.append({
+            'contract_id': contrat.contract_id,
+            'employe_id': employe.id,
+            'employe_nom': f"{employe.nom} {employe.prenom}",
+            'type': contrat.type,
+            'date_embauche': employe.date_embauche.strftime('%Y-%m-%d') if employe.date_embauche else 'Non défini',
+            'date_fin': employe.date_fin.strftime('%Y-%m-%d') if employe.date_fin else '--',
+            'salaire': str(employe.salaire_actuel) if employe.salaire_actuel else 'Non spécifié',
+            'leave_entitlement': contrat.leave_entitlement,
+            'statut': statut,
+        })
+
+    context = {
+        'active_page': 'contracts',
+        'contrats_data': contrats_data,
+        'total_contrats': total_contrats,
+        'actifs': actifs,
+        'expires': expires,
+        'a_expirer': a_expirer,
+        'search_query': search_query,
+        'type_choices': Contrat.TYPE_CHOICES,
+        'employes_sans_contrat': employes_sans_contrat,
+    }
+    return render(request, 'html_of_pages/dashboard/contracts.html', context)
+
+######################### PERFORMANCE #######################
 
 @login_required
 @rh_required
 def performance(request):
-    return render(request, 'html_of_pages/dashboard/performance.html', {'active_page': 'performance'})
+    if request.method == 'POST':
+        action = request.POST.get('action')
 
+        # Ajouter une évaluation
+        if action == 'add_performance':
+            employe_id = request.POST.get('employe_id')
+            objectif = request.POST.get('objectif')
+            score = request.POST.get('score')
+            commentaire = request.POST.get('commentaire', '')
+            debut_objectif = request.POST.get('debut_objectif')
+            fin_objectif = request.POST.get('fin_objectif')
+
+            try:
+                employe = Employe.objects.get(id=employe_id)
+                Performance.objects.create(
+                    employe=employe,
+                    objectif=objectif,
+                    score=score,
+                    commentaire=commentaire,
+                    debut_objectif=debut_objectif,
+                    fin_objectif=fin_objectif,
+                    date_evaluation=date.today()
+                )
+                messages.success(request, "Évaluation ajoutée avec succès.")
+            except Exception as e:
+                messages.error(request, f"Erreur lors de l'ajout de l'évaluation : {str(e)}")
+            return redirect('performance')
+
+        # Modifier une évaluation
+        elif action == 'edit_performance':
+            performance_id = request.POST.get('performance_id')
+            employe_id = request.POST.get('employe_id')
+            objectif = request.POST.get('objectif')
+            score = request.POST.get('score')
+            commentaire = request.POST.get('commentaire', '')
+            debut_objectif = request.POST.get('debut_objectif')
+            fin_objectif = request.POST.get('fin_objectif')
+
+            try:
+                performance = Performance.objects.get(id=performance_id)
+                performance.employe = Employe.objects.get(id=employe_id)
+                performance.objectif = objectif
+                performance.score = score
+                performance.commentaire = commentaire
+                performance.debut_objectif = debut_objectif
+                performance.fin_objectif = fin_objectif
+                performance.date_evaluation = date.today()
+                performance.save()
+                messages.success(request, "Évaluation modifiée avec succès.")
+            except Exception as e:
+                messages.error(request, f"Erreur lors de la modification de l'évaluation : {str(e)}")
+            return redirect('performance')
+
+        # Supprimer une évaluation
+        elif action == 'delete_performance':
+            performance_id = request.POST.get('performance_id')
+            try:
+                performance = Performance.objects.get(id=performance_id)
+                performance.delete()
+                messages.success(request, "Évaluation supprimée avec succès.")
+            except Exception as e:
+                messages.error(request, f"Erreur lors de la suppression de l'évaluation : {str(e)}")
+            return redirect('performance')
+
+    # Calcul des statistiques
+    performances = Performance.objects.all()
+    moyenne_score = performances.aggregate(Avg('score'))['score__avg'] or 0
+    moyenne_score = round(moyenne_score, 2)
+    excellent_count = performances.filter(score__gte=90).count()
+    moyen_count = performances.filter(score__gte=70, score__lt=90).count()
+    faible_count = performances.filter(score__lt=70).count()
+
+    # Données pour le tableau
+    performances_data = []
+    for perf in performances:
+        performances_data.append({
+            'id': perf.id,
+            'employe_id': perf.employe.id,
+            'employe_nom': f"{perf.employe.nom} {perf.employe.prenom}",
+            'departement': perf.employe.departement.nom if perf.employe.departement else "Non spécifié",
+            'objectif': perf.objectif,
+            'score': perf.score,
+            'commentaire': perf.commentaire,
+            'debut_objectif': perf.debut_objectif.strftime('%Y-%m-%d'),
+            'fin_objectif': perf.fin_objectif.strftime('%Y-%m-%d'),
+            'periode_objectif': perf.periode_objectif(),
+        })
+
+    # Liste des employés pour le formulaire
+    employes = Employe.objects.all().select_related('departement')
+
+    return render(request, 'html_of_pages/dashboard/performance.html', {
+        'active_page': 'performance',
+        'moyenne_score': moyenne_score,
+        'excellent_count': excellent_count,
+        'moyen_count': moyen_count,
+        'faible_count': faible_count,
+        'performances': performances_data,
+        'employes': employes,
+    })
+
+#########################################################################
 # Dashboard: Employé
 @login_required
 def employee_performance(request):
@@ -670,20 +1086,179 @@ def user_joboffers(request):
 def candidates(request):
     return render(request, 'html_of_pages/dashboard/candidates.html', {'active_page': 'candidates'})
 
+
+############################################################
+############################  PROFIL ###############################
+
 @login_required
 def profile(request):
     utilisateur = request.user.utilisateur
+    today = date.today()
+    
+    # Log pour déboguer
+    print(f"Request.user: {request.user}, Authentifié: {request.user.is_authenticated}")
+    print(f"Utilisateur: {utilisateur}, User: {utilisateur.user}, Rôle: {getattr(utilisateur.role, 'nom_role', 'Aucun')}")
+    print(f"Username: {request.user.username}, Email: {request.user.email}, Téléphone: {getattr(utilisateur, 'telephone', 'N/A')}")
+
+    # Vérifier si utilisateur.user existe
+    if not utilisateur.user:
+        print("Erreur: utilisateur.user est None")
+        profile_data = {
+            'username': "Inconnu",
+            'role': "N/A",
+            'nom_complet': "Inconnu",
+            'email': "N/A",
+        }
+        return render(request, 'html_of_pages/dashboard/profile.html', {
+            'active_page': 'profile',
+            'utilisateur': utilisateur,
+            'profile_data': profile_data,
+        })
+
+    # Récupérer le rôle
+    role = getattr(utilisateur.role, 'nom_role', None)
+
+    # Récupérer l'employé lié à l'utilisateur
+    employe = None
+    if role in ['Employé', 'RH']:
+        try:
+            employe = Employe.objects.get(utilisateur=utilisateur)
+            print(f"Employé trouvé: {employe.nom} {employe.prenom}, Email: {employe.email}, Date embauche: {employe.date_embauche}")
+        except Employe.DoesNotExist:
+            print(f"Aucun Employé trouvé pour utilisateur: {request.user.username} (Email: {request.user.email})")
+            employe = None
+
+    # Traitement du formulaire de modification
     if request.method == 'POST':
+        email = request.POST.get('email')
+        telephone = request.POST.get('telephone')
+        nom = request.POST.get('nom')
+        prenom = request.POST.get('prenom')
         photo = request.FILES.get('photo')
+
+        # Mettre à jour Utilisateur
+        if email:
+            utilisateur.user.email = email
+            utilisateur.user.save()
+            print(f"Email mis à jour: {email}")
+        if telephone and role in ['Employé', 'RH']:
+            try:
+                utilisateur.telephone = telephone
+                utilisateur.save()
+                print(f"Téléphone mis à jour: {telephone}")
+            except AttributeError:
+                print("Champ telephone non disponible dans Utilisateur; mise à jour ignorée")
+
+        # Mettre à jour Employe si applicable
+        if employe and role in ['Employé', 'RH']:
+            if nom:
+                employe.nom = nom
+            if prenom:
+                employe.prenom = prenom
+            if email:
+                employe.email = email
+            if telephone:
+                employe.telephone = telephone
+            employe.save()
+            print(f"Employé mis à jour: {nom} {prenom}, Email: {email}, Téléphone: {telephone}")
+
+        # Gérer l'upload de photo
         if photo:
             fs = FileSystemStorage()
             filename = fs.save(f'photos/{photo.name}', photo)
             photo_url = fs.url(filename)
             utilisateur.url_photo = photo_url
             utilisateur.save()
-        return redirect('profile')
-    return render(request, 'html_of_pages/dashboard/profile.html', {'active_page': 'profile', 'utilisateur': utilisateur})
+            print(f"Photo uploadée: {photo_url}")
 
+        return redirect('profile')
+
+    # Données pour le template
+    profile_data = {}
+    if employe and role == 'Employé':
+        # Calcul manuel de l'ancienneté
+        years = today.year - employe.date_embauche.year
+        months = today.month - employe.date_embauche.month
+        if today.month < employe.date_embauche.month or (today.month == employe.date_embauche.month and today.day < employe.date_embauche.day):
+            years -= 1
+            months += 12
+        if today.day < employe.date_embauche.day and today.month == employe.date_embauche.month:
+            months -= 1
+        if years > 0:
+            anciennete = f"{years} an{'s' if years > 1 else ''}"
+        elif months > 0:
+            anciennete = f"{months} mois"
+        else:
+            anciennete = "Moins d'un mois"
+
+        # Dernier score de performance
+        dernier_performance = Performance.objects.filter(employe=employe).order_by('-date_evaluation').first()
+        performance_score = f"{dernier_performance.score}%" if dernier_performance else "N/A"
+
+        # Dernier congé
+        dernier_conge = EmployeConge.objects.filter(employe=employe).order_by('-conge__date_debut').first()
+        conge_statut = dernier_conge.conge.statut if dernier_conge else "Aucun"
+
+        # Données pour Employé
+        profile_data = {
+            'username': request.user.username,
+            'role': role,
+            'nom_complet': f"{employe.nom} {employe.prenom}",
+            'nom': employe.nom,
+            'prenom': employe.prenom,
+            'email': employe.email or request.user.email,
+            'telephone': employe.telephone or getattr(utilisateur, 'telephone', "N/A"),
+            'departement': employe.departement.nom if employe.departement else "Non spécifié",
+            'anciennete': anciennete,
+            'performance_score': performance_score,
+            'type_contrat': employe.contrat.type if employe.contrat else "N/A",
+            'date_embauche': employe.date_embauche.strftime('%d/%m/%Y') if employe.date_embauche else "N/A",
+            'salaire_actuel': f"{employe.salaire_actuel:,} €".replace(",", " ") if employe.salaire_actuel else "N/A",
+            'dernier_conge': conge_statut,
+            'date_debut_contrat': employe.date_embauche.strftime('%d/%m/%Y') if employe.date_embauche else "N/A",
+            'date_fin_contrat': employe.date_fin.strftime('%d/%m/%Y') if employe.date_fin else "Indéterminée",
+        }
+    elif role == 'RH':
+        # Données limitées pour RH
+        profile_data = {
+            'username': request.user.username,
+            'role': role,
+            'nom_complet': employe.nom + ' ' + employe.prenom if employe else request.user.username,
+            'nom': employe.nom if employe else request.user.username,
+            'prenom': employe.prenom if employe else '',
+            'email': employe.email if employe else request.user.email,
+            'telephone': employe.telephone if employe else getattr(utilisateur, 'telephone', "0765437853"),
+            'departement': employe.departement.nom if employe and employe.departement else "RH",
+        }
+    elif role == 'Utilisateur':
+        # Données pour Utilisateur
+        profile_data = {
+            'username': request.user.username,
+            'role': role,
+            'nom_complet': request.user.username,
+            'nom': request.user.username,
+            'prenom': '',
+            'email': request.user.email,
+        }
+    else:
+        # Autres rôles ou pas de rôle
+        profile_data = {
+            'username': request.user.username,
+            'role': role or "N/A",
+            'nom_complet': request.user.username,
+            'nom': request.user.username,
+            'prenom': '',
+            'email': request.user.email,
+        }
+
+    return render(request, 'html_of_pages/dashboard/profile.html', {
+        'active_page': 'profile',
+        'utilisateur': utilisateur,
+        'profile_data': profile_data,
+    })
+
+
+#######################################################################################
 @login_required
 def settings(request):
     return render(request, 'html_of_pages/dashboard/settings.html', {'active_page': 'settings'})
@@ -713,7 +1288,7 @@ def utilisateurs(request):
                 messages.error(request, "Cet email est déjà utilisé.")
                 return redirect('utilisateurs')
             # Vérifier la contrainte d'un seul RH
-            if role_name == 'RH' and rh_count >= 1:
+            if role_name == 'RH' and rh_count >= 2:
                 messages.error(request, "Un utilisateur RH existe déjà. Vous ne pouvez pas en ajouter un autre.")
                 return redirect('utilisateurs')
 
@@ -876,6 +1451,7 @@ def trainings(request):
             'registered_trainings': [],
         })
     
+
 @login_required
 @rh_required
 def rh_trainings(request):

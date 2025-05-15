@@ -66,8 +66,8 @@
                       <td>{{ performance.score }}%</td>
                       <td>{{ performance.commentaire }}</td>
                       <td>
-                        {{ performance.debut_objectif|date:"d/m/Y" }} - {{
-                        performance.fin_objectif|date:"d/m/Y" }}
+                        <!-- prettier-ignore -->
+                        {{ performance.debut_objectif|date:"d/m/Y" }} - {{performance.fin_objectif|date:"d/m/Y" }}
                       </td>
                     </tr>
                     {% endfor %}
