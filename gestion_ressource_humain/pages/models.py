@@ -47,18 +47,28 @@ class Departement(models.Model):
         verbose_name = "Département"
         verbose_name_plural = "Départements"   
 
+
 class Contrat(models.Model):
     TYPE_CHOICES = [
         ('CDI', 'Contrat à Durée Indéterminée'),
         ('CDD', 'Contrat à Durée Déterminée'),
+        ('Stage', 'Stage'),
+        ('Freelance', 'Freelance'),
     ]
-    type = models.CharField(max_length=50, choices=TYPE_CHOICES, default='CDI')  # Valeur par défaut
-    date_debut = models.DateField(default=date.today)  # Valeur par défaut
-    date_fin = models.DateField(blank=True, null=True)  # Facultatif pour CDI
-    salaire_initial = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)  # Facultatif
+    leave_entitlement = models.IntegerField(default=25, verbose_name="Jours de congé annuels")
+    contract_id = models.CharField(max_length=10, unique=True, blank=True, verbose_name="Identifiant du contrat")
+    type = models.CharField(max_length=50, choices=TYPE_CHOICES, default='CDI', verbose_name="Type de contrat")
+
+    def save(self, *args, **kwargs):
+        if not self.contract_id:
+            last_contrat = Contrat.objects.order_by('-id').first()
+            next_id = (last_contrat.id + 1) if last_contrat else 1
+            self.contract_id = f"C{next_id:03d}"
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.type} - {self.date_debut}"
+        employe = Employe.objects.filter(contrat=self).first()
+        return f"{self.contract_id} - {employe.nom if employe else 'Sans employé'}"
 
     class Meta:
         verbose_name = "Contrat"
@@ -103,8 +113,16 @@ class Performance(models.Model):
     def periode_objectif(self):
         if self.fin_objectif and self.debut_objectif:
             delta = (self.fin_objectif - self.debut_objectif).days
-            mois = delta // 30
-            return f"{mois} mois"
+            if delta < 0:
+                return "Non défini"  # Si la date de fin est avant la date de début
+            elif delta < 30:
+                return f"{delta} jours"  # Moins d'un mois, afficher seulement les jours
+            else:
+                mois = delta // 30
+                jours = delta % 30
+                if jours == 0:
+                    return f"{mois} mois"  # Exactement un nombre de mois
+                return f"{mois} mois et {jours} jours"  # Mois et jours restants
         return "Non défini"
 
     def __str__(self):

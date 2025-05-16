@@ -162,3 +162,6 @@ EMAIL_HOST_USER = 'bk.tarek.48@gmail.com'
 EMAIL_HOST_PASSWORD = 'extf ybxe vhtl dkvy'  
 DEFAULT_FROM_EMAIL = 'bk.tarek.48@gmail.com'  
 
+
+#
+# LOGIN_URL = '/login/'

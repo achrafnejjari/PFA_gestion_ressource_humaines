@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Main dashboard</title>
+    <title>Évaluation des Performances</title>
     {% load static %}
 
     <!-- Bootstrap CSS -->
@@ -20,18 +20,38 @@
 
     <!-- CSS perso -->
     <link rel="stylesheet" href="{% static 'css/dashboard/dashboard.css' %}" />
+
+    <!-- Styles spécifiques -->
+    <style>
+      .textSuccess { background-color: #28a745; color: white; }
+      .textWarning { background-color: #ffc107; color: white; }
+      .textFailed { background-color: #dc3545; color: white; }
+      .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.875rem; }
+      .primary-button { background-color: #4e73df; color: white; border: none; }
+      .primary-button:hover { background-color: #2e59d9; }
+      .btnInfo { background-color: #6c757d; border: none; }
+      .btnInfo:hover { background-color: #5a6268; }
+      .btnDanger { background-color: #dc3545; border: none; }
+      .btnDanger:hover { background-color: #c82333; }
+    </style>
   </head>
   <body>
-    <!-- START SIDEBAR -->
     <div class="container-fluid">
       {% include 'html_of_pages/dashboard/sidebar.html' %}
-
       <div class="content">
         <div class="container">
+          <!-- Messages -->
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{% if message.tags == 'success' %}success{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+
           <!-- En-tête -->
-          <div
-            class="d-flex justify-content-between align-items-center mb-4 mt-3"
-          >
+          <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
             <div>
               <h1 class="h2">
                 <i class="bi bi-star-fill me-2"></i>
@@ -52,7 +72,7 @@
                     <i class="bi bi-star-fill me-2 text-warning"></i>
                     Moyenne des scores de performance
                   </h5>
-                  <h2 class="card-text">85%</h2>
+                  <h2 class="card-text">{{ moyenne_score }}%</h2>
                 </div>
               </div>
             </div>
@@ -64,9 +84,9 @@
                     Répartition des performances
                   </h5>
                   <ul class="list-unstyled mt-3">
-                    <li>Excellent (≥ 90%) : 120 employés</li>
-                    <li>Moyen (70-89%) : 140 employés</li>
-                    <li>Faible (< 70%) : 30 employés</li>
+                    <li>Excellent (≥ 90%) : {{ excellent_count }} employés</li>
+                    <li>Moyen (70-89%) : {{ moyen_count }} employés</li>
+                    <li>Faible (< 70%) : {{ faible_count }} employés</li>
                   </ul>
                 </div>
               </div>
@@ -75,28 +95,22 @@
 
           <!-- Bouton Ajouter -->
           <div class="mb-3">
-            <button class="btn primary-button">
+            <button class="btn primary-button" data-bs-toggle="modal" data-bs-target="#addPerformanceModal">
               <i class="bi bi-plus-circle me-2"></i>
               Ajouter une nouvelle évaluation
             </button>
           </div>
 
-          <!-- Tableau des departements -->
+          <!-- Tableau des performances -->
           <div class="card shadow-sm">
             <div class="card-body">
-              <div
-                class="d-flex justify-content-between align-items-center mb-3"
-              >
+              <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="card-title">
                   <i class="bi bi-list-check me-2"></i>
                   Liste des Performances
                 </h5>
                 <div class="search-table">
-                  <input
-                    type="text"
-                    placeholder="Rechercher..."
-                    class="border-0"
-                  />
+                  <input type="text" placeholder="Rechercher..." class="border-0" id="searchInput" />
                 </div>
               </div>
               <div class="table-responsive">
@@ -114,73 +128,225 @@
                       <th>Actions</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="performanceTable">
+                    {% for perf in performances %}
                     <tr>
-                      <td>Justin Lipshutz</td>
-                      <td>Marketing</td>
-                      <td>Atteindre les objectifs de vente</td>
-                      <td><span class="badge textSuccess">92%</span></td>
-                      <td>Excellent travail, continuez ainsi !</td>
-                      <td>01/01/2025</td>
-                      <td>31/03/2025</td>
-                      <td>3 mois</td>
+                      <td>{{ perf.employe_nom }}</td>
+                      <td>{{ perf.departement }}</td>
+                      <td>{{ perf.objectif }}</td>
                       <td>
-                        <a href="#" class="btn btnDanger btn-sm me-1">
-                          <i class="bi bi-archive-fill"></i>
-                        </a>
-                        <a href="#" class="btn btnInfo btn-sm">
+                        <span class="badge {% if perf.score >= 90 %}textSuccess{% elif perf.score >= 70 %}textWarning{% else %}textFailed{% endif %}">
+                          {{ perf.score }}%
+                        </span>
+                      </td>
+                      <td>{{ perf.commentaire|default:"Aucun" }}</td>
+                      <td>{{ perf.debut_objectif }}</td>
+                      <td>{{ perf.fin_objectif }}</td>
+                      <td>{{ perf.periode_objectif }}</td>
+                      <td>
+                        <button class="btn btnInfo btn-sm me-1" data-bs-toggle="modal" data-bs-target="#editPerformanceModal{{ perf.id }}"
+                                onclick="fillEditModal('{{ perf.id }}', '{{ perf.employe_id }}', '{{ perf.departement }}', '{{ perf.objectif }}', '{{ perf.score }}', '{{ perf.commentaire }}', '{{ perf.debut_objectif }}', '{{ perf.fin_objectif }}')">
                           <i class="bi bi-pencil"></i>
-                        </a>
+                        </button>
+                        <button class="btn btnDanger btn-sm" data-bs-toggle="modal" data-bs-target="#deletePerformanceModal{{ perf.id }}">
+                          <i class="bi bi-archive-fill"></i>
+                        </button>
                       </td>
                     </tr>
+                    {% empty %}
                     <tr>
-                      <td>Marcus Culhane</td>
-                      <td>Finance</td>
-                      <td>Optimiser les budgets</td>
-                      <td><span class="badge textWarning">78%</span></td>
-                      <td>Bon effort, mais peut améliorer la précision.</td>
-                      <td>01/02/2025</td>
-                      <td>30/04/2025</td>
-                      <td>3 mois</td>
-                      <td>
-                        <a href="#" class="btn btnDanger btn-sm me-1">
-                          <i class="bi bi-archive-fill"></i>
-                        </a>
-                        <a href="#" class="btn btnInfo btn-sm">
-                          <i class="bi bi-pencil"></i>
-                        </a>
-                      </td>
+                      <td colspan="9" class="text-center">Aucune évaluation trouvée.</td>
                     </tr>
-                    <tr>
-                      <td>Leo Stanton</td>
-                      <td>Informatique</td>
-                      <td>Développer une nouvelle application</td>
-                      <td><span class="badge textFailed">65%</span></td>
-                      <td>Doit travailler sur les délais.</td>
-                      <td>01/03/2025</td>
-                      <td>31/05/2025</td>
-                      <td>2 mois</td>
-                      <td>
-                        <a href="#" class="btn btnDanger btn-sm me-1">
-                          <i class="bi bi-archive-fill"></i>
-                        </a>
-                        <a href="#" class="btn btnInfo btn-sm">
-                          <i class="bi bi-pencil"></i>
-                        </a>
-                      </td>
-                    </tr>
+                    {% endfor %}
                   </tbody>
                 </table>
               </div>
             </div>
           </div>
+
+          <!-- Modal pour ajouter une évaluation -->
+          <div class="modal fade" id="addPerformanceModal" tabindex="-1" aria-labelledby="addPerformanceModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="addPerformanceModalLabel">Ajouter une évaluation</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form method="post" id="addPerformanceForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add_performance" />
+                    <div class="mb-3">
+                      <label for="employe" class="form-label">Employé</label>
+                      <select class="form-select" id="employe" name="employe_id" required onchange="updateDepartement()">
+                        <option value="">Sélectionner un employé</option>
+                        {% for emp in employes %}
+                        <option value="{{ emp.id }}" data-departement="{{ emp.departement }}">{{ emp.nom }} {{ emp.prenom }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label for="departement" class="form-label">Département</label>
+                      <input type="text" class="form-control" id="departement" readonly />
+                    </div>
+                    <div class="mb-3">
+                      <label for="objectif" class="form-label">Objectif</label>
+                      <input type="text" class="form-control" id="objectif" name="objectif" required />
+                    </div>
+                    <div class="mb-3">
+                      <label for="score" class="form-label">Score (%)</label>
+                      <input type="number" class="form-control" id="score" name="score" min="0" max="100" step="0.01" required />
+                    </div>
+                    <div class="mb-3">
+                      <label for="commentaire" class="form-label">Commentaire</label>
+                      <textarea class="form-control" id="commentaire" name="commentaire"></textarea>
+                    </div>
+                    <div class="mb-3">
+                      <label for="debut_objectif" class="form-label">Début objectif</label>
+                      <input type="date" class="form-control" id="debut_objectif" name="debut_objectif" required />
+                    </div>
+                    <div class="mb-3">
+                      <label for="fin_objectif" class="form-label">Fin objectif</label>
+                      <input type="date" class="form-control" id="fin_objectif" name="fin_objectif" required />
+                    </div>
+                    <button type="submit" class="btn primary-button">Ajouter</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal pour modifier une évaluation -->
+          {% for perf in performances %}
+          <div class="modal fade" id="editPerformanceModal{{ perf.id }}" tabindex="-1" aria-labelledby="editPerformanceModalLabel{{ perf.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="editPerformanceModalLabel{{ perf.id }}">Modifier l'évaluation</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="edit_performance" />
+                    <input type="hidden" name="performance_id" value="{{ perf.id }}" />
+                    <div class="mb-3">
+                      <label for="edit_employe{{ perf.id }}" class="form-label">Employé</label>
+                      <select class="form-select" id="edit_employe{{ perf.id }}" name="employe_id" required onchange="updateEditDepartement('{{ perf.id }}')">
+                        <option value="">Sélectionner un employé</option>
+                        {% for emp in employes %}
+                        <option value="{{ emp.id }}" data-departement="{{ emp.departement }}">{{ emp.nom }} {{ emp.prenom }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label for="edit_departement{{ perf.id }}" class="form-label">Département</label>
+                      <input type="text" class="form-control" id="edit_departement{{ perf.id }}" readonly />
+                    </div>
+                    <div class="mb-3">
+                      <label for="edit_objectif{{ perf.id }}" class="form-label">Objectif</label>
+                      <input type="text" class="form-control" id="edit_objectif{{ perf.id }}" name="objectif" required />
+                    </div>
+                    <div class="mb-3">
+                      <label for="edit_score{{ perf.id }}" class="form-label">Score (%)</label>
+                      <input type="number" class="form-control" id="edit_score{{ perf.id }}" name="score" min="0" max="100" step="0.01" required />
+                    </div>
+                    <div class="mb-3">
+                      <label for="edit_commentaire{{ perf.id }}" class="form-label">Commentaire</label>
+                      <textarea class="form-control" id="edit_commentaire{{ perf.id }}" name="commentaire"></textarea>
+                    </div>
+                    <div class="mb-3">
+                      <label for="edit_debut_objectif{{ perf.id }}" class="form-label">Début objectif</label>
+                      <input type="date" class="form-control" id="edit_debut_objectif{{ perf.id }}" name="debut_objectif" required />
+                    </div>
+                    <div class="mb-3">
+                      <label for="edit_fin_objectif{{ perf.id }}" class="form-label">Fin objectif</label>
+                      <input type="date" class="form-control" id="edit_fin_objectif{{ perf.id }}" name="fin_objectif" required />
+                    </div>
+                    <button type="submit" class="btn primary-button">Enregistrer</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Modal pour supprimer une évaluation -->
+          <div class="modal fade" id="deletePerformanceModal{{ perf.id }}" tabindex="-1" aria-labelledby="deletePerformanceModalLabel{{ perf.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="deletePerformanceModalLabel{{ perf.id }}">Confirmer la suppression</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Êtes-vous sûr de vouloir supprimer l'évaluation de {{ perf.employe_nom }} pour l'objectif "{{ perf.objectif }}" ?
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_performance" />
+                    <input type="hidden" name="performance_id" value="{{ perf.id }}" />
+                    <button type="submit" class="btn btnDanger">Supprimer</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
         </div>
       </div>
     </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Include JS -->
+    <!-- Custom JS -->
     <script src="{% static 'js/dashboard.js' %}"></script>
+
+    <!-- JavaScript pour la recherche et les modals -->
+    <script>
+      // Recherche dans le tableau
+      document.getElementById('searchInput').addEventListener('input', function () {
+        const searchValue = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#performanceTable tr');
+        rows.forEach(row => {
+          const employe = row.cells[0].textContent.toLowerCase();
+          const departement = row.cells[1].textContent.toLowerCase();
+          const objectif = row.cells[2].textContent.toLowerCase();
+          if (employe.includes(searchValue) || departement.includes(searchValue) || objectif.includes(searchValue)) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
+
+      // Mettre à jour le département dans le modal d'ajout
+      function updateDepartement() {
+        const select = document.getElementById('employe');
+        const departementInput = document.getElementById('departement');
+        const selectedOption = select.options[select.selectedIndex];
+        departementInput.value = selectedOption ? selectedOption.getAttribute('data-departement') : '';
+      }
+
+      // Mettre à jour le département dans le modal de modification
+      function updateEditDepartement(performanceId) {
+        const select = document.getElementById(`edit_employe${performanceId}`);
+        const departementInput = document.getElementById(`edit_departement${performanceId}`);
+        const selectedOption = select.options[select.selectedIndex];
+        departementInput.value = selectedOption ? selectedOption.getAttribute('data-departement') : '';
+      }
+
+      // Remplir le modal de modification
+      function fillEditModal(id, employe_id, departement, objectif, score, commentaire, debut_objectif, fin_objectif) {
+        document.getElementById(`edit_employe${id}`).value = employe_id;
+        document.getElementById(`edit_departement${id}`).value = departement;
+        document.getElementById(`edit_objectif${id}`).value = objectif;
+        document.getElementById(`edit_score${id}`).value = score;
+        document.getElementById(`edit_commentaire${id}`).value = commentaire;
+        document.getElementById(`edit_debut_objectif${id}`).value = debut_objectif;
+        document.getElementById(`edit_fin_objectif${id}`).value = fin_objectif;
+      }
+    </script>
   </body>
 </html>

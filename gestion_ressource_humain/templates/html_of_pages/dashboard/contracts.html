@@ -3,13 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Main dashboard</title>
+    <title>Gestion des Contrats</title>
     {% load static %}
 
     <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
       rel="stylesheet"
+      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+      crossorigin="anonymous"
     />
 
     <!-- Bootstrap Icons -->
@@ -22,24 +24,29 @@
     <link rel="stylesheet" href="{% static 'css/dashboard/dashboard.css' %}" />
   </head>
   <body>
-    <!-- START SIDEBAR -->
     <div class="container-fluid">
       {% include 'html_of_pages/dashboard/sidebar.html' %}
       <div class="content contrat-content">
         <div class="container">
+          <!-- Messages -->
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{% if message.tags == 'success' %}success{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+
           <!-- En-tête -->
-          <div
-            class="d-flex justify-content-between align-items-center mb-4 mt-3"
-          >
-            <div>
-              <h1 class="h2">
-                <i class="bi bi-briefcase-fill me-2"></i>
-                Gestion des Contrats
-              </h1>
-              <p class="text-muted">
-                Consultez et gérez les informations des contrats de TeamCore.
-              </p>
-            </div>
+          <div class="mb-4 mt-3">
+            <h1 class="h2">
+              <i class="bi bi-briefcase-fill me-2"></i>
+              Gestion des Contrats
+            </h1>
+            <p class="text-muted">
+              Consultez, modifiez, ajoutez ou supprimez les contrats de TeamCore.
+            </p>
           </div>
 
           <!-- Statistiques -->
@@ -50,74 +57,71 @@
                   <i class="bi bi-file-earmark-text text-primary fs-1"></i>
                   <div>
                     <h6 class="text-muted mb-0">Contrats totaux</h6>
-                    <h4 class="fw-bold mb-0">58</h4>
+                    <h4 class="fw-bold mb-0">{{ total_contrats }}</h4>
                   </div>
                 </div>
               </div>
             </div>
-
             <div class="col-md-6 col-xl-3">
               <div class="card card-100 shadow-sm border-0 p-3">
                 <div class="d-flex align-items-center gap-3">
                   <i class="bi bi-check2-circle text-success fs-1"></i>
                   <div>
                     <h6 class="text-muted mb-0">Actifs</h6>
-                    <h4 class="fw-bold mb-0">43</h4>
+                    <h4 class="fw-bold mb-0">{{ actifs }}</h4>
                   </div>
                 </div>
               </div>
             </div>
-
             <div class="col-md-6 col-xl-3">
               <div class="card card-100 shadow-sm border-0 p-3">
                 <div class="d-flex align-items-center gap-3">
                   <i class="bi bi-calendar-x text-danger fs-1"></i>
                   <div>
                     <h6 class="text-muted mb-0">Expirés</h6>
-                    <h4 class="fw-bold mb-0">12</h4>
+                    <h4 class="fw-bold mb-0">{{ expires }}</h4>
                   </div>
                 </div>
               </div>
             </div>
-
             <div class="col-md-6 col-xl-3">
               <div class="card card-100 shadow-sm border-0 p-3">
                 <div class="d-flex align-items-center gap-3">
                   <i class="bi bi-clock text-warning fs-1"></i>
                   <div>
                     <h6 class="text-muted mb-0">À expirer</h6>
-                    <h4 class="fw-bold mb-0">3</h4>
+                    <h4 class="fw-bold mb-0">{{ a_expirer }}</h4>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Bouton Ajouter -->
-          <div class="mb-3">
-            <button class="btn primary-button">
-              <i class="bi bi-plus-circle me-2"></i>
-              Ajouter un contrat
+          <!-- Bouton Ajouter un contrat -->
+          <div class="mb-4">
+            <button class="btn primary-button" data-bs-toggle="modal" data-bs-target="#addContratModal">
+              <i class="bi bi-plus-circle me-2"></i>Ajouter un contrat
             </button>
-            <!--ici tu dois juste modifier de la table employee !!!-->
           </div>
 
           <!-- Tableau des contrats -->
           <div class="card shadow-sm">
             <div class="card-body">
-              <div
-                class="d-flex justify-content-between align-items-center mb-3"
-              >
+              <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="card-title">
                   <i class="bi bi-list-check me-2"></i>
                   Liste des Contrats
                 </h5>
                 <div class="search-table">
-                  <input
-                    type="text"
-                    placeholder="Rechercher..."
-                    class="border-0"
-                  />
+                  <form method="get">
+                    <input
+                      type="text"
+                      name="search"
+                      placeholder="Rechercher..."
+                      class="border-0"
+                      value="{{ search_query }}"
+                    />
+                  </form>
                 </div>
               </div>
               <div class="table-responsive">
@@ -130,58 +134,197 @@
                       <th>Date début</th>
                       <th>Date fin</th>
                       <th>Salaire</th>
+                      <th>Congés</th>
                       <th>Statut</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <!-- Exemple statique (sera remplacé dynamiquement) -->
+                    {% for contrat in contrats_data %}
                     <tr>
-                      <td class="fw-bold">C001</td>
-                      <td>Ahmed Benali</td>
-                      <td>CDI</td>
-                      <td>01/03/2023</td>
-                      <td>--</td>
-                      <td>45 000 €</td>
-                      <td><span class="badge textSuccess">Actif</span></td>
+                      <td class="fw-bold">{{ contrat.contract_id }}</td>
+                      <td>{{ contrat.employe_nom }}</td>
+                      <td>{{ contrat.type }}</td>
+                      <td>{{ contrat.date_embauche }}</td>
+                      <td>{{ contrat.date_fin }}</td>
+                      <td>{{ contrat.salaire }}</td>
+                      <td>{{ contrat.leave_entitlement }} jours</td>
                       <td>
-                        <a href="#" class="btn btnDanger btn-sm me-1">
-                          <i class="bi bi-archive-fill"></i>
-                        </a>
-                        <a href="#" class="btn btnInfo btn-sm">
+                        <span class="badge fabricateBadge {% if contrat.statut == 'Actif' %}textSuccess{% elif contrat.statut == 'Expiré' %}textFailed{% else %}textWarning{% endif %}">
+                          {{ contrat.statut }}
+                        </span>
+                      </td>
+                      <td>
+                        <button class="btn btnInfo btn-sm me-1" data-bs-toggle="modal" data-bs-target="#contratModal" 
+                                onclick="fillForm('{{ contrat.contract_id }}', '{{ contrat.employe_nom }}', '{{ contrat.type }}', '{{ contrat.date_embauche }}', '{{ contrat.date_fin }}', '{{ contrat.salaire }}', '{{ contrat.leave_entitlement }}')">
                           <i class="bi bi-pencil"></i>
-                        </a>
+                        </button>
+                        <form action="{% url 'contracts' %}" method="post" style="display:inline;">
+                          {% csrf_token %}
+                          <input type="hidden" name="action" value="delete">
+                          <input type="hidden" name="contrat_id" value="{{ contrat.contract_id }}">
+                          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer ce contrat ?')">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </form>
                       </td>
                     </tr>
+                    {% empty %}
                     <tr>
-                      <td class="fw-bold">C002</td>
-                      <td>Sara Zouhair</td>
-                      <td>Stage</td>
-                      <td>15/01/2024</td>
-                      <td>15/04/2024</td>
-                      <td>0 €</td>
-                      <td><span class="badge textFailed">Expiré</span></td>
-                      <td>
-                        <a href="#" class="btn btnDanger btn-sm me-1">
-                          <i class="bi bi-archive-fill"></i>
-                        </a>
-                        <a href="#" class="btn btnInfo btn-sm">
-                          <i class="bi bi-pencil"></i>
-                        </a>
-                      </td>
+                      <td colspan="9">Aucun contrat trouvé.</td>
                     </tr>
+                    {% endfor %}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal pour Modifier -->
+          <div class="modal fade" id="contratModal" tabindex="-1" aria-labelledby="contratModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="contratModalLabel">Modifier un Contrat</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'contracts' %}" method="post">
+                  {% csrf_token %}
+                  <div class="modal-body">
+                    <input type="hidden" name="action" value="edit">
+                    <input type="hidden" name="contrat_id" id="contratId">
+                    <div class="mb-3">
+                      <label for="employe" class="form-label">Employé</label>
+                      <p id="employe" class="form-control-static"></p>
+                    </div>
+                    <div class="mb-3">
+                      <label for="type_contrat" class="form-label">Type de contrat</label>
+                      <select class="form-control" id="type_contrat" name="type_contrat" required>
+                        <option value="">Sélectionner un type</option>
+                        {% for type_choice in type_choices %}
+                          <option value="{{ type_choice.0 }}">{{ type_choice.1 }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label for="date_debut" class="form-label">Date de début</label>
+                      <input type="date" class="form-control" id="date_debut" name="date_debut" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="date_fin" class="form-label">Date de fin (facultatif)</label>
+                      <input type="date" class="form-control" id="date_fin" name="date_fin">
+                    </div>
+                    <div class="mb-3">
+                      <label for="salaire" class="form-label">Salaire (€, facultatif)</label>
+                      <input type="number" class="form-control" id="salaire" name="salaire" step="0.01">
+                    </div>
+                    <div class="mb-3">
+                      <label for="leave_entitlement" class="form-label">Jours de congé annuels</label>
+                      <input type="number" class="form-control" id="leave_entitlement" name="leave_entitlement" required>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn primary-button">Enregistrer</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal pour Ajouter -->
+          <div class="modal fade" id="addContratModal" tabindex="-1" aria-labelledby="addContratModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="addContratModalLabel">Ajouter un Contrat</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'contracts' %}" method="post">
+                  {% csrf_token %}
+                  <div class="modal-body">
+                    <input type="hidden" name="action" value="add">
+                    <div class="mb-3">
+                      <label for="employe_id" class="form-label">Employé</label>
+                      <select class="form-control" id="employe_id" name="employe_id" required>
+                        <option value="">Sélectionner un employé</option>
+                        {% for employe in employes_sans_contrat %}
+                          <option value="{{ employe.id }}">{{ employe.nom }} {{ employe.prenom }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label for="add_type_contrat" class="form-label">Type de contrat</label>
+                      <select class="form-control" id="add_type_contrat" name="type_contrat" required>
+                        <option value="">Sélectionner un type</option>
+                        {% for type_choice in type_choices %}
+                          <option value="{{ type_choice.0 }}">{{ type_choice.1 }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label for="add_date_debut" class="form-label">Date de début</label>
+                      <input type="date" class="form-control" id="add_date_debut" name="date_debut" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="add_date_fin" class="form-label">Date de fin (facultatif)</label>
+                      <input type="date" class="form-control" id="add_date_fin" name="date_fin">
+                    </div>
+                    <div class="mb-3">
+                      <label for="add_salaire" class="form-label">Salaire (€, facultatif)</label>
+                      <input type="number" class="form-control" id="add_salaire" name="salaire" step="0.01">
+                    </div>
+                    <div class="mb-3">
+                      <label for="add_leave_entitlement" class="form-label">Jours de congé annuels</label>
+                      <input type="number" class="form-control" id="add_leave_entitlement" name="leave_entitlement" required value="25">
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn primary-button">Ajouter</button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Include JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" 
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" 
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" 
+            crossorigin="anonymous"></script>
+    <!-- Custom JS -->
     <script src="{% static 'js/dashboard.js' %}"></script>
+
+    <!-- JavaScript pour gérer le modal et la recherche -->
+    <script>
+      function fillForm(contract_id, employe_nom, type, date_embauche, date_fin, salaire, leave_entitlement) {
+        document.getElementById('contratId').value = contract_id || '';
+        document.getElementById('employe').textContent = employe_nom || '';
+        document.getElementById('type_contrat').value = type || '';
+        document.getElementById('date_debut').value = date_embauche !== 'Non défini' ? date_embauche : '';
+        document.getElementById('date_fin').value = date_fin !== '--' ? date_fin : '';
+        document.getElementById('salaire').value = salaire && salaire !== 'Non spécifié' ? parseFloat(salaire) : '';
+        document.getElementById('leave_entitlement').value = leave_entitlement || '';
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.querySelector('.search-table input');
+        let timeout = null;
+        if (searchInput) {
+          searchInput.addEventListener('input', function () {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+              this.form.submit();
+            }, 500);
+          });
+        }
+      });
+    </script>
   </body>
 </html>
