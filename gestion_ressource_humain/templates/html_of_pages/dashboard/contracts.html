@@ -29,14 +29,20 @@
       <div class="content contrat-content">
         <div class="container">
           <!-- Messages -->
-          {% if messages %}
-            {% for message in messages %}
-              <div class="alert alert-{% if message.tags == 'success' %}success{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-            {% endfor %}
-          {% endif %}
+          {% if messages %} {% for message in messages %}
+          <div
+            class="alert alert-{% if message.tags == 'success' %}success{% else %}danger{% endif %} alert-dismissible fade show"
+            role="alert"
+          >
+            {{ message }}
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+          </div>
+          {% endfor %} {% endif %}
 
           <!-- En-tête -->
           <div class="mb-4 mt-3">
@@ -45,7 +51,8 @@
               Gestion des Contrats
             </h1>
             <p class="text-muted">
-              Consultez, modifiez, ajoutez ou supprimez les contrats de TeamCore.
+              Consultez, modifiez, ajoutez ou supprimez les contrats de
+              TeamCore.
             </p>
           </div>
 
@@ -99,7 +106,11 @@
 
           <!-- Bouton Ajouter un contrat -->
           <div class="mb-4">
-            <button class="btn primary-button" data-bs-toggle="modal" data-bs-target="#addContratModal">
+            <button
+              class="btn primary-button"
+              data-bs-toggle="modal"
+              data-bs-target="#addContratModal"
+            >
               <i class="bi bi-plus-circle me-2"></i>Ajouter un contrat
             </button>
           </div>
@@ -107,7 +118,9 @@
           <!-- Tableau des contrats -->
           <div class="card shadow-sm">
             <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center mb-3">
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
                 <h5 class="card-title">
                   <i class="bi bi-list-check me-2"></i>
                   Liste des Contrats
@@ -150,20 +163,38 @@
                       <td>{{ contrat.salaire }}</td>
                       <td>{{ contrat.leave_entitlement }} jours</td>
                       <td>
-                        <span class="badge fabricateBadge {% if contrat.statut == 'Actif' %}textSuccess{% elif contrat.statut == 'Expiré' %}textFailed{% else %}textWarning{% endif %}">
+                        <span
+                          class="badge fabricateBadge {% if contrat.statut == 'Actif' %}textSuccess{% elif contrat.statut == 'Expiré' %}textFailed{% else %}textWarning{% endif %}"
+                        >
                           {{ contrat.statut }}
                         </span>
                       </td>
                       <td>
-                        <button class="btn btnInfo btn-sm me-1" data-bs-toggle="modal" data-bs-target="#contratModal" 
-                                onclick="fillForm('{{ contrat.contract_id }}', '{{ contrat.employe_nom }}', '{{ contrat.type }}', '{{ contrat.date_embauche }}', '{{ contrat.date_fin }}', '{{ contrat.salaire }}', '{{ contrat.leave_entitlement }}')">
+                        <button
+                          class="btn btnInfo btn-sm me-1"
+                          data-bs-toggle="modal"
+                          data-bs-target="#contratModal"
+                          onclick="fillForm('{{ contrat.contract_id }}', '{{ contrat.employe_nom }}', '{{ contrat.type }}', '{{ contrat.date_embauche }}', '{{ contrat.date_fin }}', '{{ contrat.salaire }}', '{{ contrat.leave_entitlement }}')"
+                        >
                           <i class="bi bi-pencil"></i>
                         </button>
-                        <form action="{% url 'contracts' %}" method="post" style="display:inline;">
+                        <form
+                          action="{% url 'contracts' %}"
+                          method="post"
+                          style="display: inline"
+                        >
                           {% csrf_token %}
-                          <input type="hidden" name="action" value="delete">
-                          <input type="hidden" name="contrat_id" value="{{ contrat.contract_id }}">
-                          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer ce contrat ?')">
+                          <input type="hidden" name="action" value="delete" />
+                          <input
+                            type="hidden"
+                            name="contrat_id"
+                            value="{{ contrat.contract_id }}"
+                          />
+                          <button
+                            type="submit"
+                            class="btn btnDanger btn-sm"
+                            onclick="return confirm('Voulez-vous vraiment supprimer ce contrat ?')"
+                          >
                             <i class="bi bi-trash"></i>
                           </button>
                         </form>
@@ -181,51 +212,112 @@
           </div>
 
           <!-- Modal pour Modifier -->
-          <div class="modal fade" id="contratModal" tabindex="-1" aria-labelledby="contratModalLabel" aria-hidden="true">
+          <div
+            class="modal fade"
+            id="contratModal"
+            tabindex="-1"
+            aria-labelledby="contratModalLabel"
+            aria-hidden="true"
+          >
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="contratModalLabel">Modifier un Contrat</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <h5 class="modal-title" id="contratModalLabel">
+                    Modifier un Contrat
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
                 </div>
                 <form action="{% url 'contracts' %}" method="post">
                   {% csrf_token %}
                   <div class="modal-body">
-                    <input type="hidden" name="action" value="edit">
-                    <input type="hidden" name="contrat_id" id="contratId">
+                    <input type="hidden" name="action" value="edit" />
+                    <input type="hidden" name="contrat_id" id="contratId" />
                     <div class="mb-3">
                       <label for="employe" class="form-label">Employé</label>
                       <p id="employe" class="form-control-static"></p>
                     </div>
                     <div class="mb-3">
-                      <label for="type_contrat" class="form-label">Type de contrat</label>
-                      <select class="form-control" id="type_contrat" name="type_contrat" required>
+                      <label for="type_contrat" class="form-label"
+                        >Type de contrat</label
+                      >
+                      <select
+                        class="form-control"
+                        id="type_contrat"
+                        name="type_contrat"
+                        required
+                      >
                         <option value="">Sélectionner un type</option>
                         {% for type_choice in type_choices %}
-                          <option value="{{ type_choice.0 }}">{{ type_choice.1 }}</option>
+                        <option value="{{ type_choice.0 }}">
+                          {{ type_choice.1 }}
+                        </option>
                         {% endfor %}
                       </select>
                     </div>
                     <div class="mb-3">
-                      <label for="date_debut" class="form-label">Date de début</label>
-                      <input type="date" class="form-control" id="date_debut" name="date_debut" required>
+                      <label for="date_debut" class="form-label"
+                        >Date de début</label
+                      >
+                      <input
+                        type="date"
+                        class="form-control"
+                        id="date_debut"
+                        name="date_debut"
+                        required
+                      />
                     </div>
                     <div class="mb-3">
-                      <label for="date_fin" class="form-label">Date de fin (facultatif)</label>
-                      <input type="date" class="form-control" id="date_fin" name="date_fin">
+                      <label for="date_fin" class="form-label"
+                        >Date de fin (facultatif)</label
+                      >
+                      <input
+                        type="date"
+                        class="form-control"
+                        id="date_fin"
+                        name="date_fin"
+                      />
                     </div>
                     <div class="mb-3">
-                      <label for="salaire" class="form-label">Salaire (€, facultatif)</label>
-                      <input type="number" class="form-control" id="salaire" name="salaire" step="0.01">
+                      <label for="salaire" class="form-label"
+                        >Salaire (€, facultatif)</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="salaire"
+                        name="salaire"
+                        step="0.01"
+                      />
                     </div>
                     <div class="mb-3">
-                      <label for="leave_entitlement" class="form-label">Jours de congé annuels</label>
-                      <input type="number" class="form-control" id="leave_entitlement" name="leave_entitlement" required>
+                      <label for="leave_entitlement" class="form-label"
+                        >Jours de congé annuels</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="leave_entitlement"
+                        name="leave_entitlement"
+                        required
+                      />
                     </div>
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn primary-button">Enregistrer</button>
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Annuler
+                    </button>
+                    <button type="submit" class="btn primary-button">
+                      Enregistrer
+                    </button>
                   </div>
                 </form>
               </div>
@@ -233,55 +325,124 @@
           </div>
 
           <!-- Modal pour Ajouter -->
-          <div class="modal fade" id="addContratModal" tabindex="-1" aria-labelledby="addContratModalLabel" aria-hidden="true">
+          <div
+            class="modal fade"
+            id="addContratModal"
+            tabindex="-1"
+            aria-labelledby="addContratModalLabel"
+            aria-hidden="true"
+          >
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="addContratModalLabel">Ajouter un Contrat</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <h5 class="modal-title" id="addContratModalLabel">
+                    Ajouter un Contrat
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
                 </div>
                 <form action="{% url 'contracts' %}" method="post">
                   {% csrf_token %}
                   <div class="modal-body">
-                    <input type="hidden" name="action" value="add">
+                    <input type="hidden" name="action" value="add" />
                     <div class="mb-3">
                       <label for="employe_id" class="form-label">Employé</label>
-                      <select class="form-control" id="employe_id" name="employe_id" required>
+                      <select
+                        class="form-control"
+                        id="employe_id"
+                        name="employe_id"
+                        required
+                      >
                         <option value="">Sélectionner un employé</option>
                         {% for employe in employes_sans_contrat %}
-                          <option value="{{ employe.id }}">{{ employe.nom }} {{ employe.prenom }}</option>
+                        <option value="{{ employe.id }}">
+                          {{ employe.nom }} {{ employe.prenom }}
+                        </option>
                         {% endfor %}
                       </select>
                     </div>
                     <div class="mb-3">
-                      <label for="add_type_contrat" class="form-label">Type de contrat</label>
-                      <select class="form-control" id="add_type_contrat" name="type_contrat" required>
+                      <label for="add_type_contrat" class="form-label"
+                        >Type de contrat</label
+                      >
+                      <select
+                        class="form-control"
+                        id="add_type_contrat"
+                        name="type_contrat"
+                        required
+                      >
                         <option value="">Sélectionner un type</option>
                         {% for type_choice in type_choices %}
-                          <option value="{{ type_choice.0 }}">{{ type_choice.1 }}</option>
+                        <option value="{{ type_choice.0 }}">
+                          {{ type_choice.1 }}
+                        </option>
                         {% endfor %}
                       </select>
                     </div>
                     <div class="mb-3">
-                      <label for="add_date_debut" class="form-label">Date de début</label>
-                      <input type="date" class="form-control" id="add_date_debut" name="date_debut" required>
+                      <label for="add_date_debut" class="form-label"
+                        >Date de début</label
+                      >
+                      <input
+                        type="date"
+                        class="form-control"
+                        id="add_date_debut"
+                        name="date_debut"
+                        required
+                      />
                     </div>
                     <div class="mb-3">
-                      <label for="add_date_fin" class="form-label">Date de fin (facultatif)</label>
-                      <input type="date" class="form-control" id="add_date_fin" name="date_fin">
+                      <label for="add_date_fin" class="form-label"
+                        >Date de fin (facultatif)</label
+                      >
+                      <input
+                        type="date"
+                        class="form-control"
+                        id="add_date_fin"
+                        name="date_fin"
+                      />
                     </div>
                     <div class="mb-3">
-                      <label for="add_salaire" class="form-label">Salaire (€, facultatif)</label>
-                      <input type="number" class="form-control" id="add_salaire" name="salaire" step="0.01">
+                      <label for="add_salaire" class="form-label"
+                        >Salaire (€, facultatif)</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="add_salaire"
+                        name="salaire"
+                        step="0.01"
+                      />
                     </div>
                     <div class="mb-3">
-                      <label for="add_leave_entitlement" class="form-label">Jours de congé annuels</label>
-                      <input type="number" class="form-control" id="add_leave_entitlement" name="leave_entitlement" required value="25">
+                      <label for="add_leave_entitlement" class="form-label"
+                        >Jours de congé annuels</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="add_leave_entitlement"
+                        name="leave_entitlement"
+                        required
+                        value="25"
+                      />
                     </div>
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn primary-button">Ajouter</button>
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Annuler
+                    </button>
+                    <button type="submit" class="btn primary-button">
+                      Ajouter
+                    </button>
                   </div>
                 </form>
               </div>
@@ -292,32 +453,48 @@
     </div>
 
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" 
-            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" 
-            crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" 
-            integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" 
-            crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+      crossorigin="anonymous"
+    ></script>
     <!-- Custom JS -->
     <script src="{% static 'js/dashboard.js' %}"></script>
 
     <!-- JavaScript pour gérer le modal et la recherche -->
     <script>
-      function fillForm(contract_id, employe_nom, type, date_embauche, date_fin, salaire, leave_entitlement) {
-        document.getElementById('contratId').value = contract_id || '';
-        document.getElementById('employe').textContent = employe_nom || '';
-        document.getElementById('type_contrat').value = type || '';
-        document.getElementById('date_debut').value = date_embauche !== 'Non défini' ? date_embauche : '';
-        document.getElementById('date_fin').value = date_fin !== '--' ? date_fin : '';
-        document.getElementById('salaire').value = salaire && salaire !== 'Non spécifié' ? parseFloat(salaire) : '';
-        document.getElementById('leave_entitlement').value = leave_entitlement || '';
+      function fillForm(
+        contract_id,
+        employe_nom,
+        type,
+        date_embauche,
+        date_fin,
+        salaire,
+        leave_entitlement,
+      ) {
+        document.getElementById("contratId").value = contract_id || "";
+        document.getElementById("employe").textContent = employe_nom || "";
+        document.getElementById("type_contrat").value = type || "";
+        document.getElementById("date_debut").value =
+          date_embauche !== "Non défini" ? date_embauche : "";
+        document.getElementById("date_fin").value =
+          date_fin !== "--" ? date_fin : "";
+        document.getElementById("salaire").value =
+          salaire && salaire !== "Non spécifié" ? parseFloat(salaire) : "";
+        document.getElementById("leave_entitlement").value =
+          leave_entitlement || "";
       }
 
-      document.addEventListener('DOMContentLoaded', function () {
-        const searchInput = document.querySelector('.search-table input');
+      document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.querySelector(".search-table input");
         let timeout = null;
         if (searchInput) {
-          searchInput.addEventListener('input', function () {
+          searchInput.addEventListener("input", function () {
             clearTimeout(timeout);
             timeout = setTimeout(() => {
               this.form.submit();

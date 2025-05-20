@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -40,6 +40,36 @@
             </div>
           </div>
 
+          <!-- Messages -->
+          <div id="message-container">
+            {% if messages %} {% for message in messages %}
+            <div
+              class="alert alert-{{ message.tags }} alert-dismissible fade show"
+              role="alert"
+            >
+              {{ message }}
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+              ></button>
+            </div>
+            {% endfor %} {% endif %}
+          </div>
+
+          <!-- Remaining Days Display -->
+          <div class="alert alert-info mb-4">
+            <i class="bi bi-info-circle me-2"></i>
+            Jours de congé restants :
+            <span id="remainingDays">{{ remaining_days }}</span>
+            (sur {{ employee.contrat.leave_entitlement|default:25 }} jours
+            alloués) {% if pending_days > 0 %}
+            <br />
+            <i class="bi bi-hourglass-split me-2"></i>
+            Jours en attente d'approbation : {{ pending_days }} {% endif %}
+          </div>
+
           <!-- Formulaire de demande de congé -->
           <div class="card shadow-sm mb-4">
             <div class="card-body">
@@ -47,7 +77,14 @@
                 <i class="bi bi-calendar-check me-2"></i>
                 Nouvelle demande de congé
               </h5>
-              <form method="POST">
+              {% if has_pending_request %}
+              <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Vous avez une demande de congé en attente. Vous ne pouvez pas
+                soumettre une nouvelle demande tant que RH n'a pas répondu à
+                votre demande actuelle.
+              </div>
+              <form method="POST" id="leaveForm" class="disabled-form">
                 {% csrf_token %}
                 <div class="row">
                   <div class="col-md-6 mb-3">
@@ -59,6 +96,49 @@
                       class="form-control"
                       id="start_date"
                       name="start_date"
+                      disabled
+                    />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="end_date" class="form-label">Date de fin</label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="end_date"
+                      name="end_date"
+                      disabled
+                    />
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="reason" class="form-label">Type de congé</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="reason"
+                    name="reason"
+                    placeholder="Ex: Congé annuel, Congé maladie"
+                    disabled
+                  />
+                </div>
+                <button type="submit" class="btn primary-button" disabled>
+                  Soumettre
+                </button>
+              </form>
+              {% else %}
+              <form method="POST" id="leaveForm">
+                {% csrf_token %}
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="start_date" class="form-label">
+                      Date de début
+                    </label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="start_date"
+                      name="start_date"
+                      min="{{ tomorrow_date }}"
                       required
                     />
                   </div>
@@ -69,6 +149,7 @@
                       class="form-control"
                       id="end_date"
                       name="end_date"
+                      min="{{ tomorrow_date }}"
                       required
                     />
                   </div>
@@ -84,14 +165,19 @@
                     required
                   />
                 </div>
+                <div class="mb-3">
+                  <p class="text-muted">
+                    Jours demandés : <span id="requestedDays">0</span>
+                  </p>
+                </div>
                 <button type="submit" class="btn primary-button">
                   Soumettre
                 </button>
               </form>
+              {% endif %}
             </div>
           </div>
 
-          <!-- Historique des demandes -->
           <!-- Historique des demandes -->
           <div class="card shadow-sm">
             <div class="card-body">
@@ -121,7 +207,7 @@
                       <td>{{ employee_conge.conge.type }}</td>
                       <td>
                         <span
-                          class="badge {% if employee_conge.conge.statut == 'EN_ATTENTE' %}text-bg-warning{% elif employee_conge.conge.statut == 'APPROUVE' %}text-bg-success{% else %}text-bg-danger{% endif %}"
+                          class="badge {% if employee_conge.conge.statut == 'EN_ATTENTE' %}textWarning{% elif employee_conge.conge.statut == 'APPROUVE' %}textSuccess{% elif employee_conge.conge.statut == 'EXPIRE' %}text-bg-secondary{% else %}textFailed{% endif %}"
                         >
                           {{ employee_conge.conge.statut }}
                         </span>
@@ -149,5 +235,73 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Include JS -->
     <script src="{% static 'js/dashboard.js' %}"></script>
+    <!-- Custom JavaScript for leave validation and dynamic updates -->
+    <script>
+      {% if not has_pending_request %}
+      const startDateInput = document.getElementById('start_date');
+      const endDateInput = document.getElementById('end_date');
+      const requestedDaysSpan = document.getElementById('requestedDays');
+      const remainingDays = {{ remaining_days }};
+      const form = document.getElementById('leaveForm');
+      const tomorrow = new Date('{{ tomorrow_date }}');
+      const messageContainer = document.getElementById('message-container');
+
+      // Function to display error messages as Bootstrap alerts
+      function showErrorMessage(message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+        alertDiv.role = 'alert';
+        alertDiv.innerHTML = `
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        messageContainer.appendChild(alertDiv);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function updateRequestedDays() {
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+        if (startDate && endDate && !isNaN(startDate) && !isNaN(endDate)) {
+          const diffTime = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+          requestedDaysSpan.textContent = diffTime > 0 ? diffTime : 0;
+        } else {
+          requestedDaysSpan.textContent = 0;
+        }
+      }
+
+      startDateInput.addEventListener('change', updateRequestedDays);
+      endDateInput.addEventListener('change', updateRequestedDays);
+
+      form.addEventListener('submit', function(e) {
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+        const diffTime = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+        if (startDate < tomorrow) {
+          e.preventDefault();
+          showErrorMessage("Erreur : La date de début doit être à partir de demain ({{ tomorrow_date|date:'d/m/Y' }}).");
+          return;
+        }
+        if (endDate < tomorrow) {
+          e.preventDefault();
+          showErrorMessage("Erreur : La date de fin doit être à partir de demain ({{ tomorrow_date|date:'d/m/Y' }}).");
+          return;
+        }
+
+        if (endDate < startDate) {
+          e.preventDefault();
+          showErrorMessage("Erreur : La date de fin ne peut pas être antérieure à la date de début.");
+          return;
+        }
+
+        if (diffTime > remainingDays) {
+          e.preventDefault();
+          showErrorMessage(`Erreur : Vous avez demandé ${diffTime} jours, mais il ne vous reste que ${remainingDays} jours de congé.`);
+          return;
+        }
+      });
+      {% endif %}
+    </script>
   </body>
 </html>

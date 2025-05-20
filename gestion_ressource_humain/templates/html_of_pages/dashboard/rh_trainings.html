@@ -151,13 +151,13 @@
                         {% with registered_employees=training.trainingregistration_set.all|length %}
                         <!-- prettier-ignore -->
                         {% if registered_employees > 0 %}
-                        <span class="badge bg-success text-white me-2">
+                        <span class="badge textSuccess text-white me-2">
                           {{ registered_employees }}
                           inscrit{{registered_employees|pluralize }}
                         </span>
                         <!-- prettier-ignore -->
                         {% else %}
-                        <span class="badge bg-danger text-white me-2">
+                        <span class="badge textFailed text-white me-2">
                           {{ registered_employees }}
                           inscrit{{registered_employees|pluralize }}
                         </span>
@@ -465,10 +465,10 @@
     <script>
       // Recherche dans le tableau des formations
       document
-        .getElementById('trainingSearchInput')
-        .addEventListener('input', function () {
+        .getElementById("trainingSearchInput")
+        .addEventListener("input", function () {
           const searchValue = this.value.toLowerCase();
-          const rows = document.querySelectorAll('#trainingTable tr');
+          const rows = document.querySelectorAll("#trainingTable tr");
           rows.forEach((row) => {
             const title = row.cells[0].textContent.toLowerCase();
             const description = row.cells[1].textContent.toLowerCase();
@@ -476,9 +476,9 @@
               title.includes(searchValue) ||
               description.includes(searchValue)
             ) {
-              row.style.display = '';
+              row.style.display = "";
             } else {
-              row.style.display = 'none';
+              row.style.display = "none";
             }
           });
         });

@@ -165,19 +165,22 @@ class EmployeConge(models.Model):
 
 # 5. Offre d'Emploi
 class OffreEmploi(models.Model):
-    titre = models.CharField(max_length=255, default="Offre sans titre")  # Valeur par défaut
-    description = models.TextField(default="Aucune description")  # Valeur par défaut
-    date_publication = models.DateField(default=date.today)  # Valeur par défaut
-    date_expiration = models.DateField(default=date.today)  # Valeur par défaut
-    departement = models.ForeignKey(Departement, on_delete=models.CASCADE, null=True)  # Nullable temporairement
-    statut = models.CharField(
-        max_length=50,
-        choices=[('OUVERTE', 'Ouverte'), ('FERMEE', 'Fermée')],
-        default='OUVERTE'  # Valeur par défaut
-    )
+    STATUT_CHOICES = [
+        ('OUVERTE', 'Ouverte'),
+        ('FERMEE', 'Fermée'),
+    ]
+
+    titre = models.CharField(max_length=100)
+    description = models.TextField()
+    date_publication = models.DateField()
+    date_expiration = models.DateField()
+    competences_requises = models.TextField(blank=True, null=True, help_text="Compétences requises pour le poste.")
+    salaire = models.CharField(max_length=50, blank=True, null=True, help_text="Salaire proposé (ex. 30k-40k EUR/an).")
+    departement = models.ForeignKey(Departement, on_delete=models.CASCADE)
+    statut = models.CharField(max_length=10, choices=STATUT_CHOICES, default='OUVERTE')
 
     def __str__(self):
-        return f"{self.titre} - {self.departement.nom if self.departement else 'Inconnu'}"
+        return self.titre
 
     class Meta:
         verbose_name = "Offre d'emploi"

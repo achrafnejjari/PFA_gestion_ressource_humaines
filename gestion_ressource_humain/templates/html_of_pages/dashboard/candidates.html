@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Main dashboard</title>
+    <title>Gestion des Candidats</title>
     {% load static %}
 
     <!-- Bootstrap CSS -->
@@ -38,71 +38,28 @@
               </h1>
               <p class="text-muted">
                 Consultez et gérez les informations des candidats des offres
-                d'emplois de TeamCore.
+                d'emplois.
               </p>
             </div>
           </div>
 
-          <!-- Statistiques -->
-          <div class="row g-4 mb-4">
-            <div class="col-md-6 col-xl-3">
-              <div class="card card-100 shadow-sm border-0 p-3">
-                <div class="d-flex align-items-center gap-3">
-                  <i class="bi bi-person-plus-fill text-primary fs-1"></i>
-                  <div>
-                    <h6 class="text-muted mb-0">Candidats totaux</h6>
-                    <h4 class="fw-bold mb-0">42</h4>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-6 col-xl-3">
-              <div class="card card-100 shadow-sm border-0 p-3">
-                <div class="d-flex align-items-center gap-3">
-                  <i class="bi bi-briefcase text-success fs-1"></i>
-                  <div>
-                    <h6 class="text-muted mb-0">Postes ouverts</h6>
-                    <h4 class="fw-bold mb-0">6</h4>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-6 col-xl-3">
-              <div class="card card-100 shadow-sm border-0 p-3">
-                <div class="d-flex align-items-center gap-3">
-                  <i class="bi bi-envelope-check text-warning fs-1"></i>
-                  <div>
-                    <h6 class="text-muted mb-0">Sélectionnés</h6>
-                    <h4 class="fw-bold mb-0">9</h4>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-6 col-xl-3">
-              <div class="card card-100 shadow-sm border-0 p-3">
-                <div class="d-flex align-items-center gap-3">
-                  <i class="bi bi-x-circle text-danger fs-1"></i>
-                  <div>
-                    <h6 class="text-muted mb-0">Rejetés</h6>
-                    <h4 class="fw-bold mb-0">5</h4>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <!-- Messages -->
+          {% if messages %} {% for message in messages %}
+          <div
+            class="alert alert-{{ message.tags }} alert-dismissible fade show"
+            role="alert"
+          >
+            {{ message }}
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
           </div>
+          {% endfor %} {% endif %}
 
-          <!-- Bouton Ajouter -->
-          <div class="mb-3">
-            <button class="btn primary-button">
-              <i class="bi bi-plus-circle me-2"></i>
-              Ajouter un candidat
-            </button>
-          </div>
-
-          <!-- Tableau des departements -->
+          <!-- Tableau des candidats -->
           <div class="card shadow-sm">
             <div class="card-body">
               <div
@@ -117,6 +74,7 @@
                     type="text"
                     placeholder="Rechercher..."
                     class="border-0"
+                    id="searchInput"
                   />
                 </div>
               </div>
@@ -129,90 +87,122 @@
                       <th>Prénom</th>
                       <th>Email</th>
                       <th>Téléphone</th>
-                      <th>CV</th>
-                      <th>Date</th>
                       <th>Poste</th>
+                      <th>Date</th>
+                      <th>CV</th>
+                      <th>Statut</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
+                    {% for candidate in page_obj %}
                     <tr>
-                      <td class="fw-bold">C001</td>
-                      <td>Mohamed</td>
-                      <td>El Arabi</td>
-                      <td>mohamed@example.com</td>
-                      <td>+212 600 123 456</td>
+                      <td class="fw-bold">{{ candidate.id }}</td>
+                      <td>{{ candidate.nom }}</td>
+                      <td>{{ candidate.prenom }}</td>
+                      <td>{{ candidate.email }}</td>
+                      <td>{{ candidate.telephone }}</td>
+                      <td>{{ candidate.offre_titre }}</td>
+                      <td>{{ candidate.date_submission }}</td>
                       <td>
-                        <a href="#" class="btn btn-sm btn-outline-secondary">
-                          <i class="bi bi-eye"></i>
-                          Voir CV
+                        {% if candidate.cv_link %}
+                        <a
+                          href="{{ candidate.cv_link }}"
+                          target="_blank"
+                          class="btn btn-sm btn-outline-secondary"
+                        >
+                          <i class="bi bi-eye"></i> Voir CV
                         </a>
+                        {% else %}
+                        <span class="text-muted">Non disponible</span>
+                        {% endif %}
                       </td>
-                      <td>21/04/2025</td>
-                      <td>Développeur Web</td>
                       <td>
-                        <a href="#" class="btn btnDanger btn-sm me-1">
-                          <i class="bi bi-archive-fill"></i>
-                        </a>
-                        <a href="#" class="btn btnInfo btn-sm">
-                          <i class="bi bi-pencil"></i>
-                        </a>
+                        <span
+                          class="badge {% if candidate.statut == 'EN_ATTENTE' %}textWarning{% elif candidate.statut == 'ACCEPTEE' %}textSuccess{% else %}textFailed{% endif %}"
+                        >
+                          {{ candidate.statut }}
+                        </span>
+                      </td>
+                      <td>
+                        <form method="POST" class="d-inline">
+                          {% csrf_token %}
+                          <input type="hidden" name="action" value="approve" />
+                          <input
+                            type="hidden"
+                            name="candidature_id"
+                            value="{{ candidate.id }}"
+                          />
+                          <button
+                            type="submit"
+                            class="btn btn-success btn-sm me-1"
+                          >
+                            <i class="bi bi-check"></i>
+                          </button>
+                        </form>
+                        <form method="POST" class="d-inline">
+                          {% csrf_token %}
+                          <input type="hidden" name="action" value="reject" />
+                          <input
+                            type="hidden"
+                            name="candidature_id"
+                            value="{{ candidate.id }}"
+                          />
+                          <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="bi bi-x"></i>
+                          </button>
+                        </form>
                       </td>
                     </tr>
+                    {% empty %}
                     <tr>
-                      <td class="fw-bold">C001</td>
-                      <td>Mohamed</td>
-                      <td>El Arabi</td>
-                      <td>mohamed@example.com</td>
-                      <td>+212 600 123 456</td>
-                      <td>
-                        <a href="#" class="btn btn-sm btn-outline-secondary">
-                          <i class="bi bi-eye"></i>
-                          Voir CV
-                        </a>
-                      </td>
-                      <td>21/04/2025</td>
-                      <td>Développeur Web</td>
-                      <td>
-                        <a href="#" class="btn btnDanger btn-sm me-1">
-                          <i class="bi bi-archive-fill"></i>
-                        </a>
-                        <a href="#" class="btn btnInfo btn-sm">
-                          <i class="bi bi-pencil"></i>
-                        </a>
+                      <td colspan="10" class="text-center text-muted">
+                        Aucun candidat pour le moment.
                       </td>
                     </tr>
-                    <tr>
-                      <td class="fw-bold">C001</td>
-                      <td>Mohamed</td>
-                      <td>El Arabi</td>
-                      <td>mohamed@example.com</td>
-                      <td>+212 600 123 456</td>
-                      <td>
-                        <a href="#" class="btn btn-sm btn-outline-secondary">
-                          <i class="bi bi-eye"></i>
-                          Voir CV
-                        </a>
-                      </td>
-                      <td>21/04/2025</td>
-                      <td>Développeur Web</td>
-                      <td>
-                        <a href="#" class="btn btnDanger btn-sm me-1">
-                          <i class="bi bi-archive-fill"></i>
-                        </a>
-                        <a href="#" class="btn btnInfo btn-sm">
-                          <i class="bi bi-pencil"></i>
-                        </a>
-                      </td>
-                    </tr>
+                    {% endfor %}
                   </tbody>
                 </table>
               </div>
+
+              <!-- Pagination -->
+              <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mt-4">
+                  {% if page_obj.has_previous %}
+                  <li class="page-item">
+                    <a
+                      class="page-link"
+                      href="?page={{ page_obj.previous_page_number }}"
+                      aria-label="Previous"
+                    >
+                      <span aria-hidden="true">«</span>
+                    </a>
+                  </li>
+                  {% endif %} {% for num in page_obj.paginator.page_range %}
+                  <li
+                    class="page-item {% if page_obj.number == num %}active{% endif %}"
+                  >
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                  </li>
+                  {% endfor %} {% if page_obj.has_next %}
+                  <li class="page-item">
+                    <a
+                      class="page-link"
+                      href="?page={{ page_obj.next_page_number }}"
+                      aria-label="Next"
+                    >
+                      <span aria-hidden="true">»</span>
+                    </a>
+                  </li>
+                  {% endif %}
+                </ul>
+              </nav>
             </div>
           </div>
         </div>
       </div>
     </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

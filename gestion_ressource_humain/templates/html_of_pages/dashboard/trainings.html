@@ -70,7 +70,7 @@
                       <td>{{ training.end_date|date:"d/m/Y" }}</td>
                       <td>
                         {% if training.id in registered_trainings %}
-                        <span class="badge text-bg-success">Inscrit</span>
+                        <span class="badge textSuccess">Inscrit</span>
                         <form method="POST" style="display: inline">
                           {% csrf_token %}
                           <input
