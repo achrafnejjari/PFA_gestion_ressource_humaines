@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -26,12 +26,43 @@
     <div class="container-fluid">
       {% include 'html_of_pages/dashboard/sidebar.html' %}
       <div class="content">
-        <div class="container mt-5">
-          <h2>Offres d'emploi internes</h2>
+        <div class="container">
+          <!-- En-tête -->
+          <div
+            class="d-flex justify-content-between align-items-center mb-4 mt-3"
+          >
+            <div>
+              <h1 class="h2">
+                <i class="bi bi-briefcase-fill"></i>
+                Offres d'emploi internes
+              </h1>
+              <p class="text-muted">
+                Consultez les offres d'emplois auxquelles vous avez postulé.
+              </p>
+            </div>
+          </div>
+
+          <!-- Messages -->
+          {% if messages %} {% for message in messages %}
+          <div
+            class="alert alert-{{ message.tags }} alert-dismissible fade show"
+            role="alert"
+          >
+            {{ message }}
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+          </div>
+          {% endfor %} {% endif %}
+
           <div class="card shadow-sm">
             <div class="card-body">
               <h5 class="card-title">
-                <i class="bi bi-briefcase-fill me-2"></i>Offres disponibles
+                <i class="bi bi-briefcase-fill me-2"></i>Offres auxquelles vous
+                avez postulé
               </h5>
               {% if job_offers %}
               <div class="table-responsive">
@@ -40,23 +71,25 @@
                     <tr>
                       <th>Titre</th>
                       <th>Département</th>
-                      <th>Type</th>
                       <th>Date de publication</th>
+                      <th>Statut de candidature</th>
+                      <th>Date de soumission</th>
                     </tr>
                   </thead>
                   <tbody>
                     {% for offer in job_offers %}
                     <tr>
-                      <td>{{ offer.title }}</td>
-                      <td>{{ offer.department }}</td>
+                      <td>{{ offer.titre }}</td>
+                      <td>{{ offer.departement }}</td>
+                      <td>{{ offer.date_publication }}</td>
                       <td>
                         <span
-                          class="badge {% if offer.type == 'CDI' %}text-bg-success{% else %}text-bg-info{% endif %}"
+                          class="badge {% if offer.statut == 'ACCEPTEE' %}text-bg-success{% elif offer.statut == 'REJETEE' %}text-bg-danger{% else %}text-bg-warning{% endif %}"
                         >
-                          {{ offer.type }}
+                          {{ offer.statut }}
                         </span>
                       </td>
-                      <td>{{ offer.posted_date }}</td>
+                      <td>{{ offer.date_submission }}</td>
                     </tr>
                     {% endfor %}
                   </tbody>
@@ -64,7 +97,8 @@
               </div>
               {% else %}
               <p class="card-text text-danger">
-                Aucune offre d'emploi disponible pour le moment.
+                Aucune offre d'emploi à laquelle vous avez postulé pour le
+                moment.
               </p>
               {% endif %}
             </div>
@@ -72,6 +106,7 @@
         </div>
       </div>
     </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

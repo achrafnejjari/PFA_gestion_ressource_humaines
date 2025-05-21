@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Main dashboard</title>
+    <title>Gestion des Offres d'Emploi</title>
     {% load static %}
 
     <!-- Bootstrap CSS -->
@@ -28,9 +28,7 @@
       <div class="content">
         <div class="container">
           <!-- En-tête -->
-          <div
-            class="d-flex justify-content-between align-items-center mb-4 mt-3"
-          >
+          <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
             <div>
               <h1 class="h2">
                 <i class="bi bi-briefcase-fill me-2"></i>
@@ -44,25 +42,36 @@
 
           <!-- Statistiques rapides -->
           <div class="row g-4 mb-4">
-            <div class="col-md-6">
-              <div class="card shadow-sm">
-                <div class="card-body text-center">
-                  <h5 class="card-title text-muted">
-                    <i class="bi bi-briefcase-fill me-2 text-primary"></i>
-                    Nombre total d'offres
-                  </h5>
-                  <h2 class="card-text">45</h2>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
               <div class="card shadow-sm">
                 <div class="card-body text-center">
                   <h5 class="card-title text-muted">
                     <i class="bi bi-check-circle-fill me-2 text-success"></i>
                     Offres ouvertes
                   </h5>
-                  <h2 class="card-text">20</h2>
+                  <h2 class="card-text">{{ open_count }}</h2>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card shadow-sm">
+                <div class="card-body text-center">
+                  <h5 class="card-title text-muted">
+                    <i class="bi bi-x-circle-fill me-2 text-danger"></i>
+                    Offres expirées
+                  </h2>
+                  <h2 class="card-text">{{ expired_count }}</h2>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card shadow-sm">
+                <div class="card-body text-center">
+                  <h5 class="card-title text-muted">
+                    <i class="bi bi-lock-fill me-2 text-secondary"></i>
+                    Offres fermées
+                  </h5>
+                  <h2 class="card-text">{{ closed_count }}</h2>
                 </div>
               </div>
             </div>
@@ -70,18 +79,16 @@
 
           <!-- Bouton Ajouter -->
           <div class="mb-3">
-            <a href="#" class="btn primary-button">
+            <button class="btn primary-button" data-bs-toggle="modal" data-bs-target="#addOfferModal">
               <i class="bi bi-plus-circle me-2"></i>
               Ajouter une offre d'emploi
-            </a>
+            </button>
           </div>
 
           <!-- Grille des offres d'emploi -->
           <div class="card shadow-sm">
             <div class="card-body">
-              <div
-                class="d-flex justify-content-between align-items-center mb-3"
-              >
+              <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="card-title">
                   <i class="bi bi-list-ul me-2"></i>
                   Liste des Offres d'Emploi
@@ -91,116 +98,212 @@
                     type="text"
                     placeholder="Rechercher..."
                     class="border-0"
+                    id="searchInput"
                   />
                 </div>
               </div>
               <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                <!-- Offre 1 -->
+                {% for item in page_obj %}
+                {% with offer=item.offer %}
                 <div class="col">
                   <div class="card h-100 shadow-sm">
                     <div class="card-body">
                       <h5 class="card-title">
-                        <i class="bi bi-code-slash me-2 text-primary"></i>
-                        Développeur Full Stack
+                        <i class="bi bi-briefcase-fill me-2"></i>
+                        {{ offer.titre }}
                       </h5>
                       <p class="card-text text-muted">
-                        Département : Informatique
+                        Département : {{ offer.departement.nom }}
                       </p>
                       <p class="card-text">
-                        <span class="badge textSuccess">Ouverte</span>
+                        <small class="text-muted">Publié le : {{ offer.date_publication|date:"d/m/Y" }}</small>
                       </p>
                       <p class="card-text">
-                        <small class="text-muted">Publié le : 15/04/2025</small>
+                        <small class="text-muted">Expire le : {{ offer.date_expiration|date:"d/m/Y" }}</small>
+                      </p>
+                      <p class="card-text">
+                        <small class="text-muted">Nombre de candidatures : {{ item.applicant_count }}</small>
+                      </p>
+                      <p class="card-text">
+                        <span class="badge {% if offer.statut == 'OUVERTE' %}textSuccess{% elif offer.date_expiration < today %}textWarning{% else %}textFailed{% endif %}">
+                          {{ offer.statut }}
+                        </span>
                       </p>
                     </div>
                     <div class="card-footer bg-transparent border-0">
                       <div class="d-flex justify-content-between">
-                        <a href="#" class="btn btnInfo btn-sm">
-                          <i class="bi bi-eye me-1"></i>
-                          Voir les candidats
-                        </a>
-                        <a href="#" class="btn btnDanger btn-sm">
+                        <button class="btn btnInfo btn-sm" data-bs-toggle="modal" data-bs-target="#editOfferModal-{{ offer.id }}">
+                          <i class="bi bi-pencil me-1"></i>
+                          Modifier
+                        </button>
+                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteOfferModal-{{ offer.id }}">
                           <i class="bi bi-trash me-1"></i>
                           Supprimer
-                        </a>
+                        </button>
                       </div>
                     </div>
                   </div>
                 </div>
-                <!-- Offre 2 -->
-                <div class="col">
-                  <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                      <h5 class="card-title">
-                        <i
-                          class="bi bi-person-lines-fill me-2 text-primary"
-                        ></i>
-                        Responsable RH
-                      </h5>
-                      <p class="card-text text-muted">
-                        Département : Ressources Humaines
-                      </p>
-                      <p class="card-text">
-                        <span class="badge textWarning">En cours</span>
-                      </p>
-                      <p class="card-text">
-                        <small class="text-muted">
-                          Clôture le : 30/04/2025
-                        </small>
-                      </p>
-                    </div>
-                    <div class="card-footer bg-transparent border-0">
-                      <div class="d-flex justify-content-between">
-                        <a href="#" class="btn btnInfo btn-sm">
-                          <i class="bi bi-eye me-1"></i>
-                          Voir les candidats
-                        </a>
-                        <a href="#" class="btn btnDanger btn-sm">
-                          <i class="bi bi-trash me-1"></i>
-                          Supprimer
-                        </a>
+
+                <!-- Edit Modal -->
+                <div class="modal fade" id="editOfferModal-{{ offer.id }}" tabindex="-1" aria-labelledby="editModalLabel-{{ offer.id }}" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel-{{ offer.id }}">Modifier l'Offre</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <form method="POST">
+                          {% csrf_token %}
+                          <input type="hidden" name="action" value="edit">
+                          <input type="hidden" name="offer_id" value="{{ offer.id }}">
+                          <div class="mb-3">
+                            <label for="titre-{{ offer.id }}" class="form-label">Titre</label>
+                            <input type="text" class="form-control" id="titre-{{ offer.id }}" name="titre" value="{{ offer.titre }}" required>
+                          </div>
+                          <div class="mb-3">
+                            <label for="description-{{ offer.id }}" class="form-label">Description</label>
+                            <textarea class="form-control" id="description-{{ offer.id }}" name="description">{{ offer.description }}</textarea>
+                          </div>
+                          <div class="mb-3">
+                            <label for="competences_requises-{{ offer.id }}" class="form-label">Compétences requises</label>
+                            <textarea class="form-control" id="competences_requises-{{ offer.id }}" name="competences_requises">{{ offer.competences_requises }}</textarea>
+                          </div>
+                          <div class="mb-3">
+                            <label for="salaire-{{ offer.id }}" class="form-label">Salaire</label>
+                            <input type="text" class="form-control" id="salaire-{{ offer.id }}" name="salaire" value="{{ offer.salaire }}">
+                          </div>
+                          <div class="mb-3">
+                            <label for="date_expiration-{{ offer.id }}" class="form-label">Date d'expiration</label>
+                            <input type="date" class="form-control" id="date_expiration-{{ offer.id }}" name="date_expiration" value="{{ offer.date_expiration|date:'Y-m-d' }}" required>
+                          </div>
+                          <div class="mb-3">
+                            <label for="departement-{{ offer.id }}" class="form-label">Département</label>
+                            <select class="form-select" id="departement-{{ offer.id }}" name="departement" required>
+                              {% for dept in departements %}
+                              <option value="{{ dept.id }}" {% if offer.departement.id == dept.id %}selected{% endif %}>{{ dept.nom }}</option>
+                              {% endfor %}
+                            </select>
+                          </div>
+                          <div class="mb-3">
+                            <label for="statut-{{ offer.id }}" class="form-label">Statut</label>
+                            <select class="form-select" id="statut-{{ offer.id }}" name="statut" required>
+                              <option value="OUVERTE" {% if offer.statut == 'OUVERTE' %}selected{% endif %}>Ouverte</option>
+                              <option value="FERMEE" {% if offer.statut == 'FERMEE' %}selected{% endif %}>Fermée</option>
+                            </select>
+                          </div>
+                          <button type="submit" class="btn primary-button w-100">Sauvegarder</button>
+                        </form>
                       </div>
                     </div>
                   </div>
                 </div>
-                <!-- Offre 3 -->
-                <div class="col">
-                  <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                      <h5 class="card-title">
-                        <i class="bi bi-brush-fill me-2 text-primary"></i>
-                        Designer UX/UI
-                      </h5>
-                      <p class="card-text text-muted">Département : Création</p>
-                      <p class="card-text">
-                        <span class="badge textFailed">Clôturée</span>
-                      </p>
-                      <p class="card-text">
-                        <small class="text-muted">
-                          Clôturé le : 10/04/2025
-                        </small>
-                      </p>
-                    </div>
-                    <div class="card-footer bg-transparent border-0">
-                      <div class="d-flex justify-content-between">
-                        <a href="#" class="btn btnInfo btn-sm">
-                          <i class="bi bi-eye me-1"></i>
-                          Voir les candidats
-                        </a>
-                        <a href="#" class="btn btnDanger btn-sm">
-                          <i class="bi bi-trash me-1"></i>
-                          Supprimer
-                        </a>
+
+                <!-- Delete Modal -->
+                <div class="modal fade" id="deleteOfferModal-{{ offer.id }}" tabindex="-1" aria-labelledby="deleteModalLabel-{{ offer.id }}" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel-{{ offer.id }}">Confirmer la suppression</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        Êtes-vous sûr de vouloir supprimer l'offre "{{ offer.titre }}" ?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <form method="POST">
+                          {% csrf_token %}
+                          <input type="hidden" name="action" value="delete">
+                          <input type="hidden" name="offer_id" value="{{ offer.id }}">
+                          <button type="submit" class="btn btnDanger">Supprimer</button>
+                        </form>
                       </div>
                     </div>
                   </div>
                 </div>
+                {% endwith %}
+                {% endfor %}
               </div>
+
+              <!-- Pagination -->
+              <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mt-4">
+                  {% if page_obj.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                    </a>
+                  </li>
+                  {% endif %}
+                  {% for num in page_obj.paginator.page_range %}
+                  <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                  </li>
+                  {% endfor %}
+                  {% if page_obj.has_next %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+                  </li>
+                  {% endif %}
+                </ul>
+              </nav>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Add Modal -->
+    <div class="modal fade" id="addOfferModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addModalLabel">Ajouter une Offre</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="add">
+              <div class="mb-3">
+                <label for="titre" class="form-label">Titre</label>
+                <input type="text" class="form-control" id="titre" name="titre" required>
+              </div>
+              <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="competences_requises" class="form-label">Compétences requises</label>
+                <textarea class="form-control" id="competences_requises" name="competences_requises"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="salaire" class="form-label">Salaire</label>
+                <input type="text" class="form-control" id="salaire" name="salaire">
+              </div>
+              <div class="mb-3">
+                <label for="date_expiration" class="form-label">Date d'expiration</label>
+                <input type="date" class="form-control" id="date_expiration" name="date_expiration" required>
+              </div>
+              <div class="mb-3">
+                <label for="departement" class="form-label">Département</label>
+                <select class="form-select" id="departement" name="departement" required>
+                  {% for dept in departements %}
+                  <option value="{{ dept.id }}">{{ dept.nom }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <button type="submit" class="btn primary-button w-100">Ajouter</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

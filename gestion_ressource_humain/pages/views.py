@@ -1,12 +1,34 @@
+# from django.shortcuts import render, redirect, get_object_or_404
+# from django.contrib.auth.models import User
+# from django.contrib.auth import authenticate, login, logout
+# from django.contrib import messages # departments , ..
+# from django.core.files.storage import FileSystemStorage
+# from django.contrib.auth.decorators import login_required
+# from django.http import HttpResponseForbidden
+# from .models import Utilisateur, Role, Employe, Performance, Departement, Contrat, Conge, EmployeConge, Training, TrainingRegistration, Contact
+# from datetime import date , datetime , timedelta
+# from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
+# from django.contrib.auth.forms import SetPasswordForm
+# from django.contrib.auth.tokens import default_token_generator
+# from django.utils.http import urlsafe_base64_encode
+# from django.utils.encoding import force_bytes
+# from django.core.mail import send_mail
+# from django.template.loader import render_to_string
+# from django.urls import reverse_lazy
+# from django.conf import settings
+
+# from django.db.models import Count , Q , Avg #departments
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages # departments , ..
+from django.contrib import messages
+from django.core.paginator import Paginator
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
-from .models import Utilisateur, Role, Employe, Performance, Departement, Contrat, Conge, EmployeConge, Training, TrainingRegistration, Contact
-from datetime import date , datetime , timedelta
+from .models import Utilisateur, Role, Employe, Performance, Departement, Contrat, Conge, EmployeConge, Training, TrainingRegistration, Contact, OffreEmploi, Candidat, Candidature
+from datetime import date, datetime, timedelta
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
@@ -16,8 +38,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.conf import settings
-
-from django.db.models import Count , Q , Avg #departments
+from django.db.models import Count, Q, Avg
 
 
 # Décorateur personnalisé pour vérifier si l'utilisateur est RH
@@ -238,6 +259,8 @@ def contact(request):
 
     return render(request, 'html_of_pages/contact.html', {'active_page': 'contact'})
 
+@login_required
+@rh_required
 def contact_messages(request):
     if request.method == 'POST':
         message_id = request.POST.get('message_id')
@@ -257,7 +280,133 @@ def services(request):
     return render(request, 'html_of_pages/services.html', {'active_page': 'services'})
 
 def joboffer(request):
-    return render(request, 'html_of_pages/joboffer.html', {'active_page': 'joboffer'})
+    # Récupérer les offres ouvertes (statut 'OUVERTE' et non expirées)
+    today = date.today()
+    job_offers = OffreEmploi.objects.filter(statut='OUVERTE', date_expiration__gte=today)
+
+    # Pagination
+    paginator = Paginator(job_offers, 6)  # Afficher 6 offres par page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Déterminer si l'utilisateur peut postuler (authentifié, pas un employé, pas RH)
+    can_apply = False
+    if request.user.is_authenticated:
+        is_employee = Employe.objects.filter(utilisateur__user=request.user).exists()
+        is_rh = request.user.utilisateur.role.nom_role == 'RH'
+        can_apply = not is_employee and not is_rh
+
+    # Récupérer les offres auxquelles l'utilisateur a déjà postulé (basé sur l'email)
+    applied_offers = set()
+    if request.user.is_authenticated:
+        user_email = request.user.email.lower()  # Normaliser l'email
+        print(f"Utilisateur authentifié : {user_email}")
+        applied_candidatures = Candidature.objects.filter(candidat__email__iexact=user_email).select_related('offre_emploi')
+        applied_offers = {candidature.offre_emploi.id for candidature in applied_candidatures}
+        print(f"Offres déjà postulées : {applied_offers}")
+
+    # Vérifier si l'utilisateur a une candidature en attente
+    has_pending_application = False
+    if request.user.is_authenticated:
+        user_email = request.user.email.lower()  # Normaliser l'email
+        has_pending_application = Candidature.objects.filter(
+            candidat__email__iexact=user_email,
+            statut='EN_ATTENTE'
+        ).exists()
+        print(f"Candidature en attente : {has_pending_application}")
+
+    if request.method == 'POST':
+        if 'apply' in request.POST:
+            if not can_apply:
+                messages.error(request, "Les employés et le personnel RH ne peuvent pas postuler à des offres d'emploi.")
+                return redirect('joboffer')
+
+            if has_pending_application:
+                messages.error(request, "Vous avez déjà une candidature en attente. Veuillez attendre la réponse avant de postuler à une autre offre.")
+                return redirect('joboffer')
+
+            offer_id = request.POST.get('offer_id')
+            nom = request.POST.get('nom')
+            prenom = request.POST.get('prenom')
+            email = request.POST.get('email').lower()  # Normaliser l'email
+            telephone = request.POST.get('telephone')
+            cv = request.FILES.get('cv')
+
+            # Vérifier que l'email correspond à celui de l'utilisateur connecté
+            if email != request.user.email.lower():
+                messages.error(request, "L'email fourni doit correspondre à votre email de connexion.")
+                return redirect('joboffer')
+
+            if not all([nom, prenom, email, telephone, cv]):
+                messages.error(request, "Tous les champs sont requis.")
+                return redirect('joboffer')
+
+            if not cv.name.endswith('.pdf'):
+                messages.error(request, "Le CV doit être au format PDF.")
+                return redirect('joboffer')
+
+            try:
+                print(f"Tentative de création de candidature pour offre {offer_id} avec email {email}")
+                candidat, created = Candidat.objects.get_or_create(
+                    email=email,
+                    defaults={
+                        'nom': nom,
+                        'prenom': prenom,
+                        'telephone': telephone,
+                        'cv': cv
+                    }
+                )
+                if not created:
+                    candidat.nom = nom
+                    candidat.prenom = prenom
+                    candidat.telephone = telephone
+                    if cv:
+                        candidat.cv = cv
+                    candidat.save()
+                    print(f"Candidat existant mis à jour : {candidat.email}")
+
+                offer = get_object_or_404(OffreEmploi, id=offer_id)
+                print(f"Offre récupérée : {offer.titre}")
+
+                # Vérification explicite des candidatures existantes
+                if Candidature.objects.filter(candidat=candidat, offre_emploi=offer).exists():
+                    messages.error(request, "Vous avez déjà postulé pour cette offre.")
+                    return redirect('joboffer')
+
+                # Création de la candidature
+                candidature = Candidature.objects.create(candidat=candidat, offre_emploi=offer, statut='EN_ATTENTE')
+                print(f"Candidature créée avec succès : ID {candidature.id}")
+                messages.success(request, "Votre candidature a été soumise avec succès.")
+
+            except Exception as e:
+                print(f"Erreur lors de la soumission : {str(e)}")
+                messages.error(request, f"Erreur lors de la soumission de votre candidature : {str(e)}")
+            return redirect('joboffer')
+
+        elif 'cancel' in request.POST:
+            offer_id = request.POST.get('offer_id')
+            try:
+                offer = get_object_or_404(OffreEmploi, id=offer_id)
+                user_email = request.user.email.lower()  # Normaliser l'email
+                candidature = Candidature.objects.get(candidat__email__iexact=user_email, offre_emploi=offer)
+                candidature.delete()
+                print(f"Candidature annulée pour l'offre {offer_id}")
+                messages.success(request, "Votre candidature a été annulée avec succès.")
+            except Candidature.DoesNotExist:
+                messages.error(request, "Aucune candidature trouvée pour cette offre.")
+            except Exception as e:
+                print(f"Erreur lors de l'annulation : {str(e)}")
+                messages.error(request, f"Erreur lors de l'annulation de votre candidature : {str(e)}")
+            return redirect('joboffer')
+
+    return render(request, 'html_of_pages/joboffer.html', {
+        'active_page': 'joboffer',
+        'page_obj': page_obj,
+        'can_apply': can_apply,
+        'applied_offers': applied_offers,
+        'has_pending_application': has_pending_application
+    })
+
 
 # Dashboard
 def sidebar(request):
@@ -460,7 +609,6 @@ def departments(request):
             description = request.POST.get('description', '')
             if nom:
                 Departement.objects.create(nom=nom, description=description)
-                messages.success(request, 'Département créé avec succès.')
             else:
                 messages.error(request, 'Le nom du département est requis.')
         elif action == 'edit':
@@ -473,7 +621,6 @@ def departments(request):
                     department.nom = nom
                     department.description = description
                     department.save()
-                    messages.success(request, 'Département mis à jour avec succès.')
                 else:
                     messages.error(request, 'Le nom du département est requis.')
             except Departement.DoesNotExist:
@@ -483,7 +630,6 @@ def departments(request):
             try:
                 department = Departement.objects.get(id=department_id)
                 department.delete()
-                messages.success(request, 'Département supprimé avec succès.')
             except Departement.DoesNotExist:
                 messages.error(request, 'Le département spécifié n’existe pas.')
         return redirect('departments')
@@ -568,7 +714,6 @@ def employees(request):
                     contrat=contrat,
                     departement=departement
                 )
-                messages.success(request, "Employé ajouté avec succès.")
             except Exception as e:
                 messages.error(request, f"Erreur lors de l'ajout de l'employé : {str(e)}")
             return redirect('employees')
@@ -591,6 +736,11 @@ def employees(request):
             try:
                 employee = Employe.objects.get(id=employee_id)
 
+                # Vérifier si cet employé est lié à l'utilisateur RH
+                if employee.utilisateur == request.user.utilisateur:
+                    messages.error(request, "Vous ne pouvez pas modifier votre propre profil d'employé ici.")
+                    return redirect('employees')
+
                 # Vérifier les doublons d'email
                 if Employe.objects.exclude(id=employee_id).filter(email=email).exists():
                     messages.error(request, "Cet email est déjà utilisé par un autre employé.")
@@ -604,8 +754,9 @@ def employees(request):
                         messages.error(request, "Cet utilisateur est déjà lié à un autre employé.")
                         return redirect('employees')
                     employee.utilisateur = utilisateur
-                else:
-                    employee.utilisateur = None
+                # préserver l'utilisateur lié à l'employé
+                elif not utilisateur_id and employee.utilisateur:
+                    pass
 
                 # Mettre à jour l'employé
                 employee.nom = nom
@@ -628,7 +779,6 @@ def employees(request):
                         leave_entitlement=25
                     )
                 employee.save()
-                messages.success(request, "Employé modifié avec succès.")
             except Exception as e:
                 messages.error(request, f"Erreur lors de la modification de l'employé : {str(e)}")
             return redirect('employees')
@@ -638,8 +788,11 @@ def employees(request):
             employee_id = request.POST.get('employee_id')
             try:
                 employee = Employe.objects.get(id=employee_id)
+                # Vérifier si cet employé est lié à l'utilisateur RH
+                if employee.utilisateur == request.user.utilisateur:
+                    messages.error(request, "Vous ne pouvez pas supprimer votre propre profil d'employé.")
+                    return redirect('employees')
                 employee.delete()
-                messages.success(request, "Employé supprimé avec succès.")
             except Exception as e:
                 messages.error(request, f"Erreur lors de la suppression de l'employé : {str(e)}")
             return redirect('employees')
@@ -651,7 +804,6 @@ def employees(request):
                 conge = Conge.objects.get(id=conge_id)
                 conge.statut = 'APPROUVE' if action == 'approve_leave' else 'REFUSE'
                 conge.save()
-                messages.success(request, f"Congé {'approuvé' if action == 'approve_leave' else 'refusé'} avec succès.")
             except Exception as e:
                 messages.error(request, f"Erreur lors de la mise à jour du congé : {str(e)}")
             return redirect('employees')
@@ -662,7 +814,6 @@ def employees(request):
             try:
                 conge = Conge.objects.get(id=conge_id)
                 conge.delete()
-                messages.success(request, "Congé supprimé avec succès.")
             except Exception as e:
                 messages.error(request, f"Erreur lors de la suppression du congé : {str(e)}")
             return redirect('employees')
@@ -685,6 +836,8 @@ def employees(request):
     # Liste des employés
     employees_data = []
     for employee in Employe.objects.all():
+        # Vérifier si l'employé est lié à l'utilisateur RH
+        is_rh_employee = employee.utilisateur == request.user.utilisateur
         employees_data.append({
             'id': employee.id,
             'nom': employee.nom,
@@ -700,6 +853,7 @@ def employees(request):
             'date_embauche': employee.date_embauche.strftime('%d/%m/%Y') if employee.date_embauche else "Non défini",
             'date_fin': employee.date_fin.strftime('%d/%m/%Y') if employee.date_fin else "-",
             'type_contrat': employee.contrat.type if employee.contrat else "N/A",
+            'is_rh_employee': is_rh_employee,  # Ajout du flag pour indiquer si c'est l'employé RH
         })
 
     # Liste des congés
@@ -770,7 +924,6 @@ def contracts(request):
                     else:
                         employe.salaire_actuel = None
                     employe.save()
-                    messages.success(request, "Contrat modifié avec succès.")
             except Contrat.DoesNotExist:
                 messages.error(request, "Le contrat spécifié n'existe pas.")
             except Exception as e:
@@ -786,7 +939,6 @@ def contracts(request):
                     employe.contrat = None
                     employe.save()
                 contrat.delete()
-                messages.success(request, "Contrat supprimé avec succès.")
             except Contrat.DoesNotExist:
                 messages.error(request, "Le contrat spécifié n'existe pas.")
             except Exception as e:
@@ -818,7 +970,6 @@ def contracts(request):
                     if salaire_actuel:
                         employe.salaire_actuel = salaire_actuel
                     employe.save()
-                    messages.success(request, "Contrat ajouté avec succès.")
             except Employe.DoesNotExist:
                 messages.error(request, "L'employé spécifié n'existe pas.")
             except Exception as e:
@@ -919,7 +1070,6 @@ def performance(request):
                     fin_objectif=fin_objectif,
                     date_evaluation=date.today()
                 )
-                messages.success(request, "Évaluation ajoutée avec succès.")
             except Exception as e:
                 messages.error(request, f"Erreur lors de l'ajout de l'évaluation : {str(e)}")
             return redirect('performance')
@@ -944,7 +1094,6 @@ def performance(request):
                 performance.fin_objectif = fin_objectif
                 performance.date_evaluation = date.today()
                 performance.save()
-                messages.success(request, "Évaluation modifiée avec succès.")
             except Exception as e:
                 messages.error(request, f"Erreur lors de la modification de l'évaluation : {str(e)}")
             return redirect('performance')
@@ -955,7 +1104,6 @@ def performance(request):
             try:
                 performance = Performance.objects.get(id=performance_id)
                 performance.delete()
-                messages.success(request, "Évaluation supprimée avec succès.")
             except Exception as e:
                 messages.error(request, f"Erreur lors de la suppression de l'évaluation : {str(e)}")
             return redirect('performance')
@@ -1027,13 +1175,62 @@ def leave_requests(request):
     try:
         utilisateur = request.user.utilisateur
         employee = Employe.objects.get(utilisateur=utilisateur)
-        employee_conges = EmployeConge.objects.filter(employe=employee).order_by('-conge__created_at')
+        employee_conges = EmployeConge.objects.filter(employe=employee).select_related('conge').order_by('-conge__created_at')
 
-        if request.method == 'POST':
+        # Calculate remaining days for context
+        annual_leave_days = employee.contrat.leave_entitlement if employee.contrat and employee.contrat.leave_entitlement else 25
+        taken_days = sum((ec.conge.date_fin - ec.conge.date_debut).days + 1 for ec in employee_conges if ec.conge.statut == 'APPROUVE')
+        remaining_days = annual_leave_days - taken_days
+
+        # Calculate pending days for display (informational only)
+        pending_days = sum((ec.conge.date_fin - ec.conge.date_debut).days + 1 for ec in employee_conges if ec.conge.statut == 'EN_ATTENTE')
+
+        # Calculate tomorrow's date dynamically
+        tomorrow_date = (datetime.now().date() + timedelta(days=1)).strftime('%Y-%m-%d')
+
+        # Bulk update expired leaves
+        current_date = datetime.now().date()
+        Conge.objects.filter(
+            employeconge__employe=employee,
+            date_fin__lt=current_date,
+            statut__in=['EN_ATTENTE', 'APPROUVE']
+        ).update(statut='EXPIRE')
+
+        # Check for existing pending requests
+        has_pending_request = employee_conges.filter(conge__statut='EN_ATTENTE').exists()
+
+        if request.method == 'POST' and not has_pending_request:
             start_date = request.POST.get('start_date')
             end_date = request.POST.get('end_date')
             reason = request.POST.get('reason', 'Congé annuel')
 
+            # Validate dates
+            try:
+                start = datetime.strptime(start_date, '%Y-%m-%d').date()
+                end = datetime.strptime(end_date, '%Y-%m-%d').date()
+            except ValueError:
+                messages.error(request, "Erreur : Les dates fournies ne sont pas valides.")
+                return redirect('leave_requests')
+
+            if end < start:
+                messages.error(request, "Erreur : La date de fin ne peut pas être antérieure à la date de début.")
+                return redirect('leave_requests')
+
+            # Calculate requested days (inclusive of start and end dates)
+            requested_days = (end - start).days + 1
+
+            # Server-side validation for remaining days (as a fallback)
+            if requested_days > remaining_days:
+                messages.error(request, f"Erreur : Vous avez demandé {requested_days} jours, mais il ne vous reste que {remaining_days} jours de congé.")
+                return redirect('leave_requests')
+
+            # Validate dates against tomorrow
+            tomorrow = datetime.now().date() + timedelta(days=1)
+            if start < tomorrow or end < tomorrow:
+                messages.error(request, f"Erreur : Les dates doivent être à partir de demain ({tomorrow.strftime('%d/%m/%Y')}).")
+                return redirect('leave_requests')
+
+            # Create the leave request
             conge = Conge.objects.create(
                 type=reason,
                 date_debut=start_date,
@@ -1047,44 +1244,213 @@ def leave_requests(request):
             )
 
             return redirect('leave_requests')
+        elif request.method == 'POST' and has_pending_request:
+            messages.error(request, "Vous avez déjà une demande de congé en attente. Veuillez attendre la réponse de RH avant de soumettre une nouvelle demande.")
+            return redirect('leave_requests')
 
         return render(request, 'html_of_pages/dashboard/leave_requests.html', {
             'active_page': 'leave_requests',
             'employee_conges': employee_conges,
             'employee': employee,
+            'remaining_days': remaining_days,
+            'taken_days': taken_days,
+            'pending_days': pending_days,
+            'has_pending_request': has_pending_request,
+            'tomorrow_date': tomorrow_date,
         })
     except Employe.DoesNotExist:
+        tomorrow_date = (datetime.now().date() + timedelta(days=1)).strftime('%Y-%m-%d')
         return render(request, 'html_of_pages/dashboard/leave_requests.html', {
             'active_page': 'leave_requests',
             'employee_conges': [],
+            'remaining_days': 0,
+            'taken_days': 0,
+            'pending_days': 0,
+            'has_pending_request': False,
+            'tomorrow_date': tomorrow_date,
         })
     
+
 @login_required
 @rh_required
 def joboffer_dashboard(request):
-    return render(request, 'html_of_pages/dashboard/joboffer_dashboard.html', {'active_page': 'joboffer_dashboard'})
+    today = date.today()
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'add':
+            titre = request.POST.get('titre')
+            description = request.POST.get('description', '')
+            date_expiration = request.POST.get('date_expiration')
+            departement_id = request.POST.get('departement')
+            competences_requises = request.POST.get('competences_requises', '')
+            salaire = request.POST.get('salaire', '')
+
+            if not all([titre, date_expiration, departement_id]):
+                messages.error(request, "Tous les champs requis doivent être remplis.")
+                return redirect('joboffer_dashboard')
+
+            try:
+                departement = Departement.objects.get(id=departement_id)
+                OffreEmploi.objects.create(
+                    titre=titre,
+                    description=description,
+                    date_publication=today,
+                    date_expiration=date_expiration,
+                    competences_requises=competences_requises,
+                    salaire=salaire,
+                    departement=departement,
+                    statut='OUVERTE'
+                )
+
+            except Exception as e:
+                messages.error(request, f"Erreur lors de l'ajout de l'offre : {str(e)}")
+            return redirect('joboffer_dashboard')
+
+        elif action == 'edit':
+            offer_id = request.POST.get('offer_id')
+            titre = request.POST.get('titre')
+            description = request.POST.get('description', '')
+            date_expiration = request.POST.get('date_expiration')
+            departement_id = request.POST.get('departement')
+            competences_requises = request.POST.get('competences_requises', '')
+            salaire = request.POST.get('salaire', '')
+            statut = request.POST.get('statut')
+
+            if not all([offer_id, titre, date_expiration, departement_id, statut]):
+                messages.error(request, "Tous les champs requis doivent être remplis.")
+                return redirect('joboffer_dashboard')
+
+            try:
+                offer = get_object_or_404(OffreEmploi, id=offer_id)
+                departement = Departement.objects.get(id=departement_id)
+                offer.titre = titre
+                offer.description = description
+                offer.date_expiration = date_expiration
+                offer.departement = departement
+                offer.competences_requises = competences_requises
+                offer.salaire = salaire
+                offer.statut = statut
+                offer.save()
+            except Exception as e:
+                messages.error(request, f"Erreur lors de la modification de l'offre : {str(e)}")
+            return redirect('joboffer_dashboard')
+
+        elif action == 'delete':
+            offer_id = request.POST.get('offer_id')
+            try:
+                offer = get_object_or_404(OffreEmploi, id=offer_id)
+                offer.delete()
+            except Exception as e:
+                messages.error(request, f"Erreur lors de la suppression de l'offre : {str(e)}")
+            return redirect('joboffer_dashboard')
+
+    # Fetch all job offers with applicant counts
+    job_offers = OffreEmploi.objects.all()
+    open_count = job_offers.filter(statut='OUVERTE', date_expiration__gte=today).count()
+    closed_count = job_offers.filter(statut='FERMEE').count()
+    expired_count = job_offers.filter(date_expiration__lt=today).count()
+
+    # Prepare data with applicant counts
+    job_offers_data = []
+    for offer in job_offers:
+        applicant_count = Candidature.objects.filter(offre_emploi=offer).count()
+        job_offers_data.append({
+            'offer': offer,
+            'applicant_count': applicant_count
+        })
+
+    # Pagination
+    paginator = Paginator(job_offers_data, 6)  # Show 6 offers per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'html_of_pages/dashboard/joboffer_dashboard.html', {
+        'active_page': 'joboffer_dashboard',
+        'page_obj': page_obj,
+        'open_count': open_count,
+        'closed_count': closed_count,
+        'expired_count': expired_count,
+        'departements': Departement.objects.all(),
+    })
 
 @login_required
 def user_joboffers(request):
     if request.user.utilisateur.role.nom_role not in ['Utilisateur', 'Employé']:
         return HttpResponseForbidden("Vous n'avez pas les permissions nécessaires pour accéder à cette page.")
     
-    # Liste fictive d'offres d'emploi (à remplacer par un modèle JobOffer plus tard)
-    job_offers = [
-        {'title': 'Développeur Python', 'department': 'Informatique', 'type': 'CDI', 'posted_date': '2025-04-01'},
-        {'title': 'Responsable Marketing', 'department': 'Marketing', 'type': 'CDD', 'posted_date': '2025-04-15'},
-        {'title': 'Assistant RH', 'department': 'Ressources Humaines', 'type': 'CDI', 'posted_date': '2025-04-20'},
-    ]
+    try:
+        user_email = request.user.email
+        # Fetch candidatures for the current user
+        candidatures = Candidature.objects.filter(candidat__email=user_email).select_related('offre_emploi')
+        
+        # Extract applied job offers
+        job_offers = []
+        for candidature in candidatures:
+            offer = candidature.offre_emploi
+            job_offers.append({
+                'titre': offer.titre,
+                'departement': offer.departement.nom,
+                'date_publication': offer.date_publication.strftime('%d/%m/%Y'),
+                'statut': candidature.statut,
+                'date_submission': candidature.date_submission.strftime('%d/%m/%Y')
+            })
 
-    return render(request, 'html_of_pages/dashboard/user_joboffers.html', {
-        'active_page': 'user_joboffers',
-        'job_offers': job_offers,
-    })
+        return render(request, 'html_of_pages/dashboard/user_joboffers.html', {
+            'active_page': 'user_joboffers',
+            'job_offers': job_offers
+        })
+    except Exception as e:
+        messages.error(request, f"Une erreur s'est produite : {str(e)}")
+        return render(request, 'html_of_pages/dashboard/user_joboffers.html', {
+            'active_page': 'user_joboffers',
+            'job_offers': []
+        })
 
 @login_required
 @rh_required
 def candidates(request):
-    return render(request, 'html_of_pages/dashboard/candidates.html', {'active_page': 'candidates'})
+    today = date.today()
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        candidature_id = request.POST.get('candidature_id')
+        if action in ['approve', 'reject'] and candidature_id:
+            try:
+                candidature = get_object_or_404(Candidature, id=candidature_id)
+                candidature.statut = 'ACCEPTEE' if action == 'approve' else 'REJETEE'
+                candidature.save()
+            except Exception as e:
+                messages.error(request, f"Erreur lors de la mise à jour de la candidature : {str(e)}")
+            return redirect('candidates')
+
+    # Fetch all candidatures with related data
+    candidatures = Candidature.objects.select_related('candidat', 'offre_emploi').all()
+    candidates_data = []
+    for candidature in candidatures:
+        # Construct the full CV URL
+        cv_link = None
+        if candidature.candidat.cv:
+            cv_link = request.build_absolute_uri(candidature.candidat.cv.url)
+        candidates_data.append({
+            'id': candidature.id,
+            'nom': candidature.candidat.nom,
+            'prenom': candidature.candidat.prenom,
+            'email': candidature.candidat.email,
+            'telephone': candidature.candidat.telephone,
+            'offre_titre': candidature.offre_emploi.titre,
+            'date_submission': candidature.date_submission.strftime('%d/%m/%Y'),
+            'statut': candidature.statut,
+            'cv_link': cv_link,
+        })
+
+    # Pagination
+    paginator = Paginator(candidates_data, 10)  # Show 10 candidates per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'html_of_pages/dashboard/candidates.html', {
+        'active_page': 'candidates',
+        'page_obj': page_obj,
+    })
 
 
 ############################################################
@@ -1261,6 +1627,33 @@ def profile(request):
 #######################################################################################
 @login_required
 def settings(request):
+    if request.method == 'POST':
+        old_password = request.POST.get('old-password')
+        new_password = request.POST.get('new-password')
+        confirm_password = request.POST.get('confirm-password')
+
+        # Validate old password
+        if not request.user.check_password(old_password):
+            messages.error(request, "L'ancien mot de passe est incorrect.")
+            return redirect('settings')
+
+        # Validate new password and confirmation
+        if new_password != confirm_password:
+            messages.error(request, "Les nouveaux mots de passe ne correspondent pas.")
+            return redirect('settings')
+
+        # Validate password strength (optional, customize as needed)
+        if len(new_password) < 8:
+            messages.error(request, "Le nouveau mot de passe doit contenir au moins 8 caractères.")
+            return redirect('settings')
+
+        # Update password and invalidate session
+        request.user.set_password(new_password)
+        request.user.save()
+        logout(request)  # Invalidate session
+        messages.success(request, "Votre mot de passe a été modifié. Veuillez vous reconnecter.")
+        return redirect('login')
+
     return render(request, 'html_of_pages/dashboard/settings.html', {'active_page': 'settings'})
 
 @login_required

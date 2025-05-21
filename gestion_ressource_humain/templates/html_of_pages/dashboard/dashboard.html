@@ -26,12 +26,26 @@
 
     <!-- Styles spécifiques -->
     <style>
-      .text-bg-success { background-color: #28a745; }
-      .text-bg-info { background-color: #17a2b8; }
-      .card-100 { height: 100%; }
-      .col-wide { width: 120px; }
-      .col-narrow { width: 100px; }
-      .chart-container { position: relative; width: 100%; max-height: 300px; }
+      .text-bg-success {
+        background-color: #28a745;
+      }
+      .text-bg-info {
+        background-color: #17a2b8;
+      }
+      .card-100 {
+        height: 100%;
+      }
+      .col-wide {
+        width: 120px;
+      }
+      .col-narrow {
+        width: 100px;
+      }
+      .chart-container {
+        position: relative;
+        width: 100%;
+        max-height: 300px;
+      }
     </style>
   </head>
   <body>
@@ -39,7 +53,9 @@
       {% include 'html_of_pages/dashboard/sidebar.html' %}
       <div class="content">
         <div class="container">
-          <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+          <div
+            class="d-flex justify-content-between align-items-center mb-4 mt-3"
+          >
             <div>
               <h1 class="h2">
                 <i class="bi bi-building me-2"></i>
@@ -90,6 +106,7 @@
                     <i class="bi bi-clock-fill me-2 text-warning"></i>
                     Ancienneté moyenne des employés
                   </h5>
+                  <!-- prettier-ignore -->
                   <h2 class="card-text">{{ anciennete_moyenne }} an{% if anciennete_moyenne != 1 %}s{% endif %}</h2>
                 </div>
               </div>
@@ -110,7 +127,9 @@
                     <canvas id="contractChart"></canvas>
                   </div>
                   {% if not types_contrat or types_contrat|length == 0 %}
-                    <p class="text-muted text-center mt-3">Aucune donnée disponible pour les types de contrat.</p>
+                  <p class="text-muted text-center mt-3">
+                    Aucune donnée disponible pour les types de contrat.
+                  </p>
                   {% endif %}
                 </div>
               </div>
@@ -123,11 +142,14 @@
                     <i class="bi bi-bar-chart-fill me-2 text-success"></i>
                     Moyenne des scores par département
                   </h5>
-                  <div class="chart-container" style="max-height: 200px;">
+                  <div class="chart-container" style="max-height: 200px">
                     <canvas id="departmentChart"></canvas>
                   </div>
+                  <!-- prettier-ignore -->
                   {% if not scores_par_departement or scores_par_departement|length == 0 %}
-                    <p class="text-muted text-center mt-3">Aucune donnée disponible pour les scores par département.</p>
+                  <p class="text-muted text-center mt-3">
+                    Aucune donnée disponible pour les scores par département.
+                  </p>
                   {% endif %}
                   <p class="mt-3">{{ total_employes }} Total des employés</p>
                 </div>
@@ -138,13 +160,20 @@
           <!-- Tableau des employés -->
           <div class="card shadow-sm">
             <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center mb-3">
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
                 <h5 class="card-title">
                   <i class="bi bi-list-check me-2"></i>
                   Liste des Employés
                 </h5>
                 <div class="search-table">
-                  <input type="text" placeholder="Rechercher..." class="border-0" id="searchInput" />
+                  <input
+                    type="text"
+                    placeholder="Rechercher..."
+                    class="border-0"
+                    id="searchInput"
+                  />
                 </div>
               </div>
               <div class="table-responsive">
@@ -178,14 +207,18 @@
                       <td>{{ emp.date_embauche }}</td>
                       <td>{{ emp.date_fin }}</td>
                       <td>
-                        <span class="badge {% if emp.statut == 'CDI' or emp.statut == 'STG' %}text-bg-success{% else %}text-bg-info{% endif %}">
+                        <span
+                          class="badge {% if emp.statut == 'CDI' or emp.statut == 'STG' %}textSuccess{% else %}textInfo{% endif %}"
+                        >
                           {{ emp.statut }}
                         </span>
                       </td>
                     </tr>
                     {% empty %}
                     <tr>
-                      <td colspan="11" class="text-center">Aucun employé trouvé.</td>
+                      <td colspan="11" class="text-center">
+                        Aucun employé trouvé.
+                      </td>
                     </tr>
                     {% endfor %}
                   </tbody>
@@ -204,169 +237,167 @@
     <script src="{% static 'js/dashboard.js' %}"></script>
 
     <!-- JavaScript pour la recherche et les graphiques -->
-    
 
-<!-- JavaScript pour la recherche et les graphiques -->
+    <!-- JavaScript pour la recherche et les graphiques -->
 
-
-  <!-- JavaScript pour la recherche et les graphiques -->
-<script>
-  // Recherche dans le tableau
-  document.getElementById('searchInput').addEventListener('input', function () {
-    const searchValue = this.value.toLowerCase();
-    const rows = document.querySelectorAll('#employeeTable tr');
-    rows.forEach(row => {
-      const nom = row.cells[0].textContent.toLowerCase();
-      const prenom = row.cells[1].textContent.toLowerCase();
-      const email = row.cells[2].textContent.toLowerCase();
-      const departement = row.cells[5].textContent.toLowerCase();
-      if (nom.includes(searchValue) || prenom.includes(searchValue) || email.includes(searchValue) || departement.includes(searchValue)) {
-        row.style.display = '';
-      } else {
-        row.style.display = 'none';
-      }
-    });
-  });
-
-
-  //ce nest pas un eror cest : VS Code  analyse le fichier
-  // comme du JavaScript brut, et ne reconnaît pas les blocs Django ({ % fo r  %},
-  //{{ variable }}, etc.), donc il pense que c’est une erreur de syntaxe JavaScript.
-
-  // Données pour les graphiques
-  const contractData = {
-    labels: [{% for contrat in types_contrat %}'{{ contrat.type|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
-    counts: [{% for contrat in types_contrat %}{{ contrat.count|floatformat:0 }}{% if not forloop.last %},{% endif %}{% endfor %}]
-  };
-
-  const departmentData = {
-    labels: [{% for item in scores_par_departement %}'{{ item.departement|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
-    scores: [{% for item in scores_par_departement %}{{ item.avg_score|floatformat:2 }}{% if not forloop.last %},{% endif %}{% endfor %}],
-    hasEvaluations: [{% for item in scores_par_departement %}{{ item.has_evaluations|yesno:"true,false" }}{% if not forloop.last %},{% endif %}{% endfor %}],
-    counts: [{% for item in scores_par_departement %}{{ item.count|default:0 }}{% if not forloop.last %},{% endif %}{% endfor %}]
-  };
-
-  // Debug : Afficher les données pour vérifier le rendu
-  console.log('Contract Data:', contractData);
-  console.log('Department Data:', departmentData);
-  console.log('Department Counts:', departmentData.counts);
-
-  // Graphique : Répartition par type de contrat (Bar Chart)
-  const contractCtx = document.getElementById('contractChart').getContext('2d');
-  if (contractData.counts.length > 0 && contractData.counts.some(count => count > 0)) {
-    new Chart(contractCtx, {
-      type: 'bar',
-      data: {
-        labels: contractData.labels,
-        datasets: [{
-          label: 'Nombre d\'employés',
-          data: contractData.counts,
-          backgroundColor: ['#4e73df', '#1cc88a', '#f6c23e', '#e74a3b'],
-          borderColor: ['#4e73df', '#1cc88a', '#f6c23e', '#e74a3b'],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Nombre d\'employés'
-            },
-            ticks: {
-              precision: 0
-            }
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Type de contrat'
-            }
+    <!-- JavaScript pour la recherche et les graphiques -->
+    <script>
+      // Recherche dans le tableau
+      document.getElementById('searchInput').addEventListener('input', function () {
+        const searchValue = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#employeeTable tr');
+        rows.forEach(row => {
+          const nom = row.cells[0].textContent.toLowerCase();
+          const prenom = row.cells[1].textContent.toLowerCase();
+          const email = row.cells[2].textContent.toLowerCase();
+          const departement = row.cells[5].textContent.toLowerCase();
+          if (nom.includes(searchValue) || prenom.includes(searchValue) || email.includes(searchValue) || departement.includes(searchValue)) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
           }
-        },
-        plugins: {
-          legend: {
-            display: false
-          },
-          title: {
-            display: true,
-            text: 'Répartition par type de contrat'
-          }
-        }
-      }
-    });
-  } else {
-    contractCtx.canvas.style.display = 'none';
-  }
+        });
+      });
 
-  // Graphique : Répartition des employés par département (Doughnut Chart)
-  const departmentCtx = document.getElementById('departmentChart').getContext('2d');
-  if (departmentData.scores.length > 0 && departmentData.scores.every(score => !isNaN(score))) {
-    new Chart(departmentCtx, {
-      type: 'doughnut',
-      data: {
-        labels: departmentData.labels,
-        datasets: [{
-          label: 'Pourcentage d\'employés',
-          data: departmentData.scores,
-          backgroundColor: [
-            '#4e73df', '#1cc88a', '#f6c23e', '#e74a3b', '#36b9cc',
-            '#858796', '#5a5c69', '#ff9f40', '#ffcd56', '#2c9faf'
-          ],
-          borderColor: departmentData.labels.map(() => '#000000'), // Bordure noire pour tous
-          borderWidth: 2
-        }]
-      },
-      options: {
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'right',
-            labels: {
-              generateLabels: function(chart) {
-                const data = chart.data;
-                if (data.labels.length && data.datasets.length) {
-                  return data.labels.map((label, i) => {
-                    const value = data.datasets[0].data[i] || 0;
-                    const count = parseInt(departmentData.counts[i]) || 0;
-                    const hasEval = departmentData.hasEvaluations[i];
-                    return {
-                      text: hasEval ? `${label}: ${count} employé${count > 1 ? 's' : ''} (${value.toFixed(2)}%)` : `${label}: Aucun employé`,
-                      fillStyle: data.datasets[0].backgroundColor[i],
-                      strokeStyle: data.datasets[0].borderColor[i],
-                      lineWidth: data.datasets[0].borderWidth,
-                      hidden: isNaN(data.datasets[0].data[i]) || chart.getDatasetMeta(0).data[i].hidden,
-                      index: i
-                    };
-                  });
+
+      //ce nest pas un eror cest : VS Code  analyse le fichier
+      // comme du JavaScript brut, et ne reconnaît pas les blocs Django ({ % fo r  %},
+      //{{ variable }}, etc.), donc il pense que c’est une erreur de syntaxe JavaScript.
+
+      // Données pour les graphiques
+      const contractData = {
+        labels: [{% for contrat in types_contrat %}'{{ contrat.type|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+        counts: [{% for contrat in types_contrat %}{{ contrat.count|floatformat:0 }}{% if not forloop.last %},{% endif %}{% endfor %}]
+      };
+
+      const departmentData = {
+        labels: [{% for item in scores_par_departement %}'{{ item.departement|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+        scores: [{% for item in scores_par_departement %}{{ item.avg_score|floatformat:2 }}{% if not forloop.last %},{% endif %}{% endfor %}],
+        hasEvaluations: [{% for item in scores_par_departement %}{{ item.has_evaluations|yesno:"true,false" }}{% if not forloop.last %},{% endif %}{% endfor %}],
+        counts: [{% for item in scores_par_departement %}{{ item.count|default:0 }}{% if not forloop.last %},{% endif %}{% endfor %}]
+      };
+
+      // Debug : Afficher les données pour vérifier le rendu
+      console.log('Contract Data:', contractData);
+      console.log('Department Data:', departmentData);
+      console.log('Department Counts:', departmentData.counts);
+
+      // Graphique : Répartition par type de contrat (Bar Chart)
+      const contractCtx = document.getElementById('contractChart').getContext('2d');
+      if (contractData.counts.length > 0 && contractData.counts.some(count => count > 0)) {
+        new Chart(contractCtx, {
+          type: 'bar',
+          data: {
+            labels: contractData.labels,
+            datasets: [{
+              label: 'Nombre d\'employés',
+              data: contractData.counts,
+              backgroundColor: ['#4e73df', '#1cc88a', '#f6c23e', '#e74a3b'],
+              borderColor: ['#4e73df', '#1cc88a', '#f6c23e', '#e74a3b'],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Nombre d\'employés'
+                },
+                ticks: {
+                  precision: 0
                 }
-                return [];
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'Type de contrat'
+                }
               }
-            }
-          },
-          title: {
-            display: true,
-            text: 'Répartition des employés par département'
-          },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                const label = context.label || '';
-                const value = context.parsed || 0;
-                const count = parseInt(departmentData.counts[context.dataIndex]) || 0;
-                const hasEval = departmentData.hasEvaluations[context.dataIndex];
-                return hasEval ? `${label}: ${count} employé${count > 1 ? 's' : ''} (${value.toFixed(2)}%)` : `${label}: Aucun employé`;
+            },
+            plugins: {
+              legend: {
+                display: false
+              },
+              title: {
+                display: true,
+                text: 'Répartition par type de contrat'
               }
             }
           }
-        }
+        });
+      } else {
+        contractCtx.canvas.style.display = 'none';
       }
-    });
-  } else {
-    departmentCtx.canvas.style.display = 'none';
-  }
-</script>
+
+      // Graphique : Répartition des employés par département (Doughnut Chart)
+      const departmentCtx = document.getElementById('departmentChart').getContext('2d');
+      if (departmentData.scores.length > 0 && departmentData.scores.every(score => !isNaN(score))) {
+        new Chart(departmentCtx, {
+          type: 'doughnut',
+          data: {
+            labels: departmentData.labels,
+            datasets: [{
+              label: 'Pourcentage d\'employés',
+              data: departmentData.scores,
+              backgroundColor: [
+                '#4e73df', '#1cc88a', '#f6c23e', '#e74a3b', '#36b9cc',
+                '#858796', '#5a5c69', '#ff9f40', '#ffcd56', '#2c9faf'
+              ],
+              borderColor: departmentData.labels.map(() => '#000000'), // Bordure noire pour tous
+              borderWidth: 2
+            }]
+          },
+          options: {
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'right',
+                labels: {
+                  generateLabels: function(chart) {
+                    const data = chart.data;
+                    if (data.labels.length && data.datasets.length) {
+                      return data.labels.map((label, i) => {
+                        const value = data.datasets[0].data[i] || 0;
+                        const count = parseInt(departmentData.counts[i]) || 0;
+                        const hasEval = departmentData.hasEvaluations[i];
+                        return {
+                          text: hasEval ? `${label}: ${count} employé${count > 1 ? 's' : ''} (${value.toFixed(2)}%)` : `${label}: Aucun employé`,
+                          fillStyle: data.datasets[0].backgroundColor[i],
+                          strokeStyle: data.datasets[0].borderColor[i],
+                          lineWidth: data.datasets[0].borderWidth,
+                          hidden: isNaN(data.datasets[0].data[i]) || chart.getDatasetMeta(0).data[i].hidden,
+                          index: i
+                        };
+                      });
+                    }
+                    return [];
+                  }
+                }
+              },
+              title: {
+                display: true,
+                text: 'Répartition des employés par département'
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const label = context.label || '';
+                    const value = context.parsed || 0;
+                    const count = parseInt(departmentData.counts[context.dataIndex]) || 0;
+                    const hasEval = departmentData.hasEvaluations[context.dataIndex];
+                    return hasEval ? `${label}: ${count} employé${count > 1 ? 's' : ''} (${value.toFixed(2)}%)` : `${label}: Aucun employé`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      } else {
+        departmentCtx.canvas.style.display = 'none';
+      }
+    </script>
   </body>
 </html>

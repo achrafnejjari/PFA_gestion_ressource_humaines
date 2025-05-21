@@ -80,6 +80,13 @@
     <i class="bi bi-person-plus-fill"></i>
     Utilisateurs
   </a>
+  <a
+    class="nav-link"
+    href="{% url 'contact_messages' %}"
+    onclick="setActive(this)"
+  >
+    <i class="bi bi-envelope"></i> Messages de contact
+  </a>
   <!-- prettier-ignore -->
   {% endif %} {% if user.is_authenticated and user.utilisateur.role.nom_role == 'Employé' %}
   <!-- Liens réservés aux Employés -->
@@ -115,10 +122,6 @@
     Offres d'emploi internes
   </a>
   {% endif %}
-
-  <a class="nav-link" href="{% url 'contact_messages' %}" onclick="setActive(this)">
-    <i class="bi bi-envelope"></i> Messages de contact
-  </a>
 
   <hr class="mt-5" />
 

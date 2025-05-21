@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -27,14 +27,41 @@
       {% include 'html_of_pages/dashboard/sidebar.html' %}
       <div class="content parametres-content">
         <div class="container">
-          <h2 class="content-title mb-4">Paramètres</h2>
+          <!-- En-tête -->
+          <div
+            class="d-flex justify-content-between align-items-center mb-4 mt-3"
+          >
+            <div>
+              <h1 class="h2">
+                <i class="bi bi-gear-fill"></i>
+                Paramètres
+              </h1>
+              <p class="text-muted">Gérer vos infos et préférences.</p>
+            </div>
+          </div>
+
+          <!-- Messages -->
+          {% if messages %}
+          <!-- prettier-ignore -->
+          {% for message in messages %}
+          <div
+            class="alert alert-{{ message.tags }} alert-dismissible fade show text-danger"
+            role="alert"
+            data-bs-theme="red"
+          >
+            {{ message }}
+          </div>
+          {% endfor %}
+          <!-- prettier-ignore -->
+          {% endif %}
 
           <div class="row">
             <!-- Modifier le mot de passe -->
             <div class="col-md-6 shadow-sm mb-4">
               <div class="card shadow-sm p-4">
                 <h5 class="mb-3">Changer le mot de passe</h5>
-                <form>
+                <form method="POST" action="">
+                  {% csrf_token %}
                   <div class="mb-3">
                     <label for="old-password" class="form-label"
                       >Mot de passe actuel</label
@@ -43,6 +70,8 @@
                       type="password"
                       class="form-control"
                       id="old-password"
+                      name="old-password"
+                      required
                     />
                   </div>
                   <div class="mb-3">
@@ -53,6 +82,8 @@
                       type="password"
                       class="form-control"
                       id="new-password"
+                      name="new-password"
+                      required
                     />
                   </div>
                   <div class="mb-3">
@@ -63,9 +94,13 @@
                       type="password"
                       class="form-control"
                       id="confirm-password"
+                      name="confirm-password"
+                      required
                     />
                   </div>
-                  <button class="btn btnWarning text-white">Changer</button>
+                  <button type="submit" class="btn btn-warning text-white">
+                    Changer
+                  </button>
                 </form>
               </div>
             </div>

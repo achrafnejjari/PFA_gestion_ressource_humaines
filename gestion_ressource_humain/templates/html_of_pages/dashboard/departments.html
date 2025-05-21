@@ -26,11 +26,10 @@
     <link rel="stylesheet" href="{% static 'css/dashboard/dashboard.css' %}" />
 
     <!-- Bootstrap Icons -->
-   <link
-   rel="stylesheet"
-   href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
- />
-
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
   </head>
   <body>
     <div class="container-fluid">
@@ -38,24 +37,33 @@
       <div class="content departments-content">
         <div class="container">
           <!-- Messages -->
-          {% if messages %}
-            {% for message in messages %}
-              <div class="alert alert-{% if message.tags == 'success' %}success{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-            {% endfor %}
-          {% endif %}
+          {% if messages %} {% for message in messages %}
+          <div
+            class="alert alert-{% if message.tags == 'success' %}success{% else %}danger{% endif %} alert-dismissible fade show"
+            role="alert"
+          >
+            {{ message }}
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+          </div>
+          {% endfor %} {% endif %}
 
           <!-- En-tête -->
-          <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+          <div
+            class="d-flex justify-content-between align-items-center mb-4 mt-3"
+          >
             <div>
               <h1 class="h2">
                 <i class="bi bi-building me-2"></i>
                 Gestion des Départements
               </h1>
               <p class="text-muted">
-                Consultez et gérez les informations des départements de TeamCore.
+                Consultez et gérez les informations des départements de
+                TeamCore.
               </p>
             </div>
           </div>
@@ -82,9 +90,12 @@
                   </h5>
                   <ul class="list-unstyled mt-3">
                     {% for dept in department_employee_counts %}
-                      <li>{{ dept.departement__nom|default:"Non spécifié" }}: {{ dept.employee_count }}</li>
+                    <li>
+                      <!-- prettier-ignore -->
+                      {{ dept.departement__nom|default:"Non spécifié" }}: {{ dept.employee_count }}
+                    </li>
                     {% empty %}
-                      <li>Aucun département avec des employés</li>
+                    <li>Aucun département avec des employés</li>
                     {% endfor %}
                   </ul>
                 </div>
@@ -94,7 +105,12 @@
 
           <!-- Bouton Ajouter -->
           <div class="mb-3">
-            <button class="btn primary-button" data-bs-toggle="modal" data-bs-target="#departmentModal" onclick="resetForm()">
+            <button
+              class="btn primary-button"
+              data-bs-toggle="modal"
+              data-bs-target="#departmentModal"
+              onclick="resetForm()"
+            >
               <i class="bi bi-plus-circle me-2"></i>
               Ajouter un département
             </button>
@@ -103,7 +119,9 @@
           <!-- Tableau des départements -->
           <div class="card shadow-sm">
             <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center mb-3">
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
                 <h5 class="card-title">
                   <i class="bi bi-list-check me-2"></i>
                   Liste des Départements
@@ -135,18 +153,36 @@
                     <tr>
                       <td>{{ department.id }}</td>
                       <td>{{ department.nom }}</td>
-                      <td>{{ department.description|default:"Aucune description" }}</td>
                       <td>
-                        <form action="{% url 'departments' %}" method="post" style="display:inline;">
+                        {{ department.description|default:"Aucune description"}}
+                      </td>
+                      <td>
+                        <form
+                          action="{% url 'departments' %}"
+                          method="post"
+                          style="display: inline"
+                        >
                           {% csrf_token %}
-                          <input type="hidden" name="action" value="delete">
-                          <input type="hidden" name="department_id" value="{{ department.id }}">
-                          <button type="submit" class="btn btn-danger btn-sm me-1" onclick="return confirm('Voulez-vous vraiment supprimer ce département ?');">
+                          <input type="hidden" name="action" value="delete" />
+                          <input
+                            type="hidden"
+                            name="department_id"
+                            value="{{ department.id }}"
+                          />
+                          <button
+                            type="submit"
+                            class="btn btnDanger btn-sm me-1"
+                            onclick="return confirm('Voulez-vous vraiment supprimer ce département ?');"
+                          >
                             <i class="bi bi-archive-fill"></i>
                           </button>
                         </form>
-                        <button class="btn btn-info btn-sm me-1" data-bs-toggle="modal" data-bs-target="#departmentModal" 
-                                onclick="fillForm('{{ department.id }}', '{{ department.nom|escapejs }}', '{{ department.description|escapejs }}')">
+                        <button
+                          class="btn btnInfo btn-sm me-1"
+                          data-bs-toggle="modal"
+                          data-bs-target="#departmentModal"
+                          onclick="fillForm('{{ department.id }}', '{{ department.nom|escapejs }}', '{{ department.description|escapejs }}')"
+                        >
                           <i class="bi bi-pencil"></i>
                         </button>
                       </td>
@@ -163,31 +199,77 @@
           </div>
 
           <!-- Modal pour Ajouter/Modifier -->
-          <div class="modal fade" id="departmentModal" tabindex="-1" aria-labelledby="departmentModalLabel" aria-hidden="true">
+          <div
+            class="modal fade"
+            id="departmentModal"
+            tabindex="-1"
+            aria-labelledby="departmentModalLabel"
+            aria-hidden="true"
+          >
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="departmentModalLabel">Ajouter un Département</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <h5 class="modal-title" id="departmentModalLabel">
+                    Ajouter un Département
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
                 </div>
                 <form action="{% url 'departments' %}" method="post">
                   {% csrf_token %}
                   <div class="modal-body">
-                    <input type="hidden" name="action" id="formAction" value="add">
-                    <input type="hidden" name="department_id" id="departmentId">
+                    <input
+                      type="hidden"
+                      name="action"
+                      id="formAction"
+                      value="add"
+                    />
+                    <input
+                      type="hidden"
+                      name="department_id"
+                      id="departmentId"
+                    />
                     <div class="mb-3">
-                      <label for="nom" class="form-label">Nom du département</label>
-                      <input type="text" class="form-control" id="nom" name="nom" required>
+                      <label for="nom" class="form-label"
+                        >Nom du département</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="nom"
+                        name="nom"
+                        required
+                      />
                     </div>
                     <div class="mb-3">
-                      <label for="description" class="form-label">Description</label>
-                      <textarea class="form-control" id="description" name="description"></textarea>
-                      <div id="descriptionHelp" class="form-text">Facultatif</div>
+                      <label for="description" class="form-label"
+                        >Description</label
+                      >
+                      <textarea
+                        class="form-control"
+                        id="description"
+                        name="description"
+                      ></textarea>
+                      <div id="descriptionHelp" class="form-text">
+                        Facultatif
+                      </div>
                     </div>
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn primary-button">Enregistrer</button>
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Annuler
+                    </button>
+                    <button type="submit" class="btn primary-button">
+                      Enregistrer
+                    </button>
                   </div>
                 </form>
               </div>
@@ -198,39 +280,45 @@
     </div>
 
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" 
-            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" 
-            crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" 
-            integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" 
-            crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+      crossorigin="anonymous"
+    ></script>
     <!-- Custom JS -->
     <script src="{% static 'js/dashboard.js' %}"></script>
 
     <!-- JavaScript pour gérer le modal et la recherche -->
     <script>
       function resetForm() {
-        document.getElementById('departmentModalLabel').textContent = 'Ajouter un Département';
-        document.getElementById('formAction').value = 'add';
-        document.getElementById('departmentId').value = '';
-        document.getElementById('nom').value = '';
-        document.getElementById('description').value = '';
+        document.getElementById("departmentModalLabel").textContent =
+          "Ajouter un Département";
+        document.getElementById("formAction").value = "add";
+        document.getElementById("departmentId").value = "";
+        document.getElementById("nom").value = "";
+        document.getElementById("description").value = "";
       }
 
       function fillForm(id, nom, description) {
-        document.getElementById('departmentModalLabel').textContent = 'Modifier un Département';
-        document.getElementById('formAction').value = 'edit';
-        document.getElementById('departmentId').value = id;
-        document.getElementById('nom').value = nom;
-        document.getElementById('description').value = description;
+        document.getElementById("departmentModalLabel").textContent =
+          "Modifier un Département";
+        document.getElementById("formAction").value = "edit";
+        document.getElementById("departmentId").value = id;
+        document.getElementById("nom").value = nom;
+        document.getElementById("description").value = description;
       }
 
       // Soumettre le formulaire de recherche après un délai
-      document.addEventListener('DOMContentLoaded', function () {
-        const searchInput = document.querySelector('.search-table input');
+      document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.querySelector(".search-table input");
         let timeout = null;
         if (searchInput) {
-          searchInput.addEventListener('input', function () {
+          searchInput.addEventListener("input", function () {
             clearTimeout(timeout);
             timeout = setTimeout(() => {
               this.form.submit();
