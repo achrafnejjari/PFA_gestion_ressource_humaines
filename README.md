@@ -32,6 +32,10 @@ Accès à un espace personnel sécurisé.
 
 Consultation de leurs tâches et mise à jour de leurs actions.
 
+Demande de congé et attente d’acceptation.
+
+Accès à des certifications à étudier, fournies par l’entreprise, si le service RH publie certaines certifications sur le site.
+
 ## Visiteurs :
 
 Consultation des offres d’emploi.
